@@ -18,4 +18,5 @@ Ask question > Collect answers > Allow voting > Send votes, answers and answerer
 
 # Machine Learning Methods
 When a user asks a question, we return the **most relevant answer** as indicated by our current machine learning models. As users rate these answers, the model improves to predict better answers for questions over time. 
-   
+
+ 
