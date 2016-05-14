@@ -1,4 +1,5 @@
 # Botmother
+## Chat-Based, Module-Specific Question and Answer system
 
 # Aim
 - Allow students to ask **module-specific** questions and get **timely** and **accurate** replies. 
