@@ -33,8 +33,7 @@ bot.message_loop(handle)
 
 @app.route('/')
 def hello_world():
-    x = 1/0
-    print x
+    1/0
     return 'Hello World!'
 
 if __name__ == '__main__':

@@ -17,4 +17,4 @@ debug = True
 # errorlog = 'gunicorn-error.log'
 # accesslog = 'gunicorn-access.log'
 # log-file= -
-loglevel = 'debug'
+loglevel = 'info'
