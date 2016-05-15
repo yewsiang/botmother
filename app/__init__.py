@@ -52,7 +52,7 @@ def not_found(error):
 # ..
 
 # Before we create the database tables - import all models
-from accounts import User
+from accounts import User, TelegramAccountManager
 from knowledgebase import Question, Answer, Vote, Comment
 
 # Build the database:

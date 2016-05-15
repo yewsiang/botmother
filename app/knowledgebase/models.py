@@ -107,7 +107,7 @@ class Comment(db.Model):
     # we have one parent and many children comments
     parent_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
     children = db.relationship(
-        'Node', backref=db.backref('parent', remote_side=[id]))
+        'Comment', backref=db.backref('parent', remote_side=[id]))
 
 # Create the association table between channels and users
 user_channels_table = db.Table('userchannels', db.Model.metadata,

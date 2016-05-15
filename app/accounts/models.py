@@ -23,8 +23,8 @@ class User(db.Model):
 
     answers = db.relationship('Answer', backref='user', lazy='dynamic')
 
-    gameobject = db.relationship(
-        'Gameobjects', backref='user', lazy='dynamic', uselist=False)
+    # gameobject = db.relationship(
+    #     'Gameobjects', backref='user', lazy='dynamic', uselist=False)
 
     user_type = db.Column(db.Integer)
 
