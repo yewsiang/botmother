@@ -53,7 +53,7 @@ def not_found(error):
 
 # Before we create the database tables - import all models
 from accounts import User
-from knowledgebase import Question, Answer
+from knowledgebase import Question, Answer, Vote, Comment
 
 # Build the database:
 # This will create the database file using SQLAlchemy

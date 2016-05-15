@@ -1,1 +1,1 @@
-from models import Question, Answer
+from models import Question, Answer, Vote, Comment
