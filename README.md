@@ -27,7 +27,7 @@ You might want to use `virtualenv` before starting to ensure `pip install` doesn
 source venv/bin/activate
 ```
 
-To udate all requirements (this interally just calls `pip install -r requirements.txt`):
+To update all requirements (this interally just calls `pip install -r requirements.txt`):
 ```bash
 ./update.sh
 ```
