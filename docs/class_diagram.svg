@@ -1,66 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
-<svg width="81cm" height="40cm" viewBox="-2 -5807 1601 791" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="86cm" height="40cm" viewBox="-2 -5807 1715 791" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g>
-    <rect style="fill: #0000ff" x="758.117" y="-5805.41" width="525.9" height="56"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.117" y="-5805.41" width="525.9" height="56"/>
-    <text font-size="16" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1021.07" y="-5786.41">User</text>
-    <text font-size="11.2" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1021.07" y="-5770.91">User created</text>
-    <text font-size="11.2" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1021.07" y="-5756.91">from telegram</text>
-    <rect style="fill: #0000ff" x="758.117" y="-5749.41" width="525.9" height="164"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.117" y="-5749.41" width="525.9" height="164"/>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5735.41">+id: Integer = generic db id</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5719.41">+telegram_user_id: Integer = from telegram, can be null if web user</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5703.41">+web_user_id: Integer = nullable  - possible not to connect</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5687.41">+Questions: (one - many)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5671.41">+Answers: (one-many)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5655.41">+GameObject: (one-one) = for gamification</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5639.41">+Type: Integer = prof/ta/student</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5623.41">+Votes: (one-many)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5607.41">+Channels: (many-many)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.117" y="-5591.41">+AuthObject: auth info = for access to web</text>
-    <rect style="fill: #0000ff" x="758.117" y="-5585.41" width="525.9" height="8"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.117" y="-5585.41" width="525.9" height="8"/>
+    <rect style="fill: #0000ff" x="758.116" y="-5805.42" width="525.9" height="56"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.116" y="-5805.42" width="525.9" height="56"/>
+    <text font-size="16" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1021.07" y="-5786.42">User</text>
+    <text font-size="11.2" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1021.07" y="-5770.92">User created</text>
+    <text font-size="11.2" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:italic;font-weight:normal" x="1021.07" y="-5756.92">from telegram</text>
+    <rect style="fill: #0000ff" x="758.116" y="-5749.42" width="525.9" height="164"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.116" y="-5749.42" width="525.9" height="164"/>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5735.42">+id: Integer = generic db id</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5719.42">+telegram_user_id: Integer = from telegram, can be null if web user</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5703.42">+Questions: (one - many)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5687.42">+Answers: (one-many)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5671.42">+GameObject: (one-one) = for gamification</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5655.42">+UserType: Integer = prof/ta/student</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5639.42">+Votes: (one-many)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5623.42">+Channels: (many-many)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5607.42">+AuthObject: auth info = for access to web</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="761.116" y="-5591.42">+Comments: (one-many)</text>
+    <rect style="fill: #0000ff" x="758.116" y="-5585.42" width="525.9" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="758.116" y="-5585.42" width="525.9" height="8"/>
   </g>
   <g>
-    <rect style="fill: #00ff00" x="-0.448124" y="-5459.45" width="587.5" height="28"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5459.45" width="587.5" height="28"/>
-    <text font-size="16" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="293.302" y="-5440.45">Question</text>
-    <rect style="fill: #00ff00" x="-0.448124" y="-5431.45" width="587.5" height="100"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5431.45" width="587.5" height="100"/>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5417.45">+text: String = Question Text</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5401.45">+Answers: (one-many)</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5385.45">+Comments: (one-many)</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5369.45">+State: Integer = waiting to be answers/answered/disputed/waiting for votes</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5353.45">+questioner_id: Integer = Who asked this question</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5337.45">+channel_id: Integer = Which channel this question belongs to</text>
-    <rect style="fill: #00ff00" x="-0.448124" y="-5331.45" width="587.5" height="8"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5331.45" width="587.5" height="8"/>
+    <rect style="fill: #00ff00" x="-0.448124" y="-5459.46" width="587.5" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5459.46" width="587.5" height="28"/>
+    <text font-size="16" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="293.302" y="-5440.46">Question</text>
+    <rect style="fill: #00ff00" x="-0.448124" y="-5431.46" width="587.5" height="100"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5431.46" width="587.5" height="100"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5417.46">+text: String = Question Text</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5401.46">+Answers: (one-many)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5385.46">+Comments: (one-many)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5369.46">+State: Integer = waiting to be answers/answered/disputed/waiting for votes</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5353.46">+questioner_id: Integer = Who asked this question</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="2.55188" y="-5337.46">+channel_id: Integer = Which channel this question belongs to</text>
+    <rect style="fill: #00ff00" x="-0.448124" y="-5331.46" width="587.5" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="-0.448124" y="-5331.46" width="587.5" height="8"/>
   </g>
   <g>
-    <rect style="fill: #fcff00" x="709.565" y="-5246.47" width="448.9" height="28"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="709.565" y="-5246.47" width="448.9" height="28"/>
-    <text font-size="16" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="934.015" y="-5227.47">Answer</text>
-    <rect style="fill: #fcff00" x="709.565" y="-5218.47" width="448.9" height="68"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="709.565" y="-5218.47" width="448.9" height="68"/>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="712.565" y="-5204.47">+text: String</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="712.565" y="-5188.47">+Votes: (one-many)</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="712.565" y="-5172.47">+answerer_id: Integer = Who gave this answer</text>
-    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="712.565" y="-5156.47">+question_id: Integer = Which question this answer is for</text>
-    <rect style="fill: #fcff00" x="709.565" y="-5150.47" width="448.9" height="8"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="709.565" y="-5150.47" width="448.9" height="8"/>
+    <rect style="fill: #fcff00" x="727.566" y="-5243.46" width="448.9" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="727.566" y="-5243.46" width="448.9" height="28"/>
+    <text font-size="16" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="952.016" y="-5224.46">Answer</text>
+    <rect style="fill: #fcff00" x="727.566" y="-5215.46" width="448.9" height="68"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="727.566" y="-5215.46" width="448.9" height="68"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="730.566" y="-5201.46">+text: String</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="730.566" y="-5185.46">+Votes: (one-many)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="730.566" y="-5169.46">+answerer_id: Integer = Who gave this answer</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="730.566" y="-5153.46">+question_id: Integer = Which question this answer is for</text>
+    <rect style="fill: #fcff00" x="727.566" y="-5147.46" width="448.9" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="727.566" y="-5147.46" width="448.9" height="8"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.23 1021.07,-5511.43 293.302,-5511.43 293.302,-5460.46 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.24 1021.07,-5511.44 293.302,-5511.44 293.302,-5460.47 "/>
     <polygon style="fill: #ffffff" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
     <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
-    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="657.184" y="-5515.43">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="657.184" y="-5515.44">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1032.07" y="-5564.41"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="297.302" y="-5464.47"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.23 1021.07,-5404.94 934.015,-5404.94 934.015,-5247.47 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.24 1021.07,-5403.44 952.016,-5403.44 952.016,-5244.47 "/>
     <polygon style="fill: #ffffff" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
     <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
-    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="977.541" y="-5408.94">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="986.541" y="-5407.44">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1032.07" y="-5564.41"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="956.016" y="-5248.47"/>
   </g>
   <g>
     <rect style="fill: #ff00d9" x="1125.63" y="-5102.74" width="472" height="42"/>
@@ -75,23 +79,25 @@
     <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1125.63" y="-5024.74" width="472" height="8"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.23 1021.07,-5333.08 1361.63,-5333.08 1361.63,-5103.75 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.24 1021.07,-5333.08 1361.63,-5333.08 1361.63,-5103.75 "/>
     <polygon style="fill: #ffffff" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
     <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
     <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1191.35" y="-5337.08">1...1</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1032.07" y="-5564.41"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1365.63" y="-5107.75"/>
   </g>
   <g>
-    <rect style="fill: #060606" x="20.6468" y="-5234.91" width="626" height="28"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5234.91" width="626" height="28"/>
-    <text font-size="16" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="333.647" y="-5215.91">Vote</text>
-    <rect style="fill: #060606" x="20.6468" y="-5206.91" width="626" height="68"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5206.91" width="626" height="68"/>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5192.91">+answer_id: Integer = Which answer this vote was for (nullable if comment vote)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5176.91">+voter_id: Integer = Who made this vote</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5160.91">+Amount: Integer = how much was the vote (+1/-1/0/..)</text>
-    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5144.91">+comment_id: Integer = Which comment this vote was for (nullable if answer vote)</text>
-    <rect style="fill: #060606" x="20.6468" y="-5138.91" width="626" height="8"/>
-    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5138.91" width="626" height="8"/>
+    <rect style="fill: #060606" x="20.6468" y="-5234.9" width="626" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5234.9" width="626" height="28"/>
+    <text font-size="16" style="fill: #ffffff;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="333.647" y="-5215.9">Vote</text>
+    <rect style="fill: #060606" x="20.6468" y="-5206.9" width="626" height="68"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5206.9" width="626" height="68"/>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5192.9">+answer_id: Integer = Which answer this vote was for (nullable if comment vote)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5176.9">+voter_id: Integer = Who made this vote</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5160.9">+Amount: Integer = how much was the vote (+1/-1/0/..)</text>
+    <text font-size="12.8" style="fill: #ffffff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="23.6468" y="-5144.9">+comment_id: Integer = Which comment this vote was for (nullable if answer vote)</text>
+    <rect style="fill: #060606" x="20.6468" y="-5138.9" width="626" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="20.6468" y="-5138.9" width="626" height="8"/>
   </g>
   <g>
     <rect style="fill: #ff0000" x="16" y="-5727" width="549" height="28"/>
@@ -105,19 +111,50 @@
     <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="16" y="-5663" width="549" height="8"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="290.5,-5628.82 290.5,-5550.23 293.302,-5550.23 293.302,-5460.46 "/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="290.5,-5628.82 290.5,-5550.23 293.302,-5550.23 293.302,-5460.47 "/>
     <polygon style="fill: #ffffff" points="290.5,-5653.99 295.3,-5639.99 290.5,-5625.99 285.7,-5639.99 "/>
     <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="290.5,-5653.99 295.3,-5639.99 290.5,-5625.99 285.7,-5639.99 "/>
     <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="291.901" y="-5554.23">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="301.5" y="-5641.99"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="297.302" y="-5464.47"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="731.937,-5691.41 695.383,-5691.41 695.383,-5182.91 647.656,-5182.91 "/>
-    <polygon style="fill: #ffffff" points="757.109,-5691.41 743.109,-5686.61 729.109,-5691.41 743.109,-5696.21 "/>
-    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="757.109,-5691.41 743.109,-5686.61 729.109,-5691.41 743.109,-5696.21 "/>
-    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="697.383" y="-5441.16">1...many</text>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="731.936,-5691.42 695.382,-5691.42 695.382,-5182.9 647.656,-5182.9 "/>
+    <polygon style="fill: #ffffff" points="757.108,-5691.42 743.108,-5686.62 729.108,-5691.42 743.108,-5696.22 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="757.108,-5691.42 743.108,-5686.62 729.108,-5691.42 743.108,-5696.22 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="697.382" y="-5441.16">1...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="725.108" y="-5695.42"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="651.656" y="-5186.9"/>
   </g>
   <g>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="566.008,-5691 661.559,-5691 661.559,-5691.41 757.109,-5691.41 "/>
-    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="663.559" y="-5695.21">many...many</text>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="566.008,-5691 661.558,-5691 661.558,-5691.42 757.108,-5691.42 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="663.558" y="-5695.21">many...many</text>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="570.008" y="-5695"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="753.108" y="-5695.42"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1055" y="-5495.75" width="656.8" height="28"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1055" y="-5495.75" width="656.8" height="28"/>
+    <text font-size="16" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1383.4" y="-5476.75">Comment</text>
+    <rect style="fill: #ffffff" x="1055" y="-5467.75" width="656.8" height="68"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1055" y="-5467.75" width="656.8" height="68"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1058" y="-5453.75">+commenter_id: Integer = Which user wrote this comment</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1058" y="-5437.75">+question_id: Integer = Which question this comment was for</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1058" y="-5421.75">+parent_comment_id: Integer (nullable) = Which comment this comment is responding to</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="1058" y="-5405.75">+text: String</text>
+    <rect style="fill: #ffffff" x="1055" y="-5399.75" width="656.8" height="8"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1055" y="-5399.75" width="656.8" height="8"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="613.227,-5391.46 828.028,-5391.46 828.028,-5443.75 1054.02,-5443.75 "/>
+    <polygon style="fill: #ffffff" points="588.056,-5391.46 602.056,-5396.26 616.056,-5391.46 602.056,-5386.66 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="588.056,-5391.46 602.056,-5396.26 616.056,-5391.46 602.056,-5386.66 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="830.028" y="-5421.6">1...many</text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5551.24 1021.07,-5529.58 1383.4,-5529.58 1383.4,-5496.76 "/>
+    <polygon style="fill: #ffffff" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1021.07,-5576.41 1025.87,-5562.41 1021.07,-5548.41 1016.27,-5562.41 "/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1202.23" y="-5533.58">1...many</text>
   </g>
 </svg>

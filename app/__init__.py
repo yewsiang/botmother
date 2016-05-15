@@ -32,7 +32,10 @@ bot = telepot.Bot(TOKEN)
 def handle(message):
     pprint(message)
 
-bot.message_loop(handle)
+print "========================="
+print "WARNING: MESSAGE LOOP OFF"
+print "========================="
+# bot.message_loop(handle)
 
 
 # Sample HTTP error handling
@@ -50,6 +53,7 @@ def not_found(error):
 
 # Before we create the database tables - import all models
 from accounts import User
+from knowledgebase import Question, Answer
 
 # Build the database:
 # This will create the database file using SQLAlchemy
