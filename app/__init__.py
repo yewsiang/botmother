@@ -4,6 +4,10 @@ from flask import Flask, render_template
 # Import SQLAlchemy
 from flask.ext.sqlalchemy import SQLAlchemy
 
+# Import Telepot and pretty printing
+import telepot
+from pprint import pprint
+
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -13,6 +17,16 @@ app.config.from_object('config')
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
+
+# Start Telegram bot loop
+TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
+bot = telepot.Bot(TOKEN)
+
+
+def handle(message):
+    pprint(message)
+
+bot.message_loop(handle)
 
 
 # Sample HTTP error handling
