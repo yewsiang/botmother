@@ -27,19 +27,19 @@ import time
 import telepot
 import pprint
 
-from pprint import pprint
-
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 bot = telepot.Bot(TOKEN)
 
+
 def handle(msg):
-	content_type, chat_type, chat_id = telepot.glance(msg)
-	print (content_type, chat_type, chat_id)
-	if (content_type == "text"):
-		show_keyboard = {'keyboard': [['Yes','No'], ['Maybe','Maybe not']]}
-		bot.sendMessage(chat_id, "Bro, you just sent me a " + content_type + "?", reply_markyup=show_keyboard)
-	else:
-		bot.sendMessage(chat_id, "Bro, you sent something?")
+    content_type, chat_type, chat_id = telepot.glance(msg)
+    print (content_type, chat_type, chat_id)
+    if (content_type == "text"):
+        show_keyboard = {'keyboard': [['Yes', 'No'], ['Maybe', 'Maybe not']]}
+        bot.sendMessage(chat_id, "Bro, you just sent me a " +
+                        content_type + "?", reply_markup=show_keyboard)
+    else:
+        bot.sendMessage(chat_id, "Bro, you sent something?")
 
 
 bot.message_loop(handle)
@@ -47,4 +47,4 @@ print ('Listening ...')
 
 # Keep the program running.
 while 1:
-  time.sleep(10)
+    time.sleep(10)

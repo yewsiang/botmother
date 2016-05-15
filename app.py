@@ -33,7 +33,6 @@ bot.message_loop(handle)
 
 @app.route('/')
 def hello_world():
-    1/0
     return 'Hello World!'
 
 @app.route('/sup/<x>')
