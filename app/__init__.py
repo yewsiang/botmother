@@ -8,15 +8,21 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import telepot
 from pprint import pprint
 
+
 # Define the WSGI application object
 app = Flask(__name__)
 
 # Configurations
 app.config.from_object('config.DevelopmentConfig')
 
+# to avoid circular
+
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
+
+db.init_app(app)
+# app.register_blueprint(accounts)
 
 # Start Telegram bot loop
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
@@ -42,6 +48,15 @@ def not_found(error):
 # app.register_blueprint(xyz_module)
 # ..
 
+# Before we create the database tables - import all models
+from accounts import User
+
 # Build the database:
 # This will create the database file using SQLAlchemy
+db.drop_all()
 db.create_all()
+
+# x = User(2, 3)
+# print x
+# db.session.add(x)
+# db.session.commit()
