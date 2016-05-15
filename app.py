@@ -33,6 +33,10 @@ bot.message_loop(handle)
 def hello_world():
     return 'Hello World!'
 
+@app.route('/sup/<x>')
+def sup(x):
+	return 'x = ' + x
+
 if __name__ == '__main__':
     app.run(port=PORT, debug=True)
     print "hi"
