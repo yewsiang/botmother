@@ -38,8 +38,8 @@ def hello_world():
 
 @app.route('/sup/<x>')
 def sup(x):
+    1/0
     return 'x = ' + x
 
 if __name__ == '__main__':
-    app.run()
-    print "hi"
+    app.run(debug=True)

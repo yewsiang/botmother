@@ -1,9 +1,13 @@
 Flask==0.10.1
+Flask-SQLAlchemy==2.1
+Flask-WTF==0.12
 gunicorn==19.5.0
 itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
 requests==2.10.0
+SQLAlchemy==1.0.12
 telepot==8.0
 urllib3==1.15.1
 Werkzeug==0.11.9
+WTForms==2.1
