@@ -1,4 +1,5 @@
 from app import db
+from ..knowledgebase import user_channels_table
 
 
 class User(db.Model):
@@ -31,7 +32,8 @@ class User(db.Model):
 
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
 
-    # channels - many-to-many
+    channels = db.relationship(
+        'Channel', secondary=user_channels_table, back_populates="users")
 
     def __init__(self, telegram_user_id, user_type):
         self.telegram_user_id = telegram_user_id

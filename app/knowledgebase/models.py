@@ -28,7 +28,7 @@ class Question(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    # channel_id = db.Column(db.Integer, db.ForeignKey('channels.id'))
+    channel_id = db.Column(db.Integer, db.ForeignKey('channels.id'))
 
 
 class Answer(db.Model):
@@ -108,3 +108,34 @@ class Comment(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
     children = db.relationship(
         'Node', backref=db.backref('parent', remote_side=[id]))
+
+# Create the association table between channels and users
+user_channels_table = db.Table('userchannels', db.Model.metadata,
+                               db.Column('user_id', db.Integer,
+                                         db.ForeignKey('users.id')),
+                               db.Column('channel_id', db.Integer,
+                                         db.ForeignKey('channels.id'))
+                               )
+
+
+class Channel(db.Model):
+    '''
+    Channel model - stores users that belong to it, the channel name,
+    and the questions that belong to the channel.
+    '''
+
+    ''' TABLE NAME '''
+
+    __tablename__ = 'channels'
+
+    ''' ATTRIBUTES '''
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # 500 characters limited channel
+    name = db.Column(db.String(500))
+
+    questions = db.relationship('Question', backref='channel', lazy='dynamic')
+
+    users = db.relationship(
+        'User', secondary=user_channels_table, back_populates="channels")
