@@ -5,68 +5,97 @@ from telepot.delegate import per_chat_id, create_open
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
-# Questioner class
-class Questioner(telepot.helper.ChatHandler):
-    QUESTIONS = [
-        'What is your name?',
-        'How old are you?',
-    ]
+class Command:
+    @classmethod
+    def processCommand(cls, bot, command):
+        channelExists = bot.user_details.channelExists
+        # NOT DOOONE: UNIMPLEMENTED COMMANDS
+        if command == '/help':
+            print 'You need help. Eh?'
+            bot.sender.sendMessage('You need help. Eh?')
 
-    def __init__(self, seed_tuple, timeout):
-        super(Questioner, self).__init__(seed_tuple, timeout)
-        print (seed_tuple)
+        elif command == '/me':
+            if not channelExists:
+                bot.sender.sendMessage('You have not subscribed to any mods')
+            else:
+                bot.sender.sendMessage('Your modules subscribed are ...')
 
-        # Remember which question you are asking
-        self._qindex = -1
+        elif command == '/modules':
+            bot.sender.sendMessage(
+                'These are the modules that you can subscribe to ...')
 
-    def on_chat_message(self, msg):
-        # Display answer to your questions
-        if 0 <= self._qindex < len(self.QUESTIONS):
-            answer = msg['text']
-            print '%d. %s %s' % (
-                self._qindex, self.QUESTIONS[self._qindex], answer)
+        elif command == '/add':
+            # May remove this. Let people add mods directly (Eg "/MA1234")
+            bot.sender.sendMessage('What module would you like to add?')
 
-        # Advance index to next question
-        self._qindex += 1
+        elif command == '/delete':
+            if not channelExists:
+                bot.sender.sendMessage('You have not subscribed to any mods')
+            else:
+                bot.sender.sendMessage('What module would you like to delete?')
 
-        # Send question to user, or tell him no more questions.
-        if self._qindex < len(self.QUESTIONS):
-            self.sender.sendMessage(self.QUESTIONS[self._qindex])
         else:
-            self.sender.sendMessage('No more questions. I am done.')
-
-
-class Account:
-    # initialize user_id to -1
-    def __init__(self):
-        self.user_id = -1
-
-    def getUserID(self):
-        return self.user_id
-
-    def checkUserAccount(self):
-        # GET request to find out if account with this telegram userid exists
-        self.user_id = 1
-        return True
-
-    def createUserAccount(self):
-        # POST request to create a user account with this particular userid
+            # Say people do this "/MA1234"
+            # We must search if "MA1234" is a valid module
+            moduleCode = command[1:]
+            # moduleExists = checkIfModuleExists(moduleCode)
+            moduleExists = True
+            if (moduleExists):
+                bot.user_details.joinChannels(moduleCode)
+            else:
+                bot.sender.sendMessage('Mod does not exist. Check /modules to see the available modules')
+            bot.sender.sendMessage('End of Adding module')
         return
 
 
-class Channel:
-    def __init__(self):
+class User:
+    def __init__(self, bot, telegram_id):
+        self.telegram_id = telegram_id
         self.channels = []
+        self.bot = bot
+        self.bot.sender.sendMessage("Creating the USER class")
+
+    def getTelegramID(self):
+        self.bot.sender.sendMessage("Getting your telegram_id")
+        return self.telegram_id
 
     def getChannels(self):
+        # Retrieve the channels that the user is subscribed to
+        self.bot.sender.sendMessage("Getting your channels")
         return self.channels
 
-    def checkChannels(self):
-        # GET request to find out the channels that the user is subscribed to
-        self.channels = ["WA1234"]
+    def checkUserAccount(self):
+        # NOT DOOONE:
+        # use self.telegram_id to check
+        # Check if this users' telegram userid exists, return boolean
+        self.bot.sender.sendMessage("Checking your account")
         return True
 
-    def joinChannels(self):
+    def createUserAccount(self):
+        # NOT DOOONE:
+        # use self.telegram_id to create
+        # Create a user account with this particular telegram id
+        self.bot.sender.sendMessage("Creating your account")
+        return
+
+    def checkChannels(self):
+        # NOT DOOONE:
+        # use self.telegram_id to get the channels
+        # Retrieve the channels that the user is subscribed to, return boolean
+        self.bot.sender.sendMessage(
+            "Checking the modules that you've subscribed")
+        self.channels = ["WA123456789"]
+        return False
+
+    def joinChannels(self, module_code):
+        # NOT DOOONE:
+        # use module_code to select the channel to join
+        self.channels.append(module_code)
+        all_modules = ""
+        for channel in self.channels:
+            all_modules += (channel + " ")
+        self.bot.sender.sendMessage("Joining channels")
+        self.bot.sender.sendMessage("Joined " + all_modules)
         return
 
 
@@ -74,15 +103,33 @@ class Channel:
 class Start(telepot.helper.ChatHandler):
     def __init__(self, seed_tuple, timeout):
         super(Start, self).__init__(seed_tuple, timeout)
-        # Check if the user has an account
-        userExists = Account.checkUserAccount(self)
-        if userExists:
-            channelExists = Channel.checkChannels(self)
-        else:
-            Account.createUserAccount(self)
+        # Admin checks every time the bot has been initialized
+        # If user is not registered in db, register him
+        # If user does not have any channels, set channelExists = False
+        telegram_id = seed_tuple[2]
+        self.user_details = User(self, telegram_id)
+
+        userExists = self.user_details.checkUserAccount()
+        if not userExists:
+            self.user_details.createUserAccount()
+
+        self.user_details.channelExists = self.user_details.checkChannels()
+
+        print "-- Initialization --"
 
     def on_chat_message(self, msg):
-        return
+        content_type, chat_type, chat_id = telepot.glance(msg)
+
+        if content_type != 'text':
+            self.sender.sendMessage("Please key in a text command :)")
+            return
+
+        command = msg['text'].strip().lower()
+        Command.processCommand(self, command)
+
+    def on_close(self, exception):
+        if isinstance(exception, telepot.exception.WaitTooLong):
+            self.sender.sendMessage('Session expired')
 
 
 bot = telepot.DelegatorBot(TOKEN, [
