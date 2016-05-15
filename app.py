@@ -2,7 +2,7 @@ import sys
 from flask import Flask
 import telepot
 from pprint import pprint
-
+import logging
 
 """
 $ python2.7 webhook_flask_skeleton.py <token> <listening_port> <webhook_url>
@@ -21,6 +21,7 @@ PORT = 8443
 URL = '/telegram'
 
 app = Flask(__name__)
+app.config['DEBUG'] = True
 bot = telepot.Bot(TOKEN)
 
 
@@ -29,8 +30,10 @@ def handle(message):
 
 bot.message_loop(handle)
 
+
 @app.route('/')
 def hello_world():
+    1/0
     return 'Hello World!'
 
 @app.route('/sup/<x>')
@@ -38,5 +41,5 @@ def sup(x):
 	return 'x = ' + x
 
 if __name__ == '__main__':
-    app.run(port=PORT, debug=True)
+    app.run()
     print "hi"
