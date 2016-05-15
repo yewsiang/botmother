@@ -4,8 +4,8 @@ import telepot
 import pprint
 
 from pprint import pprint
-
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
+
 '''
 bot = telepot.Bot(TOKEN)
 
@@ -113,7 +113,7 @@ class Player(telepot.helper.ChatHandler):
                 'Game expired. The answer is %d' % self._answer)
 '''
 
-
+'''
 class TestShit(telepot.helper.ChatHandler):
     def __init__(self, seed_tuple, timeout):
         super(TestShit, self).__init__(seed_tuple, timeout)
@@ -136,8 +136,40 @@ class TestShit(telepot.helper.ChatHandler):
         if isinstance(exception, telepot.exception.WaitTooLong):
             self.sender.sendMessage(
                 'Expired. Try again')
+        print "--------- Closed ---------"
+'''
+
+
+class Questioner(telepot.helper.ChatHandler):
+    QUESTIONS = [
+        'What is your name?',
+        'How old are you?',
+    ]
+
+    def __init__(self, seed_tuple, timeout):
+        super(Questioner, self).__init__(seed_tuple, timeout)
+        print (seed_tuple)
+
+        # Remember which question you are asking
+        self._qindex = -1
+
+    def on_chat_message(self, msg):
+        # Display answer to your questions
+        if 0 <= self._qindex < len(self.QUESTIONS):
+            answer = msg['text']
+            print '%d. %s %s' % (self._qindex, self.QUESTIONS[self._qindex], answer)
+
+        # Advance index to next question
+        self._qindex += 1
+
+        # Send question to user, or tell him no more questions.
+        if self._qindex < len(self.QUESTIONS):
+            self.sender.sendMessage(self.QUESTIONS[self._qindex])
+        else:
+            self.sender.sendMessage('No more questions. I am done.')
+
 
 bot = telepot.DelegatorBot(TOKEN, [
-    (per_chat_id(), create_open(TestShit, timeout=10)),
+    (per_chat_id(), create_open(Questioner, timeout=20)),
 ])
 bot.message_loop(run_forever=True)
