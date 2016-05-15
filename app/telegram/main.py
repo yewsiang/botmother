@@ -23,7 +23,8 @@ class Questioner(telepot.helper.ChatHandler):
         # Display answer to your questions
         if 0 <= self._qindex < len(self.QUESTIONS):
             answer = msg['text']
-            print '%d. %s %s' % (self._qindex, self.QUESTIONS[self._qindex], answer)
+            print '%d. %s %s' % (
+                self._qindex, self.QUESTIONS[self._qindex], answer)
 
         # Advance index to next question
         self._qindex += 1
@@ -35,7 +36,56 @@ class Questioner(telepot.helper.ChatHandler):
             self.sender.sendMessage('No more questions. I am done.')
 
 
+class Account:
+    # initialize user_id to -1
+    def __init__(self):
+        self.user_id = -1
+
+    def getUserID(self):
+        return self.user_id
+
+    def checkUserAccount(self):
+        # GET request to find out if account with this telegram userid exists
+        self.user_id = 1
+        return True
+
+    def createUserAccount(self):
+        # POST request to create a user account with this particular userid
+        return
+
+
+class Channel:
+    def __init__(self):
+        self.channels = []
+
+    def getChannels(self):
+        return self.channels
+
+    def checkChannels(self):
+        # GET request to find out the channels that the user is subscribed to
+        self.channels = ["WA1234"]
+        return True
+
+    def joinChannels(self):
+        return
+
+
+# Starting up the bot
+class Start(telepot.helper.ChatHandler):
+    def __init__(self, seed_tuple, timeout):
+        super(Start, self).__init__(seed_tuple, timeout)
+        # Check if the user has an account
+        userExists = Account.checkUserAccount(self)
+        if userExists:
+            channelExists = Channel.checkChannels(self)
+        else:
+            Account.createUserAccount(self)
+
+    def on_chat_message(self, msg):
+        return
+
+
 bot = telepot.DelegatorBot(TOKEN, [
-    (per_chat_id(), create_open(Questioner, timeout=20)),
+    (per_chat_id(), create_open(Start, timeout=20)),
 ])
 bot.message_loop(run_forever=True)
