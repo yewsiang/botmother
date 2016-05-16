@@ -17,7 +17,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    telegram_user_id = db.Column(db.Integer)
+    telegram_user_id = db.Column(db.Integer, unique=True)
 
     questions = db.relationship('Question', backref='user', lazy='dynamic')
 

@@ -2,6 +2,12 @@ from .models import User
 from app import db
 
 
+class AccountManager(object):
+    @staticmethod
+    def get_subscribed_channels(telegram_user_id):
+        pass
+
+
 class TelegramAccountManager(object):
     @staticmethod
     def create_account_if_does_not_exist(telegram_user_id):
