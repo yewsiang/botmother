@@ -52,6 +52,7 @@ class User:
     def __init__(self, bot, telegram_id):
         self.telegram_id = telegram_id
         self.channels = []
+        self.channelExists = False
         self.bot = bot
         self.bot.sender.sendMessage("Creating the USER class")
 
@@ -90,12 +91,17 @@ class User:
     def joinChannels(self, module_code):
         # NOT DOOONE:
         # use module_code to select the channel to join
+        # change channelExists accordingly
+        # if (module_code exists):
         self.channels.append(module_code)
         all_modules = ""
         for channel in self.channels:
             all_modules += (channel + " ")
         self.bot.sender.sendMessage("Joining channels")
         self.bot.sender.sendMessage("Joined " + all_modules)
+        self.channelExists = True
+        # else:
+        #   self.bot.sender.sendMessage("I'm sorry the module does not exist")
         return
 
 
