@@ -21,7 +21,7 @@ class BaseConfig(object):
     HASH_ROUNDS = 100000
 
     # force SQLALCHEMY to echo
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
 
     # LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
     # make_dir(LOG_FOLDER)
@@ -65,6 +65,9 @@ class DevelopmentConfig(BaseConfig):
 class TestConfiguration(BaseConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
+
+    SQLALCHEMY_ECHO = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # uncomment the join part to access the test db if need be
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
