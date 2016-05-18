@@ -4,7 +4,7 @@ from app.knowledgebase import Channel
 from app import db
 from sqlalchemy.exc import IntegrityError
 
-from app.telegram import Command, User, Start
+#from app.telegram import Command, User, Start
 
 
 # Create a fake bot that stores the messages sent to the user in a variable
@@ -21,6 +21,7 @@ class FakeBot:
         self.sender = object
         self.bot.sender = object
         #self.bot.sender.sendMessage = testSendMessage(self)
+        assert False
 
 
 class TelegramTests(BaseTestCase):
@@ -31,6 +32,7 @@ class TelegramTests(BaseTestCase):
         fakeBot = FakeBot()
         #fakeBot.bot.sender.sendMessage("hello")
         #assert fakeBot.messages[0] == "hello"
+        assert False
 
 
 class UserTests(BaseTestCase):
