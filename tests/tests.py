@@ -4,15 +4,26 @@ from app.knowledgebase import Channel
 from app import db
 from sqlalchemy.exc import IntegrityError
 
-#from app.telegram import Command, User, Start
+from app.telegram import Command, UserDetails
 
 
 # Create a fake bot that stores the messages sent to the user in a variable
 # to allow us to test the messages sent to the user
 # telepot uses self.bot.sender.sendMessage(msg) to send messages to user
-def testSendMessage(self, msg):
+def test_send_message(self, msg):
     #self.messages.append(msg)
     return
+
+
+# Compare 2 lists of messages and make sure they are the same
+def compare_two_lists_sequentially(self, incoming_messages, expected_messages):
+    if (len(incoming_messages) != len(expected_messages)):
+        return False
+    are_identical_messages = True
+    for i, incoming_message in enumerate(incoming_messages):
+        if (incoming_message != expected_messages[i]):
+            are_identical_messages = False
+    return are_identical_messages
 
 
 class FakeBot:
@@ -33,6 +44,7 @@ class TelegramTests(BaseTestCase):
         #fakeBot.bot.sender.sendMessage("hello")
         #assert fakeBot.messages[0] == "hello"
         assert False
+
 
 
 class UserTests(BaseTestCase):

@@ -42,7 +42,6 @@ class AccountManager(object):
 
 
 
-
 class TelegramAccountManager(object):
     @staticmethod
     def create_account_if_does_not_exist(telegram_user_id):
@@ -61,7 +60,11 @@ class TelegramAccountManager(object):
             db.session.add(new_user)
             # Commit changes
             db.session.commit()
+
+            print "DEBUG: Creating User"
+
             # Return false to indicate we created an account
             return False
         else:
+            print "DEBUG: User exists already"
             return True

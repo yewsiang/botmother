@@ -8,7 +8,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import telepot
 from pprint import pprint
 
-
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -26,16 +25,16 @@ db.init_app(app)
 
 # Start Telegram bot loop
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
-bot = telepot.Bot(TOKEN)
+'''
+bot = telepot.DelegatorBot(TOKEN, [
+    (per_chat_id(), create_open(Start, timeout=20)),
+])
+'''
 
-
-def handle(message):
-    pprint(message)
 
 print "========================="
 print "WARNING: MESSAGE LOOP OFF"
 print "========================="
-# bot.message_loop(handle)
 
 
 # Sample HTTP error handling
@@ -64,3 +63,7 @@ db.create_all()
 # print x
 # db.session.add(x)
 # db.session.commit()
+
+
+from telegram import bot
+bot.message_loop(run_forever=True)

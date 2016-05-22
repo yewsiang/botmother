@@ -1,3 +1,4 @@
+"""
 import sys
 import time
 import telepot
@@ -37,7 +38,7 @@ while 1:
 '''
 
 # Message counter
-"""
+'''
 from telepot.delegate import per_chat_id, create_open
 
 
@@ -60,7 +61,7 @@ print ('Listening ...')
 # Keep the program running.
 while 1:
     time.sleep(10)
-"""
+'''
 
 # Guess a number game
 import random
@@ -177,7 +178,7 @@ bot.message_loop(run_forever=True)
 
 from telepot.delegate import per_chat_id_in, per_application, call, create_open
 
-"""
+'''
 $ python3.5 chatbox_nodb.py <token> <owner_id>
 Chatbox - a mailbox for chats
 1. People send messages to your bot.
@@ -189,7 +190,7 @@ It accepts the following commands from you, the owner, only:
 - /unread - tells you who has sent you messages and how many
 - /next - read next sender's messages
 It can be a starting point for customer-support type of bots.
-"""
+'''
 
 # Simulate a database to store unread messages
 
@@ -367,3 +368,4 @@ OWNER_ID = str(45369113)
 
 bot = ChatBox(TOKEN, OWNER_ID)
 bot.message_loop(run_forever=True)
+"""
