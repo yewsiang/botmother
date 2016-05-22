@@ -15,29 +15,62 @@ class State:
 class Command:
     # All commands are first passed into this function
     # A second function will be called depending on the State at which the user is in
+    # The initial commands (/help, /done) must be supported REGARDLESS of STATE
     @classmethod
     def process_commands(cls, bot, command):
         print "(1) PROCESS COMMANDS"
-        if (bot.state == State.NORMAL):
-            Command.process_normal_commands(bot, command)
+        if command == '/help':
+            # DEPENDING on the STATE of the User, provide different help commands
+            # TODO
+            if bot.state == State.NORMAL:
+                bot.sender.sendMessage("/help - List commands that you can\n"
+                    "/me - List the modules that you are subscribed to\n"
+                    "/ask - Ask questions!\n"  # Changes state
+                    # "/answer - Answer questions\n"  # Changes state - May not be showing this to users
+                    # "/vote - Vote on answers\n"  # Changes state - May not be showing this to users
+                    "/modules - List the modules that you can subscribe to\n"
+                    "/<module code> - Add a module (E.g /MOM1000 adds the module MOM1000)\n"
+                    "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
+                    "/settings - Change your settings (E.g notification rate)\n"  # Changes state
+                    "/end - Stop the conversation :(\n")
+            elif (bot.state == State.DELETING_CHANNEL):
+                bot.sender.sendMessage("/help for DELETING_CHANNEL")
+            elif (bot.state == State.ASKING_QUESTIONS):
+                bot.sender.sendMessage("/help for ASKING_QUESTIONS")
+            elif (bot.state == State.ANSWERING_QUESTIONS):
+                bot.sender.sendMessage("/help for ANSWERING_QUESTIONS")
+            elif (bot.state == State.VOTING):
+                bot.sender.sendMessage("/help for VOTING")
+            elif (bot.state == State.CHANGE_SETTINGS):
+                bot.sender.sendMessage("/help for CHANGE_SETTINGS")
+            else:
+                print "Wat?"
 
-        elif (bot.state == State.DELETING_CHANNEL):
-            Command.process_deleting_channels(bot, command)
+        elif command == '/done':
+            bot.state = State.NORMAL
+            bot.sender.sendMessage("You are back to normal")
 
-        elif (bot.state == State.ASKING_QUESTIONS):
-            Command.process_asking_questions(bot, command)
-
-        elif (bot.state == State.ANSWERING_QUESTIONS):
-            Command.process_answering_questions(bot, command)
-
-        elif (bot.state == State.VOTING):
-            Command.process_voting(bot, command)
-
-        elif (bot.state == State.CHANGE_SETTINGS):
-            Command.process_change_settings(bot, command)
+        elif command == '/end':
+            bot.sender.sendMessage("<The End>")
+            bot.close()
 
         else:
-            print "Wat?"
+            # Once the general commands are catered, the command will be sent to an appropriate
+            # function depending on the user's State
+            if (bot.state == State.NORMAL):
+                Command.process_normal_commands(bot, command)
+            elif (bot.state == State.DELETING_CHANNEL):
+                Command.process_deleting_channels(bot, command)
+            elif (bot.state == State.ASKING_QUESTIONS):
+                Command.process_asking_questions(bot, command)
+            elif (bot.state == State.ANSWERING_QUESTIONS):
+                Command.process_answering_questions(bot, command)
+            elif (bot.state == State.VOTING):
+                Command.process_voting(bot, command)
+            elif (bot.state == State.CHANGE_SETTINGS):
+                Command.process_change_settings(bot, command)
+            else:
+                print "Wat?"
 
     # State.NORMAL - Function that will be called when the usual queries are called
     @classmethod
@@ -49,29 +82,20 @@ class Command:
 
         # TODO: Probably have to do pre-processing before comparing
 
-        if command == '/help':
-            bot.sender.sendMessage("/help - List commands that you can\n"
-                "/me - List the modules that you are subscribed to\n"
-                "/ask - Ask questions!\n"  # Changes state
-                # "/answer - Answer questions\n"  # Changes state - May not be showing this to users
-                # "/vote - Vote on answers\n"  # Changes state - May not be showing this to users
-                "/modules - List the modules that you can subscribe to\n"
-                "/<module code> - Add a module (E.g /MOM1000 adds the module MOM1000)\n"
-                "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
-                "/settings - Change your settings (E.g notification rate)\n"  # Changes state
-                "/end - Stop the conversation :(\n")
-
-        elif command == '/ask':
+        if command == '/ask':
             # User wants to ask questions
             bot.state = State.ASKING_QUESTIONS
+            bot.sender.sendMessage("What are your questions?")
 
         elif command == '/answer':
             # User clicks on questions he wants to answer
             bot.state = State.ANSWERING_QUESTIONS
+            bot.sender.sendMessage("What is your answer?")
 
         elif command == '/vote':
             # User votes on answers
             bot.state = State.VOTING
+            bot.sender.sendMessage("Which answer do you think best fits your question?")
 
         elif command == '/me':
             # List of modules that have been subscribed by user
@@ -111,10 +135,6 @@ class Command:
             bot.state = State.CHANGE_SETTINGS
             bot.sender.sendMessage("What settings would you like to change?")
 
-        elif command == '/end':
-            bot.sender.sendMessage("<The End>")
-            bot.close()
-
         else:
             # Say, people do this "/MA1234"
             # We must search if "MA1234" is a valid module
@@ -127,7 +147,7 @@ class Command:
                 print add_channel_succeed
             else:
                 bot.sender.sendMessage('Mod does not exist. Check /modules to see the available modules')
-            bot.sender.sendMessage('End of Adding module')
+            bot.sender.sendMessage('Module Added')
         return
 
     # State.DELETING - When user wants to delete a channel

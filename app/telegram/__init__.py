@@ -7,63 +7,6 @@ import pprint
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
-class UserDetails:
-    def __init__(self, bot, telegram_id):
-        self.telegram_id = telegram_id
-        self.channels = []
-        self.channelExists = False
-        self.bot = bot
-        self.bot.sender.sendMessage("Creating the USER class")
-
-    def getTelegramID(self):
-        self.bot.sender.sendMessage("Getting your telegram_id")
-        return self.telegram_id
-
-    def getChannels(self):
-        # Retrieve the channels that the user is subscribed to
-        self.bot.sender.sendMessage("Getting your channels")
-        return self.channels
-
-    def checkUserAccount(self):
-        # NOT DOOONE:
-        # use self.telegram_id to check
-        # Check if this users' telegram userid exists, return boolean
-        self.bot.sender.sendMessage("Checking your account")
-        return True
-
-    def createUserAccount(self):
-        # NOT DOOONE:
-        # use self.telegram_id to create
-        # Create a user account with this particular telegram id
-        self.bot.sender.sendMessage("Creating your account")
-        return
-
-    def checkChannels(self):
-        # NOT DOOONE:
-        # use self.telegram_id to get the channels
-        # Retrieve the channels that the user is subscribed to, return boolean
-        self.bot.sender.sendMessage(
-            "Checking the modules that you've subscribed")
-        self.channels = ["WA123456789"]
-        return False
-
-    def joinChannels(self, module_code):
-        # NOT DOOONE:
-        # use module_code to select the channel to join
-        # change channelExists accordingly
-        # if (module_code exists):
-        self.channels.append(module_code)
-        all_modules = ""
-        for channel in self.channels:
-            all_modules += (channel + " ")
-        self.bot.sender.sendMessage("Joining channels")
-        self.bot.sender.sendMessage("Joined " + all_modules)
-        self.channelExists = True
-        # else:
-        #   self.bot.sender.sendMessage("I'm sorry the module does not exist")
-        return
-
-
 # Starting up the bot
 class Start(telepot.helper.ChatHandler):
     def __init__(self, seed_tuple, timeout):
