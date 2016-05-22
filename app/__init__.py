@@ -25,11 +25,6 @@ db.init_app(app)
 
 # Start Telegram bot loop
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
-'''
-bot = telepot.DelegatorBot(TOKEN, [
-    (per_chat_id(), create_open(Start, timeout=20)),
-])
-'''
 
 
 print "========================="
@@ -54,6 +49,7 @@ def not_found(error):
 from accounts import User, TelegramAccountManager
 from knowledgebase import Question, Answer, Vote, Comment
 
+
 # Build the database:
 # This will create the database file using SQLAlchemy
 db.drop_all()
@@ -66,4 +62,4 @@ db.create_all()
 
 
 from telegram import bot
-bot.message_loop(run_forever=True)
+bot.message_loop()
