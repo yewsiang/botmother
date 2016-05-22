@@ -140,6 +140,10 @@ class Channel(db.Model):
     users = db.relationship(
         'User', secondary=user_channels_table, back_populates="channels")
 
+    # Lowercases any module name - compat with yew siang's tolower of messages
+    def __init__(self, **kwargs):
+        if (kwargs['name'] is not None):
+            self.name = kwargs['name'].lower()
 
     def __repr__(self):
         return str(self.name)
