@@ -14,8 +14,8 @@ class AccountManager(object):
             User.telegram_user_id == telegram_user_id).first()
         if user is not None:
             # TODO: Remove Edits
-            return ["CS1020", "ST2334"]
-            # return user.channels
+            #return ["CS1020", "ST2334"]
+            return user.channels
         else:
             return None
 
@@ -24,23 +24,55 @@ class AccountManager(object):
         '''
         Checks if a user with this telegram user id exists in the database
         and if a channel with this name exists
-        and adds the channel to the user
+        adds the channel to the user
 
         Returns True if the operation was done successfully
         False if not
         '''
         user = db.session.query(User).filter(
             User.telegram_user_id == telegram_user_id).first()
+        print "searching for " + str(channel_name)
         channel = db.session.query(Channel).filter(
             Channel.name == channel_name).first()
 
         # TODO: Remove Edits
-        if (user is not None): # and (channel is not None):
-            # user.channels.append(channel)
+        if (user is not None and channel is not None): # and (channel is not None):
+            user.channels.append(channel)
             db.session.add(user)
             db.session.commit()
             return True
         else:
+            if (user is None):
+                print 'User none'
+            if (channel is None):
+                print 'Channel is none'
+
+            return False
+
+    @staticmethod
+    def delete_channel(telegram_user_id, channel_name):
+        '''
+        Checks if a user with this telegram user id exists in the database
+        and if a channel with this name exists
+        delete it from the user.
+
+        Returns True if the operation was done successfully
+        False if not
+        '''
+        user = db.session.query(User).filter(
+            User.telegram_user_id == telegram_user_id).first()
+        print "searching for " + str(channel_name)
+
+        # TODO: Remove Edits
+        if (user is not None):
+            # removes any channels with "channel_name"
+            user.channels = [ channel for channel in user.channels if channel != channel_name ]
+            db.session.add(user)
+            db.session.commit()
+            return True
+        else:
+            print 'User none'
+
             return False
 
 

@@ -106,7 +106,7 @@ class Command:
                 # Send user's telegram id and retrieve a list of modules
                 list_of_subscribed_channels = ""
                 for channel in subscribed_channels:
-                    list_of_subscribed_channels += channel + " "
+                    list_of_subscribed_channels += str(channel) + " "
 
                 bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
