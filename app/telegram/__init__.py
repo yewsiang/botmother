@@ -1,9 +1,12 @@
 import telepot
 from telepot.delegate import per_chat_id, create_open
 from .commands import Command, State
+from .callbackqueries import CallbackQueries
 from app.accounts import TelegramAccountManager
 
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
+
+message_with_inline_keyboard = None
 
 
 # Starting up the bot
@@ -35,6 +38,19 @@ class Start(telepot.helper.ChatHandler):
 
         command = msg['text'].strip().lower()
         Command.process_commands(self, command)
+
+    # TEST
+    # usage of "bot" seems a bit hacky
+    def on_callback_query(self, msg):
+        query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
+        print 'Callback query:', query_id, from_id, data
+
+        if data == 'notification':
+            CallbackQueries.question_answered(self, query_id)
+            bot.answerCallbackQuery(query_id, text='Question sent to be voted!')
+        return
+    #
+    #
 
     def on_close(self, exception):
         if isinstance(exception, telepot.exception.WaitTooLong):

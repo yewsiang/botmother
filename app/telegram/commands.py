@@ -1,4 +1,5 @@
 from app.accounts import AccountManager
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
 
@@ -113,7 +114,19 @@ class Command:
         elif command == '/modules':
             # TODO
             # Retrieve all the modules
-            bot.sender.sendMessage("These are the modules that you can subscribe to ...")
+
+            # TODO : REMOVE
+            # TESTING
+            #
+            markup = InlineKeyboardMarkup(inline_keyboard=[
+                     [InlineKeyboardButton(text='Answer Question', callback_data='notification')],
+                     [dict(text='Link to Forum', url='https://core.telegram.org/')]
+                 ])
+
+            bot.sender.sendMessage("These are the modules that you can subscribe to ...", reply_markup=markup)
+            #
+            #
+            #
 
         elif command == '/add':
             # Redirect people to /<module code>
