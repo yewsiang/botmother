@@ -2,7 +2,6 @@ import telepot
 from telepot.delegate import per_chat_id, create_open
 from .commands import Command, State
 from app.accounts import TelegramAccountManager
-import pprint
 
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
