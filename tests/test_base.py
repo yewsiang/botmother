@@ -11,9 +11,9 @@ class BaseTestCase(TestCase):
         app.config.from_object('config.TestConfiguration')
         return app
 
-    def create_user(self):
+    def create_user(self, telegram_user_id=123, user_type=0):
         # user does not exist
-        new_user = User(123, 0)
+        new_user = User(telegram_user_id, user_type)
         # Add to database
         db.session.add(new_user)
         # Commit changes

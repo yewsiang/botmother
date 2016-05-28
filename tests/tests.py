@@ -3,6 +3,7 @@ from app.accounts import TelegramAccountManager, AccountManager, User
 from app.knowledgebase import Channel
 from app import db
 from sqlalchemy.exc import IntegrityError
+from app.knowledgebase import KBManager
 
 from app.telegram import Command
 
@@ -43,6 +44,89 @@ class TelegramTests(BaseTestCase):
         #assert fakeBot.messages[0] == "hello"
         assert False
 '''
+
+
+class KBManagerTests(BaseTestCase):
+    def test_get_answerers(self):
+        '''
+        This test creates 3 users
+            u1 -> question asker in cs2100
+            u2 -> a subscriber in cs2100
+            u3 -> a subscriber in another channel
+        KBManager.get_answerers should only return u2
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # we want this to return only u2 - as the only other
+        # subscriber to cs2100
+        answerers = KBManager.get_answerers(123, 'cs2100')
+        assert answerers == [u2]
+
+    def test_get_answerers_for_nonexistent_user(self):
+        '''
+        This tests tries to get answerers for a
+        non_existent telegram_user_id
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # trying to get answerers that don't include the telegram user 10005
+        answerers = KBManager.get_answerers(10005, 'cs2100')
+        assert answerers == [u1, u2]
+
+    def test_get_answerers_for_nonexistent_channel(self):
+        '''
+        This tests tries to get answerers for a
+        non_existent telegram_user_id
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # trying to get answerers that don't include the telegram user 10005
+        self.assertRaises(ValueError, KBManager.get_answerers, 123, 'cs5050')
 
 
 class UserTests(BaseTestCase):
