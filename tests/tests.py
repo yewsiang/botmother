@@ -72,6 +72,20 @@ class KBManagerTests(BaseTestCase):
         u1 = self.create_user(123, 0)
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
 
+    def test_ask_too_long_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # create a looong question - 5001 characters
+        question = "".join([str(i) for i in range(10) for _ in xrange(500)]) + "a"
+
+        print len(question)
+
+        # ensure that we get the right question id returned
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', question)
+
 
     def test_get_answerers(self):
         '''
