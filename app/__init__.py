@@ -58,7 +58,7 @@ db.create_all()
 db.session.add(Channel(name='mom1000'))
 db.session.add(Channel(name='pap1000'))
 db.session.add(Channel(name='bro1000'))
-db.session.commit();
+db.session.commit()
 
 # x = User(2, 3)
 # print x

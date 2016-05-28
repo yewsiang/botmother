@@ -1,4 +1,5 @@
 from app import db
+from app.helpers import user_channels_table
 
 
 class Question(db.Model):
@@ -29,6 +30,18 @@ class Question(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     channel_id = db.Column(db.Integer, db.ForeignKey('channels.id'))
+
+    def __init__(self, text, state=0):
+        '''
+        This creates a new question with the initial state set to
+        0 = "being asked"
+        '''
+        if (len(text) <= 5000):
+            self.text = text
+            self.state = 0
+        else:
+            raise ValueError('Size of question > database 5000 char limit!')
+
 
 
 class Answer(db.Model):
@@ -109,13 +122,6 @@ class Comment(db.Model):
     children = db.relationship(
         'Comment', backref=db.backref('parent', remote_side=[id]))
 
-# Create the association table between channels and users
-user_channels_table = db.Table('userchannels', db.Model.metadata,
-                               db.Column('user_id', db.Integer,
-                                         db.ForeignKey('users.id')),
-                               db.Column('channel_id', db.Integer,
-                                         db.ForeignKey('channels.id'))
-                               )
 
 
 class Channel(db.Model):

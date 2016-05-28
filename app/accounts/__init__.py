@@ -13,8 +13,6 @@ class AccountManager(object):
         user = db.session.query(User).filter(
             User.telegram_user_id == telegram_user_id).first()
         if user is not None:
-            # TODO: Remove Edits
-            #return ["CS1020", "ST2334"]
             return user.channels
         else:
             return None

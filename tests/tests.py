@@ -47,6 +47,32 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_ask_valid_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # ensure that we get the right question id returned
+        assert KBManager.ask_question(123, 'cs2100', "hi") == 1
+
+    def test_ask_blank_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # ensure that we get the right question id returned
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "")
+
+    def test_ask_question_from_non_user(self):
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
+
+    def test_ask_question_for_nonexistent_channel(self):
+        u1 = self.create_user(123, 0)
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
+
+
     def test_get_answerers(self):
         '''
         This test creates 3 users
