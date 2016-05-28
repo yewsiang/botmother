@@ -47,6 +47,77 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_add_valid_answer_to_valid_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.add_answer_to_question(question_id,
+                                                u1.telegram_user_id,
+                                                "42") is True
+
+    def test_add_too_long_answer_to_valid_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # long answer - too long
+        answer = "".join([str(i) for i in range(10) for _ in xrange(500)]) + 'a'
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_blank_answer_to_valid_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # non-answer
+        answer = ""
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_valid_answer_to_invalid_question(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # valid answer
+        answer = "42"
+
+        # does not exist
+        question_id = 7000
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_valid_answer_to_valid_question_with_invalid_user(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # valid answer
+        answer = "42"
+
+        # does not exist
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # user telegram id that does not exist
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, 500, answer)
+
     def test_ask_valid_question(self):
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))

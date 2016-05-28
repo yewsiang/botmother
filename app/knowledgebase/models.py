@@ -43,7 +43,6 @@ class Question(db.Model):
             raise ValueError('Size of question > database 5000 char limit!')
 
 
-
 class Answer(db.Model):
     '''
     Answer model - stores an answer, the votes it has received, the person
@@ -66,6 +65,12 @@ class Answer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
+
+    def __init__(self, text):
+        if len(text) <= 5000:
+            self.text = text
+        else:
+            raise ValueError('Answer is too long for database (<= 5000 chars)')
 
 
 class Vote(db.Model):

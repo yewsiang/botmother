@@ -64,7 +64,35 @@ class KBManager(object):
             else:
                 raise ValueError('User does not exist, cannot ask question!')
 
-'''
     @staticmethod
-    def add_answer_to_question(question_id, answerer_telegram_user_id, answer):
-'''
+    def add_answer_to_question(question_id, answerer_telegram_user_id, answer_text):
+        '''
+        This method checks for a valid question, answerer and valid answer_text
+        and adds it to both the question and the answerer_user
+        Exceptions are raised for invalid input, otherwise returns True
+        '''
+        question = db.session.query(Question).get(question_id)
+
+        if question is not None:
+            answerer = db.session.query(User).filter(
+                User.telegram_user_id == answerer_telegram_user_id).first()
+
+            if answerer is not None:
+                if answer_text != "":
+                    answer = Answer(answer_text)
+                    # add this answer to the user who answered
+                    answerer.answers.append(answer)
+                    # add this answer to the question
+                    question.answers.append(answer)
+
+                    db.session.add(answerer)
+                    db.session.add(question)
+                    db.session.commit()
+                    return True
+
+                else:
+                    raise ValueError('Answer cannot be nothing!')
+            else:
+                raise ValueError('Answerer does not exist!')
+        else:
+            raise ValueError('Question does not exist!')
