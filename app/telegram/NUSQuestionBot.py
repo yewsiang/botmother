@@ -1,10 +1,10 @@
 import sys
 import time
 import telepot
-import pprint
+from pprint import pprint
 import threading
 import random
-from telepot.delegate import per_chat_id_in, per_application, call, create_open
+from telepot.delegate import per_chat_id, per_chat_id_in, per_application, call, create_open
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardHide, ForceReply
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
@@ -393,8 +393,9 @@ The bot works like this:
     - `b` - to see a button above the inline results to switch back to a private chat with the bot
 - Play around with the bot for an afternoon ...
 '''
-
+"""
 message_with_inline_keyboard = None
+
 
 def on_chat_message(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
@@ -454,9 +455,11 @@ def on_inline_query(msg):
         print '%s: Computing for: %s' % (threading.current_thread().name, query_string)
 
         articles = [InlineQueryResultArticle(
-                        id='abcde', title='Telegram', input_message_content=InputTextMessageContent(message_text='Telegram is a messaging app')),
+                        id='abcde', title='Telegram',
+                        input_message_content=InputTextMessageContent(message_text='Telegram is a messaging app')),
                     dict(type='article',
-                        id='fghij', title='Google', input_message_content=dict(message_text='Google is a search engine'))]
+                        id='fghij', title='Google',
+                        input_message_content=dict(message_text='Google is a search engine'))]
 
         photo1_url = 'https://core.telegram.org/file/811140934/1/tbDSLHSaijc/fdcc7b6d5fb3354adf'
         photo2_url = 'https://www.telegram.org/img/t_logo.png'
@@ -472,9 +475,10 @@ def on_inline_query(msg):
         elif result_type == 'p':
             return photos
         else:
-            results = articles if random.randint(0,1) else photos
+            results = articles if random.randint(0, 1) else photos
             if result_type == 'b':
-                return dict(results=results, switch_pm_text='Back to Bot', switch_pm_parameter='Optional start parameter')
+                return dict(results=results, switch_pm_text='Back to Bot',
+                    switch_pm_parameter='Optional start parameter')
             else:
                 return dict(results=results)
 
@@ -498,3 +502,95 @@ print 'Listening ...'
 # Keep the program running.
 while 1:
     time.sleep(10)
+
+"""
+
+
+class CallbackBot(telepot.helper.ChatHandler):
+    def __init__(self, seed_tuple, timeout):
+        super(CallbackBot, self).__init__(seed_tuple, timeout)
+        print "CALLBACK BOT INITIALIZATION!"
+
+    def on_callback_query(self, msg):
+        print "ON CALLBACK QUERY!!!"
+        '''
+        query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
+        print "Something is happening within callback query function!!"
+        if data == 'mycallbackfunction':
+            # callback_bot.sendMessage(from_id, "-- Your callback query has been called --")
+            # self.sendMessage(from_id, "-- Your callback query has been called --")
+            # callback_bot.answerCallbackQuery(query_id, text='Callback query called!')
+            # self.answerCallbackQuery(query_id, text='Callback query called!')
+            print "Hi"
+        '''
+
+    def on_chat_message(self, msg):
+        return
+
+
+class MyBot(telepot.helper.ChatHandler):
+    def __init__(self, seed_tuple, timeout):
+        super(MyBot, self).__init__(seed_tuple, timeout)
+        self.sender.sendMessage("-- Initialization --")
+        '''
+        pprint(vars(self))
+        print "-- Administrator --"
+        pprint(vars(vars(self)['_administrator']))
+        print "-- Bot --"
+        pprint(vars(vars(self)['_bot']))
+        print "-- Listener --"
+        pprint(vars(vars(self)['_listener']))
+        print "-- Router --"
+        pprint(vars(vars(self)['_router']))
+        #print "-- Sender --"
+        #pprint(vars(vars(self)['_sender']))
+
+        print "-- Bot.Delegate_Records --"
+        print((vars(vars(self)['_bot']))['_delegate_records'])
+        '''
+
+    def on_chat_message(self, msg):
+        self.sender.sendMessage("-- On chat message --")
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+                     [InlineKeyboardButton(text='Some function', callback_data='mycallbackfunction')],
+                     [dict(text='Link to Forum', url='https://core.telegram.org/')]
+                 ])
+        self.sender.sendMessage("Callback query succeeded!", reply_markup=markup)
+
+    def on_callback_query(self, msg):
+        print "I shall do nothing from now on. Let CallbackBot handle the job"
+        '''
+        query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
+        print "Something is happening within callback query function!!"
+        if data == 'mycallbackfunction':
+            # callback_bot.sendMessage(from_id, "-- Your callback query has been called --")
+            bot.sendMessage(from_id, "-- Your callback query has been called --")
+            # callback_bot.answerCallbackQuery(query_id, text='Callback query called!')
+            bot.answerCallbackQuery(query_id, text='Callback query called!')
+        '''
+
+
+def callback_function(msg):
+    flavor = telepot.flavor(msg)
+    if flavor == 'callback_query':
+        print "callback!!"
+    elif flavor == 'chat':
+        something1 = telepot.glance(msg)
+        print something1
+
+# callback_bot = telepot.Bot(TOKEN)
+bot = telepot.DelegatorBot(TOKEN, [
+    #
+    # IMPORTANT: CallbackBot will not work if the program has been closed. You need one message to init it.
+    # Assumption that timeout=None means the Bot will run forever
+    # Note also: the message will run through CallbackBot first and then to MyBot
+    #
+    (per_application(), create_open(CallbackBot, timeout=None)),
+    (per_chat_id(), create_open(MyBot, timeout=5)),
+])
+bot.message_loop(run_forever=True)
+
+'''
+bot = CallbackBot(TOKEN)
+bot.message_loop(callback_function, run_forever=True)
+'''
