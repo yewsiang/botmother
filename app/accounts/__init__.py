@@ -74,12 +74,17 @@ class AccountManager(object):
 
         # TODO: Remove Edits
         if (user is not None):
+            length_before = len(user.channels)
             # removes any channels with "channel_name"
             user.channels = [
-                channel for channel in user.channels if channel != channel_name]
+                channel for channel in user.channels if channel.name != channel_name]
             db.session.add(user)
             db.session.commit()
-            return True
+            length_after = len(user.channels)
+            if (length_before > length_after):
+                return True
+            else:
+                return False
         else:
             print 'User none'
 

@@ -1,4 +1,6 @@
 from app.accounts import AccountManager
+from app.knowledgebase import KBManager
+from app.telegram import MessageBlast
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
@@ -8,9 +10,10 @@ class State:
     NORMAL = 0
     DELETING_CHANNEL = 1
     ASKING_QUESTIONS = 2
-    ANSWERING_QUESTIONS = 3
-    VOTING = 4
-    CHANGE_SETTINGS = 5
+    SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS = 3
+    ANSWERING_QUESTIONS = 4
+    VOTING = 5
+    CHANGE_SETTINGS = 6
 
 
 class Command:
@@ -20,6 +23,9 @@ class Command:
     @classmethod
     def process_commands(cls, bot, command):
         print "(1) PROCESS COMMANDS"
+        bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+        print bot.subscribed_channels
+
         if command == '/help':
             # DEPENDING on the STATE of the User, provide different help commands
             # TODO
@@ -35,9 +41,14 @@ class Command:
                     "/settings - Change your settings (E.g notification rate)\n"  # Changes state
                     "/end - Stop the conversation :(\n")
             elif (bot.state == State.DELETING_CHANNEL):
-                bot.sender.sendMessage("/help for DELETING_CHANNEL")
+                bot.sender.sendMessage("/<module code> - Delete a module that you are subscribed to\n"
+                    "/done - Done with deleting modules\n")
             elif (bot.state == State.ASKING_QUESTIONS):
-                bot.sender.sendMessage("/help for ASKING_QUESTIONS")
+                bot.sender.sendMessage("Send a question to those who are subscribed to the particular module\n"
+                    "/done - Done with asking questions\n")
+            elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
+                bot.sender.sendMessage("/<module code> - Send the question that you've asked to the people"
+                    "subscribed to this particular module\n")
             elif (bot.state == State.ANSWERING_QUESTIONS):
                 bot.sender.sendMessage("/help for ANSWERING_QUESTIONS")
             elif (bot.state == State.VOTING):
@@ -47,66 +58,15 @@ class Command:
             else:
                 print "Wat?"
 
-        elif command == '/done':
-            bot.state = State.NORMAL
-            bot.sender.sendMessage("You are back to normal")
-
-        elif command == '/end':
-            bot.sender.sendMessage("<The End>")
-            bot.close()
-
-        else:
-            # Once the general commands are catered, the command will be sent to an appropriate
-            # function depending on the user's State
-            if (bot.state == State.NORMAL):
-                Command.process_normal_commands(bot, command)
-            elif (bot.state == State.DELETING_CHANNEL):
-                Command.process_deleting_channels(bot, command)
-            elif (bot.state == State.ASKING_QUESTIONS):
-                Command.process_asking_questions(bot, command)
-            elif (bot.state == State.ANSWERING_QUESTIONS):
-                Command.process_answering_questions(bot, command)
-            elif (bot.state == State.VOTING):
-                Command.process_voting(bot, command)
-            elif (bot.state == State.CHANGE_SETTINGS):
-                Command.process_change_settings(bot, command)
-            else:
-                print "Wat?"
-
-    # State.NORMAL - Function that will be called when the usual queries are called
-    @classmethod
-    def process_normal_commands(cls, bot, command):
-        print "(A) PROCESS NORMAL COMMANDS"
-        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
-        print bot.telegram_id
-        print subscribed_channels
-
-        # TODO: Probably have to do pre-processing before comparing
-
-        if command == '/ask':
-            # User wants to ask questions
-            bot.state = State.ASKING_QUESTIONS
-            bot.sender.sendMessage("What are your questions?")
-
-        elif command == '/answer':
-            # User clicks on questions he wants to answer
-            bot.state = State.ANSWERING_QUESTIONS
-            bot.sender.sendMessage("What is your answer?")
-
-        elif command == '/vote':
-            # User votes on answers
-            bot.state = State.VOTING
-            bot.sender.sendMessage("Which answer do you think best fits your question?")
-
         elif command == '/me':
             # List of modules that have been subscribed by user
-            if subscribed_channels == []:
+            if bot.subscribed_channels == []:
                 bot.sender.sendMessage("You have not subscribed to any mods.\n"
                     "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
             else:
                 # Send user's telegram id and retrieve a list of modules
                 list_of_subscribed_channels = ""
-                for channel in subscribed_channels:
+                for channel in bot.subscribed_channels:
                     list_of_subscribed_channels += str(channel) + " "
 
                 bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
@@ -128,6 +88,57 @@ class Command:
             #
             #
 
+        elif command == '/done':
+            bot.state = State.NORMAL
+            bot.sender.sendMessage("You are back to normal")
+
+        elif command == '/end':
+            bot.sender.sendMessage("<The End>")
+            bot.close()
+
+        else:
+            # Once the general commands are catered, the command will be sent to an appropriate
+            # function depending on the user's State
+            if (bot.state == State.NORMAL):
+                Command.process_normal_commands(bot, command)
+            elif (bot.state == State.DELETING_CHANNEL):
+                Command.process_deleting_channels(bot, command)
+            elif (bot.state == State.ASKING_QUESTIONS):
+                Command.process_asking_questions(bot, command)
+            elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
+                Command.process_selecting_channel_after_asking_questions(bot, command)
+            elif (bot.state == State.ANSWERING_QUESTIONS):
+                Command.process_answering_questions(bot, command)
+            elif (bot.state == State.VOTING):
+                Command.process_voting(bot, command)
+            elif (bot.state == State.CHANGE_SETTINGS):
+                Command.process_change_settings(bot, command)
+            else:
+                print "Wat?"
+
+    # State.NORMAL - Function that will be called when the usual queries are called
+    @classmethod
+    def process_normal_commands(cls, bot, command):
+        print "(A) PROCESS NORMAL COMMANDS"
+        print bot.telegram_id
+
+        # TODO: Probably have to do pre-processing before comparing
+
+        if command == '/ask':
+            # User wants to ask questions
+            bot.state = State.ASKING_QUESTIONS
+            bot.sender.sendMessage("What are your questions?")
+
+        elif command == '/answer':
+            # User clicks on questions he wants to answer
+            bot.state = State.ANSWERING_QUESTIONS
+            bot.sender.sendMessage("What is your answer?")
+
+        elif command == '/vote':
+            # User votes on answers
+            bot.state = State.VOTING
+            bot.sender.sendMessage("Which answer do you think best fits your question?")
+
         elif command == '/add':
             # Redirect people to /<module code>
             bot.sender.sendMessage("Woah. How do you know there is a /add when we didn't tell you"
@@ -135,7 +146,7 @@ class Command:
 
         elif command == '/delete':
             # User wants to delete modules off his subscription list
-            if subscribed_channels == []:
+            if bot.subscribed_channels == []:
                 bot.sender.sendMessage("You have not subscribed to any mods.\n"
                     "/<module code> to add a module (E.g /BRO1000 adds the module BRO1000)")
             else:
@@ -167,13 +178,31 @@ class Command:
     @classmethod
     def process_deleting_channels(cls, bot, command):
         print "(B) PROCESS DELETING CHANNELS"
-        bot.sender.sendMessage("We are in deleting function")
+        module_code = command[1:]
+        deletedChannel = AccountManager.delete_channel(bot.telegram_id, module_code)
+        if (deletedChannel):
+            bot.sender.sendMessage("You have deleted " + module_code + " from your subscribed modules :(")
+        else:
+            bot.sender.sendMessage("You are not even subscribed to " + module_code)
 
     # State.ASKING_QUESTIONS - When user wants to ask questions for a module
     @classmethod
     def process_asking_questions(cls, bot, command):
         print "(C) PROCESS ASKING QUESTIONS"
+        bot.question_asked = command
+        bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         bot.sender.sendMessage("We are in asking questions function")
+
+    # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
+    # selecting a channel to post the question
+    @classmethod
+    def process_selecting_channel_after_asking_questions(cls, bot, command):
+        print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
+        module_code = command[1:]
+        answerers = KBManager.get_answerers(bot.telegram_id, module_code)
+        MessageBlast.send_question_to_answerers(bot, module_code, bot.question_asked, answerers)
+        bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
+            ". The answers will be sent back to you in 15mins!")
 
     # State.ANSWERING_QUESTIONS - When user clicks on other person's questions to answer
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
