@@ -1,6 +1,7 @@
 from .models import Question, Answer, Vote, Comment, Channel
 from app import db
 from app.accounts import User
+from app.helpers import get_user_by_telegram_id
 
 
 class KBManager(object):
@@ -69,7 +70,8 @@ class KBManager(object):
         '''
         This method checks for a valid question, answerer and valid answer_text
         and adds it to both the question and the answerer_user
-        Exceptions are raised for invalid input, otherwise returns True
+        Exceptions are raised for invalid input, otherwise returns the answer
+        id
         '''
         question = db.session.query(Question).get(question_id)
 
@@ -88,7 +90,7 @@ class KBManager(object):
                     db.session.add(answerer)
                     db.session.add(question)
                     db.session.commit()
-                    return True
+                    return answer.id
 
                 else:
                     raise ValueError('Answer cannot be nothing!')
@@ -102,6 +104,32 @@ class KBManager(object):
     #def get_answers_to_vote_on():
 
     @staticmethod
-    def add_vote_to_answer(answer_id, voter_telegram_id, vote):
-        pass
+    def add_vote_to_answer(answer_id, voter_telegram_id, vote_amount):
+        '''
+        This method checks for a valid answer and voter, then adds
+        the vote object to both
+        '''
+        answer = db.session.query(Answer).get(answer_id)
 
+        if answer is not None:
+            voter = get_user_by_telegram_id(voter_telegram_id)
+
+            if voter is not None:
+                '''
+                answer and voter exist and are valid, create a new vote
+                and add it to both of them
+                '''
+                new_vote = Vote(amount=vote_amount)
+
+                voter.votes.append(new_vote)
+                answer.votes.append(new_vote)
+
+                db.session.add(voter)
+                db.session.add(answer)
+                db.session.commit()
+
+                return True
+            else:
+                raise ValueError('Voter is not a valid user!')
+        else:
+            raise ValueError('Answer cannot be found to add vote to!')

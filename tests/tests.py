@@ -47,6 +47,18 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_add_valid_vote_to_valid_answer(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        answer_id = KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+
+        assert KBManager.add_vote_to_answer(answer_id, u2.telegram_user_id, 1) is True
     def test_add_valid_answer_to_valid_question(self):
         '''
         This tests adding a valid answer to an existing question
@@ -60,7 +72,7 @@ class KBManagerTests(BaseTestCase):
 
         assert KBManager.add_answer_to_question(question_id,
                                                 u1.telegram_user_id,
-                                                "42") is True
+                                                "42") == 1
 
     def test_add_too_long_answer_to_valid_question(self):
         '''
@@ -175,7 +187,7 @@ class KBManagerTests(BaseTestCase):
         This tests asks a question in a channel that does not exist,
         expects ValueError
         '''
-        u1 = self.create_user(123, 0)
+        self.create_user(123, 0)
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
 
     def test_ask_too_long_question(self):
@@ -195,7 +207,6 @@ class KBManagerTests(BaseTestCase):
 
         # ensure that we get the right question id returned
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', question)
-
 
     def test_get_answerers(self):
         '''
