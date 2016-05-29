@@ -5,6 +5,16 @@ from app import db
 
 class AccountManager(object):
     @staticmethod
+    def get_user_by_telegram_id(telegram_user_id):
+        '''
+        Helper method that checks the database for a user with a
+        particular telegram_user_id and returns it if it exists,
+        or returns None if not
+        '''
+        return db.session.query(User).\
+            filter(User.telegram_user_id == telegram_user_id).first()
+
+    @staticmethod
     def get_subscribed_channels(telegram_user_id):
         '''
         Checks if a user with this telegram_user_id exists in the database
@@ -13,8 +23,6 @@ class AccountManager(object):
         user = db.session.query(User).filter(
             User.telegram_user_id == telegram_user_id).first()
         if user is not None:
-            # TODO: Remove Edits
-            #return ["CS1020", "ST2334"]
             return user.channels
         else:
             return None
@@ -36,7 +44,8 @@ class AccountManager(object):
             Channel.name == channel_name).first()
 
         # TODO: Remove Edits
-        if (user is not None and channel is not None): # and (channel is not None):
+        # and (channel is not None):
+        if (user is not None and channel is not None):
             user.channels.append(channel)
             db.session.add(user)
             db.session.commit()
@@ -66,7 +75,8 @@ class AccountManager(object):
         # TODO: Remove Edits
         if (user is not None):
             # removes any channels with "channel_name"
-            user.channels = [ channel for channel in user.channels if channel != channel_name ]
+            user.channels = [
+                channel for channel in user.channels if channel != channel_name]
             db.session.add(user)
             db.session.commit()
             return True
@@ -95,10 +105,7 @@ class TelegramAccountManager(object):
             # Commit changes
             db.session.commit()
 
-            print "DEBUG: Creating User"
-
             # Return false to indicate we created an account
             return False
         else:
-            print "DEBUG: User exists already"
             return True

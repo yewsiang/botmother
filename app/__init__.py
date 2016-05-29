@@ -46,7 +46,7 @@ def not_found(error):
 # ..
 
 # Before we create the database tables - import all models
-from accounts import User, TelegramAccountManager
+from accounts import User
 from knowledgebase import Question, Answer, Vote, Comment, Channel
 
 
@@ -58,7 +58,7 @@ db.create_all()
 db.session.add(Channel(name='mom1000'))
 db.session.add(Channel(name='pap1000'))
 db.session.add(Channel(name='bro1000'))
-db.session.commit();
+db.session.commit()
 
 # x = User(2, 3)
 # print x

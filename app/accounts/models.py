@@ -1,5 +1,5 @@
 from app import db
-from ..knowledgebase import user_channels_table
+from app.helpers import user_channels_table
 
 
 class User(db.Model):

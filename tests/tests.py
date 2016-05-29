@@ -3,6 +3,7 @@ from app.accounts import TelegramAccountManager, AccountManager, User
 from app.knowledgebase import Channel
 from app import db
 from sqlalchemy.exc import IntegrityError
+from app.knowledgebase import KBManager
 
 from app.telegram import Command
 
@@ -43,6 +44,250 @@ class TelegramTests(BaseTestCase):
         #assert fakeBot.messages[0] == "hello"
         assert False
 '''
+
+
+class KBManagerTests(BaseTestCase):
+    def test_add_valid_vote_to_valid_answer(self):
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        answer_id = KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+
+        assert KBManager.add_vote_to_answer(answer_id, u2.telegram_user_id, 1) is True
+    def test_add_valid_answer_to_valid_question(self):
+        '''
+        This tests adding a valid answer to an existing question
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.add_answer_to_question(question_id,
+                                                u1.telegram_user_id,
+                                                "42") == 1
+
+    def test_add_too_long_answer_to_valid_question(self):
+        '''
+        This tests adding an answer that is 5001 chars, > 5000 char limit in DB
+        to a valid question, expects ValueError
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # long answer - too long
+        answer = "".join([str(i) for i in range(10) for _ in xrange(500)]) + 'a'
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_blank_answer_to_valid_question(self):
+        '''
+        This tests adding an invalid (blank) answer to a valid question,
+        expects ValueError
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # non-answer
+        answer = ""
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_valid_answer_to_invalid_question(self):
+        '''
+        This tests trying to  add a valid answer to a question
+        that does not exist, expects ValueError
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # valid answer
+        answer = "42"
+
+        # does not exist
+        question_id = 7000
+
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, u1.telegram_user_id, answer)
+
+    def test_add_valid_answer_to_valid_question_with_invalid_user(self):
+        '''
+        This test tries to add a valid answer to a valid question but
+        the answerer id does not exist. Expects ValueError
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # valid answer
+        answer = "42"
+
+        # does not exist
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # user telegram id that does not exist
+        self.assertRaises(ValueError, KBManager.add_answer_to_question,
+                          question_id, 500, answer)
+
+    def test_ask_valid_question(self):
+        '''
+        This tests that when a valid question is asked, the correct question
+        id is returned
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # ensure that we get the right question id returned
+        assert KBManager.ask_question(123, 'cs2100', "hi") == 1
+
+    def test_ask_blank_question(self):
+        '''
+        This test asks a question that is just an empty string,
+        expects a ValueError since non-questions are not allowed
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # ensure that we get the right question id returned
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "")
+
+    def test_ask_question_from_non_user(self):
+        '''
+        This test asks a question from a user id that does not exist and
+        expects a ValueError
+        '''
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
+
+    def test_ask_question_for_nonexistent_channel(self):
+        '''
+        This tests asks a question in a channel that does not exist,
+        expects ValueError
+        '''
+        self.create_user(123, 0)
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
+
+    def test_ask_too_long_question(self):
+        '''
+        This test asks a question that is too long for the current DB limit
+        of VARCHAR(5000) - asks a 5001 char long qn. Expects a ValueError
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        db.session.add(u1)
+        db.session.commit()
+
+        # create a looong question - 5001 characters
+        question = "".join([str(i) for i in range(10) for _ in xrange(500)]) + "a"
+
+        print len(question)
+
+        # ensure that we get the right question id returned
+        self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', question)
+
+    def test_get_answerers(self):
+        '''
+        This test creates 3 users
+            u1 -> question asker in cs2100
+            u2 -> a subscriber in cs2100
+            u3 -> a subscriber in another channel
+        KBManager.get_answerers should only return u2
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # we want this to return only u2 - as the only other
+        # subscriber to cs2100
+        answerers = KBManager.get_answerers(123, 'cs2100')
+        assert answerers == [u2]
+
+    def test_get_answerers_for_nonexistent_user(self):
+        '''
+        This tests tries to get answerers for a
+        non_existent telegram_user_id
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # trying to get answerers that don't include the telegram user 10005
+        answerers = KBManager.get_answerers(10005, 'cs2100')
+        assert answerers == [u1, u2]
+
+    def test_get_answerers_for_nonexistent_channel(self):
+        '''
+        This tests tries to get answerers for a
+        non_existent telegram_user_id
+        '''
+        u1 = self.create_user(123, 0)
+        u2 = self.create_user(124, 0)
+        u3 = self.create_user(125, 0)
+
+        # bind first 2 users to first channel
+        new_channel = Channel(name='cs2100')
+        u1.channels.append(new_channel)
+        u2.channels.append(new_channel)
+
+        # bind third user to different channel
+        u3.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.commit()
+
+        # trying to get answerers that don't include the telegram user 10005
+        self.assertRaises(ValueError, KBManager.get_answerers, 123, 'cs5050')
 
 
 class UserTests(BaseTestCase):
