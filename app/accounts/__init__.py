@@ -93,10 +93,7 @@ class TelegramAccountManager(object):
             # Commit changes
             db.session.commit()
 
-            print "DEBUG: Creating User"
-
             # Return false to indicate we created an account
             return False
         else:
-            print "DEBUG: User exists already"
             return True

@@ -48,6 +48,9 @@ class TelegramTests(BaseTestCase):
 
 class KBManagerTests(BaseTestCase):
     def test_add_valid_answer_to_valid_question(self):
+        '''
+        This tests adding a valid answer to an existing question
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -60,6 +63,10 @@ class KBManagerTests(BaseTestCase):
                                                 "42") is True
 
     def test_add_too_long_answer_to_valid_question(self):
+        '''
+        This tests adding an answer that is 5001 chars, > 5000 char limit in DB
+        to a valid question, expects ValueError
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -74,6 +81,10 @@ class KBManagerTests(BaseTestCase):
                           question_id, u1.telegram_user_id, answer)
 
     def test_add_blank_answer_to_valid_question(self):
+        '''
+        This tests adding an invalid (blank) answer to a valid question,
+        expects ValueError
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -88,6 +99,10 @@ class KBManagerTests(BaseTestCase):
                           question_id, u1.telegram_user_id, answer)
 
     def test_add_valid_answer_to_invalid_question(self):
+        '''
+        This tests trying to  add a valid answer to a question
+        that does not exist, expects ValueError
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -103,6 +118,10 @@ class KBManagerTests(BaseTestCase):
                           question_id, u1.telegram_user_id, answer)
 
     def test_add_valid_answer_to_valid_question_with_invalid_user(self):
+        '''
+        This test tries to add a valid answer to a valid question but
+        the answerer id does not exist. Expects ValueError
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -119,6 +138,10 @@ class KBManagerTests(BaseTestCase):
                           question_id, 500, answer)
 
     def test_ask_valid_question(self):
+        '''
+        This tests that when a valid question is asked, the correct question
+        id is returned
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -128,6 +151,10 @@ class KBManagerTests(BaseTestCase):
         assert KBManager.ask_question(123, 'cs2100', "hi") == 1
 
     def test_ask_blank_question(self):
+        '''
+        This test asks a question that is just an empty string,
+        expects a ValueError since non-questions are not allowed
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)
@@ -137,13 +164,25 @@ class KBManagerTests(BaseTestCase):
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "")
 
     def test_ask_question_from_non_user(self):
+        '''
+        This test asks a question from a user id that does not exist and
+        expects a ValueError
+        '''
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
 
     def test_ask_question_for_nonexistent_channel(self):
+        '''
+        This tests asks a question in a channel that does not exist,
+        expects ValueError
+        '''
         u1 = self.create_user(123, 0)
         self.assertRaises(ValueError, KBManager.ask_question, 123, 'cs2100', "a")
 
     def test_ask_too_long_question(self):
+        '''
+        This test asks a question that is too long for the current DB limit
+        of VARCHAR(5000) - asks a 5001 char long qn. Expects a ValueError
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         db.session.add(u1)

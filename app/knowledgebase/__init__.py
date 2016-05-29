@@ -96,3 +96,12 @@ class KBManager(object):
                 raise ValueError('Answerer does not exist!')
         else:
             raise ValueError('Question does not exist!')
+
+
+    #@staticmethod
+    #def get_answers_to_vote_on():
+
+    @staticmethod
+    def add_vote_to_answer(answer_id, voter_telegram_id, vote):
+        pass
+
