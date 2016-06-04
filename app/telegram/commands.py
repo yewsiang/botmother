@@ -1,6 +1,6 @@
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager
-#from app.telegram import MessageBlast
+from .message_blast import MessageBlast
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
@@ -23,10 +23,15 @@ class Command:
     The initial commands (/help, /done, /me, /modules) must be supported REGARDLESS of STATE
     '''
     @classmethod
-    def process_commands(cls, bot, command):
+    def process_commands(cls, bot, delegator_bot, command):
         print "(1) PROCESS COMMANDS"
         bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
         print bot.subscribed_channels
+
+        # DEBUGGING PURPOSES
+        if command == '/':
+            print "bot.State = " + bot.State
+        # REMOVE LATER
 
         if command == '/help':
             # DEPENDING on the STATE of the User, provide different help commands
@@ -74,25 +79,22 @@ class Command:
                 bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
         elif command == '/modules':
-            # TODO
-            # Retrieve all the modules
+            # Retrieve all the modules that are available for subscription
             list_of_all_modules = KBManager.retrieve_all_modules()
-            string_to_send = "Modules available: "
-            print list_of_all_modules
+            string_to_send = "Modules available:  "
             for module in list_of_all_modules:
-                #print module
-                string_to_send += "/" + str(module).upper() + " "
+                string_to_send += "/" + str(module).upper() + "  "
             bot.sender.sendMessage(string_to_send)
 
             # TODO : REMOVE
             # TESTING
             #
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                     [InlineKeyboardButton(text='Answer Question', callback_data='notification')],
+                     [InlineKeyboardButton(text='Answer Question', callback_data='question_answered')],
                      [dict(text='Link to Forum', url='https://core.telegram.org/')]
                  ])
 
-            bot.sender.sendMessage("These are the modules that you can subscribe to ...", reply_markup=markup)
+            bot.sender.sendMessage("Testing InlineKeyboard", reply_markup=markup)
             #
             #
             #
@@ -109,25 +111,25 @@ class Command:
             # Once the general commands are catered, the command will be sent to an appropriate
             # function depending on the user's State
             if (bot.state == State.NORMAL):
-                Command.process_normal_commands(bot, command)
+                Command.process_normal_commands(bot, delegator_bot, command)
             elif (bot.state == State.DELETING_CHANNEL):
-                Command.process_deleting_channels(bot, command)
+                Command.process_deleting_channels(bot, delegator_bot, command)
             elif (bot.state == State.ASKING_QUESTIONS):
-                Command.process_asking_questions(bot, command)
+                Command.process_asking_questions(bot, delegator_bot, command)
             elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
-                Command.process_selecting_channel_after_asking_questions(bot, command)
+                Command.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
             elif (bot.state == State.ANSWERING_QUESTIONS):
-                Command.process_answering_questions(bot, command)
+                Command.process_answering_questions(bot, delegator_bot, command)
             elif (bot.state == State.VOTING):
-                Command.process_voting(bot, command)
+                Command.process_voting(bot, delegator_bot, command)
             elif (bot.state == State.CHANGE_SETTINGS):
-                Command.process_change_settings(bot, command)
+                Command.process_change_settings(bot, delegator_bot, command)
             else:
                 print "Wat?"
 
     # State.NORMAL - Function that will be called when the usual queries are called
     @classmethod
-    def process_normal_commands(cls, bot, command):
+    def process_normal_commands(cls, bot, delegator_bot, command):
         print "(A) PROCESS NORMAL COMMANDS"
         print bot.telegram_id
 
@@ -185,7 +187,7 @@ class Command:
 
     # State.DELETING - When user wants to delete a channel
     @classmethod
-    def process_deleting_channels(cls, bot, command):
+    def process_deleting_channels(cls, bot, delegator_bot, command):
         print "(B) PROCESS DELETING CHANNELS"
         module_code = command[1:]
         deletedChannel = AccountManager.delete_channel(bot.telegram_id, module_code)
@@ -199,7 +201,7 @@ class Command:
     # TODO
     #
     @classmethod
-    def process_asking_questions(cls, bot, command):
+    def process_asking_questions(cls, bot, delegator_bot, command):
         print "(C) PROCESS ASKING QUESTIONS"
         bot.question_asked = command
         bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
@@ -211,11 +213,11 @@ class Command:
     # TODO
     #
     @classmethod
-    def process_selecting_channel_after_asking_questions(cls, bot, command):
+    def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
         print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
         module_code = command[1:]
         answerers = KBManager.get_answerers(bot.telegram_id, module_code)
-        MessageBlast.send_question_to_answerers(bot, module_code, bot.question_asked, answerers)
+        MessageBlast.send_question_to_answerers(bot, delegator_bot, module_code, bot.question_asked, answerers)
         bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
             ". The answers will be sent back to you in 15mins!")
 
@@ -225,7 +227,7 @@ class Command:
     # TODO
     #
     @classmethod
-    def process_answering_questions(cls, bot, command):
+    def process_answering_questions(cls, bot, delegator_bot, command):
         print "(D) PROCESS ANSWERING QUESTIONS"
         bot.sender.sendMessage("We are in answering questions function")
 
@@ -235,11 +237,11 @@ class Command:
     # TODO
     #
     @classmethod
-    def process_voting(cls, bot, command):
+    def process_voting(cls, bot, delegator_bot, command):
         print "(E) PROCESS VOTING"
         bot.sender.sendMessage("We are in voting function")
 
     @classmethod
-    def process_change_settings(cls, bot, command):
+    def process_change_settings(cls, bot, delegator_bot, command):
         print "(F) PROCESS CHANGE SETTINGS"
         bot.sender.sendMessage("We are in change settings function")

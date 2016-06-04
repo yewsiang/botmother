@@ -18,12 +18,9 @@ class CallbackBot(telepot.helper.ChatHandler):
         super(CallbackBot, self).__init__(seed_tuple, timeout)
 
     def on_callback_query(self, msg):
-        print "----- ON CALLBACK QUERY!!! -----"
         query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
-
-        if data == 'notification':
-            CallbackQueries.question_answered(self, query_id)
-            bot.answerCallbackQuery(query_id, text='Question sent to be voted!')
+        print "---- CALLBACK QUERY ----"
+        CallbackQueries.on_answer(self, bot, data, query_id)
 
     # CallbackBot should only be handling Callback queries and nothing else.
     def on_chat_message(self, msg):
@@ -55,7 +52,7 @@ class MainBot(telepot.helper.ChatHandler):
             return
 
         command = msg['text'].strip().lower()
-        Command.process_commands(self, command)
+        Command.process_commands(self, bot, command)
 
     # Callback_query will be answered by CallbackBot. MainBot ignores such queries.
     def on_callback_query(self, msg):
@@ -63,7 +60,7 @@ class MainBot(telepot.helper.ChatHandler):
 
     def on_close(self, exception):
         if isinstance(exception, telepot.exception.WaitTooLong):
-            print "---- Session Expired ----"
+            print "---- SESSION EXPIRED ----"
             self.sender.sendMessage('Session expired')
 
 

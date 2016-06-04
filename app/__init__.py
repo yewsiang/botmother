@@ -52,9 +52,10 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-db.drop_all()
-db.create_all()
+#db.drop_all()
+#db.create_all()
 
+db.session.add(Channel(name='gerk1000'))
 db.session.add(Channel(name='mom1000'))
 db.session.add(Channel(name='pap1000'))
 db.session.add(Channel(name='bro1000'))
