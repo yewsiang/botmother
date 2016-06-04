@@ -1,5 +1,6 @@
 from app import db
 from app.helpers import user_channels_table
+import datetime
 
 
 class Question(db.Model):
@@ -25,11 +26,14 @@ class Question(db.Model):
 
     # integer representing what state the qn is in
     #   - waiting for answers/waiting for votes/rejected/accepted
+    # 0 = waiting for answers, 1 = voting,  2 = not resolved + discussing, 3 = resolved + discussing
     state = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     channel_id = db.Column(db.Integer, db.ForeignKey('channels.id'))
+
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, text, state=0):
         '''

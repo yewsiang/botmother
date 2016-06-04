@@ -47,6 +47,32 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_can_user_ask_question_pass(self):
+        '''
+        Ask only a few questions and see if we can ask another one
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        for i in xrange(20):
+            KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.can_user_ask_question(u1.telegram_user_id) is True
+
+    def test_can_user_ask_question(self):
+        '''
+        Ask just above the limit of number of questions and see if we can ask another one
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        for i in xrange(21):
+            KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.can_user_ask_question(u1.telegram_user_id) is False
+
     def test_get_voters_for_question_answers(self):
         '''
         Returns everyone who has not answered the questions and is in this
@@ -115,9 +141,6 @@ class KBManagerTests(BaseTestCase):
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
 
-
-
-
     def test_add_valid_vote_to_valid_answer(self):
         '''
         Tests simple case of adding a valid vote to a valid answer
@@ -133,6 +156,7 @@ class KBManagerTests(BaseTestCase):
         answer_id = KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
 
         assert KBManager.add_vote_to_answer(answer_id, u2.telegram_user_id, 1) is True
+
     def test_add_valid_answer_to_valid_question(self):
         '''
         This tests adding a valid answer to an existing question

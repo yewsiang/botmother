@@ -2,9 +2,37 @@ from .models import Question, Answer, Vote, Comment, Channel
 from app import db
 from app.accounts import User
 from app.helpers import get_user_by_telegram_id
+from sqlalchemy.sql import func
+from datetime import datetime, timedelta
+from app.helpers import get_user_by_telegram_id
+
+'''
+Constants
+'''
+max_questions_per_day = 20
 
 
 class KBManager(object):
+    @staticmethod
+    def can_user_ask_question(telegram_user_id):
+        '''
+        Returns true/false based on whether the
+        number of questions per day has been exceeded for this user
+        '''
+        user = get_user_by_telegram_id(telegram_user_id)
+        if user is not None:
+            # define a simple filter to get questions from the last day
+            def date_filter(question):
+                return question.date_created >= (datetime.utcnow() - timedelta(days=1))
+
+            filtered_questions = filter(date_filter, user.questions)
+
+            # check if we have exceeded the number of questions we can have today
+            return len(filtered_questions) <= max_questions_per_day
+
+        else:
+            raise ValueError('User does not exist!')
+
     @staticmethod
     def get_voters_and_answers_for_qn(question_id):
         '''
