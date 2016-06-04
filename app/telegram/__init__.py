@@ -7,9 +7,13 @@ from app.accounts import TelegramAccountManager
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
-# There will only be 1 CallbackBot in the application
-# The Bot handles callback_queries when users click on inline keyboard buttons
 class CallbackBot(telepot.helper.ChatHandler):
+    '''
+    There will only be 1 CallbackBot in the entire application.
+    The Bot handles callback_queries when users click on inline keyboard buttons.
+    This will be the Bot that all queries will pass through first. If it is not a callback query,
+    it will simply return and MainBot will takeover the handling of the message.
+    '''
     def __init__(self, seed_tuple, timeout):
         super(CallbackBot, self).__init__(seed_tuple, timeout)
 
@@ -26,13 +30,16 @@ class CallbackBot(telepot.helper.ChatHandler):
         return
 
 
-# Starting up the bot
 class MainBot(telepot.helper.ChatHandler):
+    '''
+    There will be 1 MainBot for EVERY USER.
+    This Bot will maintain the state of the user while the session hasn't expired.
+    This Bot is responsible for all the non-callback queries to the Bot.
+    '''
     def __init__(self, seed_tuple, timeout):
         super(MainBot, self).__init__(seed_tuple, timeout)
-        # Admin checks every time the bot has been initialized
-        # If user is not registered in db, register him
-        # If user does not have any channels, set channelExists = False
+        # Admin checks every time the bot has been initialized.
+        # If user is not registered in db, register him. Initialize state to NORMAL.
         telegram_id = seed_tuple[2]
         self.telegram_id = telegram_id
         self.state = State.NORMAL
@@ -62,11 +69,11 @@ class MainBot(telepot.helper.ChatHandler):
 
 bot = telepot.DelegatorBot(TOKEN, [
     #
-    # IMPORTANT: CallbackBot will not work if the program has been closed. You need one message to init it.
+    # IMPORTANT: CallbackBot will NOT WORK if the program has been closed. You need one message to init it.
     # Assumption that timeout=None means the Bot will run forever
     # Note also: the message will run through CallbackBot first and then to MyBot
     #
     (per_application(), create_open(CallbackBot, timeout=None)),
     (per_chat_id(), create_open(MainBot, timeout=20)),
 ])
-# cannot put bot.message_loop() here or there will be a bug
+# CANNOT put bot.message_loop() here or there will be a bug

@@ -1,6 +1,6 @@
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager
-from app.telegram import MessageBlast
+#from app.telegram import MessageBlast
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
@@ -17,9 +17,11 @@ class State:
 
 
 class Command:
-    # All commands are first passed into this function
-    # A second function will be called depending on the State at which the user is in
-    # The initial commands (/help, /done) must be supported REGARDLESS of STATE
+    '''
+    All commands are first passed into this function
+    A second function will be called depending on the State at which the user is in
+    The initial commands (/help, /done, /me, /modules) must be supported REGARDLESS of STATE
+    '''
     @classmethod
     def process_commands(cls, bot, command):
         print "(1) PROCESS COMMANDS"
@@ -67,13 +69,20 @@ class Command:
                 # Send user's telegram id and retrieve a list of modules
                 list_of_subscribed_channels = ""
                 for channel in bot.subscribed_channels:
-                    list_of_subscribed_channels += str(channel) + " "
+                    list_of_subscribed_channels += str(channel).upper() + " "
 
                 bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
         elif command == '/modules':
             # TODO
             # Retrieve all the modules
+            list_of_all_modules = AccountManager.retrieve_all_modules()
+            string_to_send = "Modules available: "
+            print list_of_all_modules
+            for module in list_of_all_modules:
+                #print module
+                string_to_send += "/" + str(module).upper() + " "
+            bot.sender.sendMessage(string_to_send)
 
             # TODO : REMOVE
             # TESTING
@@ -186,6 +195,9 @@ class Command:
             bot.sender.sendMessage("You are not even subscribed to " + module_code)
 
     # State.ASKING_QUESTIONS - When user wants to ask questions for a module
+    #
+    # TODO
+    #
     @classmethod
     def process_asking_questions(cls, bot, command):
         print "(C) PROCESS ASKING QUESTIONS"
@@ -195,6 +207,9 @@ class Command:
 
     # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
     # selecting a channel to post the question
+    #
+    # TODO
+    #
     @classmethod
     def process_selecting_channel_after_asking_questions(cls, bot, command):
         print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
@@ -206,6 +221,9 @@ class Command:
 
     # State.ANSWERING_QUESTIONS - When user clicks on other person's questions to answer
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
+    #
+    # TODO
+    #
     @classmethod
     def process_answering_questions(cls, bot, command):
         print "(D) PROCESS ANSWERING QUESTIONS"
@@ -213,6 +231,9 @@ class Command:
 
     # State.VOTING - When user clicks on answer to vote
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
+    #
+    # TODO
+    #
     @classmethod
     def process_voting(cls, bot, command):
         print "(E) PROCESS VOTING"

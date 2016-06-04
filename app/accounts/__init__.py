@@ -5,6 +5,10 @@ from app import db
 
 class AccountManager(object):
     @staticmethod
+    def retrieve_all_modules():
+        return db.session.query(Channel.name).all()
+
+    @staticmethod
     def get_user_by_telegram_id(telegram_user_id):
         '''
         Helper method that checks the database for a user with a
