@@ -1,6 +1,6 @@
 from test_base import BaseTestCase
 from app.accounts import TelegramAccountManager, AccountManager, User
-from app.knowledgebase import Channel
+from app.knowledgebase import Channel, Question
 from app import db
 from sqlalchemy.exc import IntegrityError
 from app.knowledgebase import KBManager
@@ -47,6 +47,20 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_change_question_state(self):
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        qn = db.session.query(Question).get(question_id)
+        assert qn.state == 0
+
+        KBManager.change_question_state(question_id, 3)
+        assert qn.state == 3
+
+
     def test_can_user_ask_question_pass(self):
         '''
         Ask only a few questions and see if we can ask another one

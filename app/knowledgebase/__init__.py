@@ -14,6 +14,21 @@ max_questions_per_day = 20
 
 class KBManager(object):
     @staticmethod
+    def change_question_state(question_id, new_state):
+        '''
+        Changes the state of a question - depending on
+        what's current going on.
+        0 = waiting for answers, 1 = voting,  2 = not resolved + discussing, 3 = resolved + discussing
+        '''
+        question = db.session.query(Question).get(question_id)
+        if question is not None:
+            question.state = new_state
+            db.session.add(question)
+            db.session.commit()
+        else:
+            raise ValueError('Question does not exist!')
+
+    @staticmethod
     def can_user_ask_question(telegram_user_id):
         '''
         Returns true/false based on whether the
