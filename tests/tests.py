@@ -47,6 +47,56 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+
+    def test_can_answer_qn_because_have_not_answered(self):
+        '''
+        Should be able to answer because we haven't answered before
+        '''
+
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.change_question_state(question_id, 1)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is True
+
+    def test_can_answer_qn_because_not_voting(self):
+        '''
+        Should be able to answer because it's not voting time
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+        KBManager.change_question_state(question_id, 0)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is True
+
+    def test_can_answer_qn_actually_cannot_because_voting(self):
+        '''
+        Should not be able to answer question because we
+        answered and it's voting time!
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+        KBManager.change_question_state(question_id, 1)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is False
+
     def test_change_question_state(self):
         u1 = self.create_user(123, 0)
         cs2100 = Channel(name='cs2100')

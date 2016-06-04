@@ -14,6 +14,32 @@ max_questions_per_day = 20
 
 class KBManager(object):
     @staticmethod
+    def can_user_answer_question(question_id, telegram_user_id):
+        '''
+        Checks if a user has already answered a question and
+        the question has entered the voting process.
+        If both are true, return False, else True
+        '''
+        question = db.session.query(Question).get(question_id)
+
+        if question is not None:
+            if question.state == 0:
+                # the question hasn't entered the voting process, can still answer
+                return True
+            else:
+                user = get_user_by_telegram_id(telegram_user_id)
+                if user is not None:
+                    # search for the matching answer
+                    val = next((x for x in user.answers if x.question_id == question_id), None)
+                    # None indicates that we can answer the question since
+                    # we have no answers for this question
+                    return val is None
+                else:
+                    raise ValueError('User does not exist!')
+        else:
+            raise ValueError('Question does not exist!')
+
+    @staticmethod
     def change_question_state(question_id, new_state):
         '''
         Changes the state of a question - depending on
