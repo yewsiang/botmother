@@ -9,11 +9,15 @@ import pprint
 class State:
     NORMAL = 0
     DELETING_CHANNEL = 1
+
     ASKING_QUESTIONS = 2
     SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS = 3
+
     ANSWERING_QUESTIONS = 4
-    VOTING = 5
-    CHANGE_SETTINGS = 6
+    CONFIRMATION_OF_ANSWER = 5
+
+    VOTING = 6
+    CHANGE_SETTINGS = 7
 
 
 class Command:
@@ -28,10 +32,10 @@ class Command:
         bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
         print bot.subscribed_channels
 
-        # DEBUGGING PURPOSES
+        # -------- DEBUGGING PURPOSES -------
         if command == '/':
             print "bot.State = " + bot.State
-        # REMOVE LATER
+        # ----------  REMOVE LATER ----------
 
         if command == '/help':
             # DEPENDING on the STATE of the User, provide different help commands
@@ -120,6 +124,8 @@ class Command:
                 Command.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
             elif (bot.state == State.ANSWERING_QUESTIONS):
                 Command.process_answering_questions(bot, delegator_bot, command)
+            elif (bot.state == State.CONFIRMATION_OF_ANSWER):
+                Command.process_confirmation_of_answer(bot, delegator_bot, command)
             elif (bot.state == State.VOTING):
                 Command.process_voting(bot, delegator_bot, command)
             elif (bot.state == State.CHANGE_SETTINGS):
@@ -197,29 +203,26 @@ class Command:
             bot.sender.sendMessage("You are not even subscribed to " + module_code)
 
     # State.ASKING_QUESTIONS - When user wants to ask questions for a module
-    #
-    # TODO
-    #
     @classmethod
     def process_asking_questions(cls, bot, delegator_bot, command):
         print "(C) PROCESS ASKING QUESTIONS"
         bot.question_asked = command
         bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
-        bot.sender.sendMessage("We are in asking questions function")
+        bot.sender.sendMessage("Which module would you like to send the question to?")
 
     # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
     # selecting a channel to post the question
-    #
-    # TODO
-    #
     @classmethod
     def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
         print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
         module_code = command[1:]
+        #
+        # TODO: Check if the user should be allowed to ask questions
+        #
         answerers = KBManager.get_answerers(bot.telegram_id, module_code)
         MessageBlast.send_question_to_answerers(bot, delegator_bot, module_code, bot.question_asked, answerers)
         bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
-            ". The answers will be sent back to you in 15mins!")
+            ". The answers will be sent back to you in 15 mins!")
 
     # State.ANSWERING_QUESTIONS - When user clicks on other person's questions to answer
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
@@ -230,6 +233,15 @@ class Command:
     def process_answering_questions(cls, bot, delegator_bot, command):
         print "(D) PROCESS ANSWERING QUESTIONS"
         bot.sender.sendMessage("We are in answering questions function")
+
+    # State.CONFIRMATION_OF_ANSWER
+    #
+    # TODO
+    #
+    @classmethod
+    def process_confirmation_of_answer(cls, bot, delegator_bot, command):
+        print "(D2) CONFIRMATION OF ANSWERS"
+        bot.sender.sendMessage("We are in confirmation of answers function")
 
     # State.VOTING - When user clicks on answer to vote
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)

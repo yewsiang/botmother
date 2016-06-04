@@ -1,6 +1,8 @@
 import telepot
 from telepot.delegate import per_chat_id, create_open
 from app.accounts import TelegramAccountManager
+from .commands import State
+from telepot.namedtuple import ForceReply
 
 
 class CallbackQueries:
@@ -17,8 +19,13 @@ class CallbackQueries:
         # TODO: Data may have uneven lengths.
         # Encoded information be in the first 5 letters?
         #
-        print "Data: " + data
-        if data == 'question_answered':
+        callback_type, id1, id2 = data.split('_')
+        print callback_type
+
+        if callback_type == 'answerquestion':
+            bot.state = State.CONFIRMATION_OF_ANSWER
+            bot.sender.sendMessage('Please type your answer', reply_markup=ForceReply())
+        elif data == 'question_answered':
             CallbackQueries.question_answered(bot, delegator_bot, data, query_id)
         elif data == 'voted':
             #

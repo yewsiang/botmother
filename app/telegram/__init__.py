@@ -6,7 +6,8 @@ from app.accounts import TelegramAccountManager
 
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
-
+# Left here in case we want to implement such a method in the future
+"""
 class CallbackBot(telepot.helper.ChatHandler):
     '''
     There will only be 1 CallbackBot in the entire application.
@@ -16,6 +17,7 @@ class CallbackBot(telepot.helper.ChatHandler):
     '''
     def __init__(self, seed_tuple, timeout):
         super(CallbackBot, self).__init__(seed_tuple, timeout)
+        print "---- INIT OF CALLBACKBOT ----"
 
     def on_callback_query(self, msg):
         query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
@@ -25,6 +27,10 @@ class CallbackBot(telepot.helper.ChatHandler):
     # CallbackBot should only be handling Callback queries and nothing else.
     def on_chat_message(self, msg):
         return
+
+    def on_close(self, exception):
+        print "----- CALLBACK BOT CLOSED ----- THIS SHOULD NOT BE HAPPENING --------"
+"""
 
 
 class MainBot(telepot.helper.ChatHandler):
@@ -54,9 +60,16 @@ class MainBot(telepot.helper.ChatHandler):
         command = msg['text'].strip().lower()
         Command.process_commands(self, bot, command)
 
+    '''
     # Callback_query will be answered by CallbackBot. MainBot ignores such queries.
     def on_callback_query(self, msg):
         return
+    '''
+
+    def on_callback_query(self, msg):
+        query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
+        print "---- CALLBACK QUERY ----"
+        CallbackQueries.on_answer(self, bot, data, query_id)
 
     def on_close(self, exception):
         if isinstance(exception, telepot.exception.WaitTooLong):
@@ -70,7 +83,7 @@ bot = telepot.DelegatorBot(TOKEN, [
     # Assumption that timeout=None means the Bot will run forever
     # Note also: the message will run through CallbackBot first and then to MyBot
     #
-    (per_application(), create_open(CallbackBot, timeout=None)),
-    (per_chat_id(), create_open(MainBot, timeout=20)),
+    # (per_application(), create_open(CallbackBot, timeout=None)),
+    (per_chat_id(), create_open(MainBot, timeout=None)),
 ])
 # CANNOT put bot.message_loop() here or there will be a bug

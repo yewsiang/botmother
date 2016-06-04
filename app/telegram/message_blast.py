@@ -30,11 +30,11 @@ class MessageBlast:
         pprint(answerers)
         for answerer in answerers:
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                     [InlineKeyboardButton(text="Answer Question", callback_data=('answer' + str(bot.telegram_id)))]
+                     [InlineKeyboardButton(text="Answer Question",
+                        callback_data=('answerquestion_' + str(bot.telegram_id) + '_WRONGGGG'))]
                  ])
             print answerer.telegram_user_id
-            delegator_bot.sendMessage(answerer.telegram_user_id,
-                "These are the modules that you can subscribe to ...", reply_markup=markup)
+            delegator_bot.sendMessage(answerer.telegram_user_id, question, reply_markup=markup)
         print "Sup"
 
     @classmethod

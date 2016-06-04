@@ -505,7 +505,7 @@ while 1:
 
 """
 
-
+"""
 class CallbackBot(telepot.helper.ChatHandler):
     def __init__(self, seed_tuple, timeout):
         super(CallbackBot, self).__init__(seed_tuple, timeout)
@@ -589,6 +589,46 @@ bot = telepot.DelegatorBot(TOKEN, [
     (per_chat_id(), create_open(MyBot, timeout=5)),
 ])
 bot.message_loop(run_forever=True)
+"""
+
+
+class MyBot(telepot.helper.ChatHandler):
+    def __init__(self, seed_tuple, timeout):
+        super(MyBot, self).__init__(seed_tuple, timeout)
+        self.sender.sendMessage("-- Initialization --")
+
+    def on_chat_message(self, msg):
+        self.sender.sendMessage("-- On chat message --")
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+                     [InlineKeyboardButton(text='Some function', callback_data='mycallbackfunction')],
+                     [dict(text='Link to Forum', url='https://core.telegram.org/')]
+                 ])
+        self.sender.sendMessage("Callback query succeeded!", reply_markup=markup)
+
+    def on_callback_query(self, msg):
+        print "I shall do nothing from now on. Let CallbackBot handle the job"
+
+
+def callback_function(msg):
+    flavor = telepot.flavor(msg)
+    if flavor == 'callback_query':
+        print "callback!!"
+    elif flavor == 'chat':
+        print "normal message"
+        return
+
+def hello_world(self):
+    print "hello"
+    print self
+
+mycallback = {'chat': hello_world,
+    'callback_function': callback_function}
+
+# callback_bot = telepot.Bot(TOKEN)
+bot = telepot.DelegatorBot(TOKEN, [
+    (per_chat_id(), create_open(MyBot, timeout=15)),
+])
+bot.message_loop(mycallback, run_forever=True)
 
 '''
 bot = CallbackBot(TOKEN)
