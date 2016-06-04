@@ -6,6 +6,10 @@ from app.helpers import get_user_by_telegram_id
 
 class KBManager(object):
     @staticmethod
+    def retrieve_all_modules():
+        return [name[0] for name in db.session.query(Channel.name).all()]
+
+    @staticmethod
     def get_answerers(telegram_user_id, channel_name):
         '''
         Returns all the people in the module channel

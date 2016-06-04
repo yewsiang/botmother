@@ -76,7 +76,7 @@ class Command:
         elif command == '/modules':
             # TODO
             # Retrieve all the modules
-            list_of_all_modules = AccountManager.retrieve_all_modules()
+            list_of_all_modules = KBManager.retrieve_all_modules()
             string_to_send = "Modules available: "
             print list_of_all_modules
             for module in list_of_all_modules:
