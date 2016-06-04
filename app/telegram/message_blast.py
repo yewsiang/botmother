@@ -16,26 +16,29 @@ class MessageBlast:
     '''
     @classmethod
     def send_question_to_answerers(cls, bot, delegator_bot, module_code, question, answerers):
-        # TODO : REMOVE
-        # TESTING
-        #
         # callback_data is supposed to encode the question_id so that when users click
         # "Answer Question", we will know what question he is answering
-        # question_id = KBManager.ask_question(bot.telegram_id, module_code, question)
+        question_id = KBManager.ask_question(bot.telegram_id, module_code, question)
         answerers = KBManager.get_answerers(bot.telegram_id, module_code)
         #
         # CHECK: Module_code may not exist
         #
-        print answerers
-        pprint(answerers)
+        print "Question_id: " + str(question_id)
         for answerer in answerers:
             markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Answer Question",
-                        callback_data=('answerquestion_' + str(bot.telegram_id) + '_WRONGGGG'))]
+                        callback_data=('AnswerQuestion_' + str(question_id) + '_blank'))]
                  ])
             print answerer.telegram_user_id
             delegator_bot.sendMessage(answerer.telegram_user_id, question, reply_markup=markup)
-        print "Sup"
+
+    @classmethod
+    def send_answers_to_voters(cls, bot, delegator_bot, answers_text, voters):
+        #
+        # for voter in voters:
+        #     delegator_bot.sendMessage(voter.telegram_user_id, answers_text)
+        #
+        print "Hi"
 
     @classmethod
     def send_answers_and_link_to_participants(cls, bot, delegator_bot, participants):
@@ -49,10 +52,3 @@ class MessageBlast:
                  [dict(text='Link to Forum', url='https://core.telegram.org/')]
              ])
         # bot.sender.sendMessage(reply_markup=markup)
-
-# Need another bot?
-'''
-import telepot
-TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
-bot2 = telepot.Bot(TOKEN)
-'''

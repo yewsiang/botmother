@@ -1,6 +1,5 @@
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager
-from .message_blast import MessageBlast
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
@@ -13,11 +12,14 @@ class State:
     ASKING_QUESTIONS = 2
     SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS = 3
 
-    ANSWERING_QUESTIONS = 4
-    CONFIRMATION_OF_ANSWER = 5
+    ANSWERING_QUESTIONS = 5
 
     VOTING = 6
     CHANGE_SETTINGS = 7
+
+
+# Placed here because fuck python
+from .questions import AskingQuestions, AnsweringQuestions
 
 
 class Command:
@@ -118,14 +120,17 @@ class Command:
                 Command.process_normal_commands(bot, delegator_bot, command)
             elif (bot.state == State.DELETING_CHANNEL):
                 Command.process_deleting_channels(bot, delegator_bot, command)
+
+            # Handled by the AskingQuestions class
             elif (bot.state == State.ASKING_QUESTIONS):
-                Command.process_asking_questions(bot, delegator_bot, command)
+                AskingQuestions.process_asking_questions(bot, delegator_bot, command)
             elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
-                Command.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
+                AskingQuestions.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
+
+            # Handled by the AnswerQuestions class
             elif (bot.state == State.ANSWERING_QUESTIONS):
-                Command.process_answering_questions(bot, delegator_bot, command)
-            elif (bot.state == State.CONFIRMATION_OF_ANSWER):
-                Command.process_confirmation_of_answer(bot, delegator_bot, command)
+                AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, command)
+
             elif (bot.state == State.VOTING):
                 Command.process_voting(bot, delegator_bot, command)
             elif (bot.state == State.CHANGE_SETTINGS):
@@ -201,47 +206,6 @@ class Command:
             bot.sender.sendMessage("You have deleted " + module_code + " from your subscribed modules :(")
         else:
             bot.sender.sendMessage("You are not even subscribed to " + module_code)
-
-    # State.ASKING_QUESTIONS - When user wants to ask questions for a module
-    @classmethod
-    def process_asking_questions(cls, bot, delegator_bot, command):
-        print "(C) PROCESS ASKING QUESTIONS"
-        bot.question_asked = command
-        bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
-        bot.sender.sendMessage("Which module would you like to send the question to?")
-
-    # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
-    # selecting a channel to post the question
-    @classmethod
-    def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
-        print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
-        module_code = command[1:]
-        #
-        # TODO: Check if the user should be allowed to ask questions
-        #
-        answerers = KBManager.get_answerers(bot.telegram_id, module_code)
-        MessageBlast.send_question_to_answerers(bot, delegator_bot, module_code, bot.question_asked, answerers)
-        bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
-            ". The answers will be sent back to you in 15 mins!")
-
-    # State.ANSWERING_QUESTIONS - When user clicks on other person's questions to answer
-    # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
-    #
-    # TODO
-    #
-    @classmethod
-    def process_answering_questions(cls, bot, delegator_bot, command):
-        print "(D) PROCESS ANSWERING QUESTIONS"
-        bot.sender.sendMessage("We are in answering questions function")
-
-    # State.CONFIRMATION_OF_ANSWER
-    #
-    # TODO
-    #
-    @classmethod
-    def process_confirmation_of_answer(cls, bot, delegator_bot, command):
-        print "(D2) CONFIRMATION OF ANSWERS"
-        bot.sender.sendMessage("We are in confirmation of answers function")
 
     # State.VOTING - When user clicks on answer to vote
     # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)

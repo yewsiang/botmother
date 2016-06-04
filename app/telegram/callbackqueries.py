@@ -2,7 +2,7 @@ import telepot
 from telepot.delegate import per_chat_id, create_open
 from app.accounts import TelegramAccountManager
 from .commands import State
-from telepot.namedtuple import ForceReply
+from .questions import AskingQuestions, AnsweringQuestions
 
 
 class CallbackQueries:
@@ -15,23 +15,21 @@ class CallbackQueries:
     def on_answer(cls, bot, delegator_bot, data, query_id):
         # All callback queries will pass through this function and be allocated to
         # a suitable function to handle it based on information in "data"
-        #
-        # TODO: Data may have uneven lengths.
-        # Encoded information be in the first 5 letters?
-        #
         callback_type, id1, id2 = data.split('_')
         print callback_type
 
-        if callback_type == 'answerquestion':
-            bot.state = State.CONFIRMATION_OF_ANSWER
-            bot.sender.sendMessage('Please type your answer', reply_markup=ForceReply())
+        # Callback queries for Asking and Answering of questions
+        if callback_type == 'AnswerQuestion':
+            AnsweringQuestions.callback_answer_question(bot, delegator_bot, data, query_id)
+        elif callback_type == 'ConfirmAnswer':
+            AnsweringQuestions.callback_confirm_answer(bot, delegator_bot, data, query_id)
+        elif callback_type == 'Sent':
+            delegator_bot.answerCallbackQuery(query_id, text='Your answer has been sent!')
+        elif callback_type == 'Cancelled':
+            delegator_bot.answerCallbackQuery(query_id, text='Your answer was cancelled!')
+
         elif data == 'question_answered':
             CallbackQueries.question_answered(bot, delegator_bot, data, query_id)
-        elif data == 'voted':
-            #
-            # TODO: Support other callback queries
-            #
-            print 'Wat'
 
     @classmethod
     def question_answered(cls, bot, delegator_bot, data, query_id):

@@ -1,6 +1,8 @@
 import telepot
 from telepot.delegate import per_application, per_chat_id, create_open
 from .commands import Command, State
+from .questions import AskingQuestions, AnsweringQuestions
+
 from .callbackqueries import CallbackQueries
 from app.accounts import TelegramAccountManager
 
