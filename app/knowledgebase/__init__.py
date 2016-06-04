@@ -6,7 +6,72 @@ from app.helpers import get_user_by_telegram_id
 
 class KBManager(object):
     @staticmethod
+    def get_voters_and_answers_for_qn(question_id):
+        '''
+        Convenience function to get both the voters and answerers for
+        a particular question.
+        Returned as tuple of (xs of User), (xs of Answer)
+        '''
+        voters = KBManager.get_voters_for_qn_answers(question_id)
+        answers = KBManager.get_answers_for_qn(question_id)
+        return (voters, answers)
+
+    @staticmethod
+    def get_voters_for_qn_answers(question_id):
+        '''
+        Get the people that need to vote on a particular set of answers
+        for a particular question. Current behavior is EVERYONE who is not
+        an answerer OR the question asker themselves will be in this list
+        '''
+        answers = KBManager.get_answers_for_qn(question_id)
+        if answers is not None:
+            # get the list of user ids
+            user_ids = map(lambda x: x.user_id, answers)
+
+            # get the actual question
+            question = db.session.query(Question).get(question_id)
+
+            # append the asker of the question to the list
+            user_ids.append(question.user_id)
+
+            # get the channel id
+            channel_id = question.channel_id
+
+            # get the channel
+            channel = db.session.query(Channel).get(channel_id)
+
+            if channel is not None:
+                # get list of users in channel
+                users = channel.users
+
+                print "channel users: " + str(users)
+
+                # return all the users that were not answerers
+                return filter(lambda user: user.id not in user_ids, users)
+            else:
+                raise ValueError('Could not find a valid channel!')
+
+        else:
+            print "answers none!"
+            return None
+
+    @staticmethod
+    def get_answers_for_qn(question_id):
+        '''
+        Gets the answers so far for a particular question
+        '''
+        question = db.session.query(Question).get(question_id)
+        if question is not None:
+            return question.answers
+        else:
+            raise ValueError('Question does not exist!')
+
+
+    @staticmethod
     def retrieve_all_modules():
+        '''
+        Gets all the modules that can be subscribed to - by name
+        '''
         return [name[0] for name in db.session.query(Channel.name).all()]
 
     @staticmethod

@@ -47,7 +47,81 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_get_voters_for_question_answers(self):
+        '''
+        Returns everyone who has not answered the questions and is in this
+        channel and is NOT the asker of the qn
+        u1 is the question asker and should not be returned
+        u2 is the one who will answer and should not be returned
+        u3 should be returned since he's not in the answerer list
+        u4 should not be returned since he's not in the same channe;
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        u2 = self.create_user(124, 0)
+        u2.channels.append(cs2100)
+
+        u3 = self.create_user(125, 0)
+        u3.channels.append(cs2100)
+
+        u4 = self.create_user(126, 0)
+        u4.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.add(u4)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i)
+
+        voters = KBManager.get_voters_for_qn_answers(question_id)
+
+        print "voters: " + str(voters)
+        print "u3: " + str(u3)
+
+        assert voters == [u3]
+
+    def test_get_answers_for_question(self):
+        '''
+        Tests that we get the correct list of answers for a question
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i)
+
+        # gets all the answer texts
+        found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+
+        # check that their unordered versions are the same
+        assert set(answers) == set(found_answers)
+
+
+
+
     def test_add_valid_vote_to_valid_answer(self):
+        '''
+        Tests simple case of adding a valid vote to a valid answer
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         u2 = self.create_user(124, 0)
