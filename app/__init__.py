@@ -27,11 +27,6 @@ db.init_app(app)
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
-print "========================="
-print "WARNING: MESSAGE LOOP OFF"
-print "========================="
-
-
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):

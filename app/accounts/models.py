@@ -38,3 +38,6 @@ class User(db.Model):
     def __init__(self, telegram_user_id, user_type):
         self.telegram_user_id = telegram_user_id
         self.user_type = user_type
+
+    def __repr__(self):
+        return str(self.telegram_user_id)

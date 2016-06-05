@@ -2,11 +2,145 @@ from .models import Question, Answer, Vote, Comment, Channel
 from app import db
 from app.accounts import User
 from app.helpers import get_user_by_telegram_id
+from sqlalchemy.sql import func
+from datetime import datetime, timedelta
+from app.helpers import get_user_by_telegram_id
+
+'''
+Constants
+'''
+max_questions_per_day = 20
 
 
 class KBManager(object):
     @staticmethod
+    def can_user_answer_question(question_id, telegram_user_id):
+        '''
+        Checks if a user has already answered a question and
+        the question has entered the voting process.
+        If both are true, return False, else True
+        '''
+        question = db.session.query(Question).get(question_id)
+
+        if question is not None:
+            if question.state == 0:
+                # the question hasn't entered the voting process, can still answer
+                return True
+            else:
+                user = get_user_by_telegram_id(telegram_user_id)
+                if user is not None:
+                    # search for the matching answer
+                    val = next((x for x in user.answers if x.question_id == question_id), None)
+                    # None indicates that we can answer the question since
+                    # we have no answers for this question
+                    return val is None
+                else:
+                    raise ValueError('User does not exist!')
+        else:
+            raise ValueError('Question does not exist!')
+
+    @staticmethod
+    def change_question_state(question_id, new_state):
+        '''
+        Changes the state of a question - depending on
+        what's current going on.
+        0 = waiting for answers, 1 = voting,  2 = not resolved + discussing, 3 = resolved + discussing
+        '''
+        question = db.session.query(Question).get(question_id)
+        if question is not None:
+            question.state = new_state
+            db.session.add(question)
+            db.session.commit()
+        else:
+            raise ValueError('Question does not exist!')
+
+    @staticmethod
+    def can_user_ask_question(telegram_user_id):
+        '''
+        Returns true/false based on whether the
+        number of questions per day has been exceeded for this user
+        '''
+        user = get_user_by_telegram_id(telegram_user_id)
+        if user is not None:
+            # define a simple filter to get questions from the last day
+            def date_filter(question):
+                return question.date_created >= (datetime.utcnow() - timedelta(days=1))
+
+            filtered_questions = filter(date_filter, user.questions)
+
+            # check if we have exceeded the number of questions we can have today
+            return len(filtered_questions) <= max_questions_per_day
+
+        else:
+            raise ValueError('User does not exist!')
+
+    @staticmethod
+    def get_voters_and_answers_for_qn(question_id):
+        '''
+        Convenience function to get both the voters and answerers for
+        a particular question.
+        Returned as tuple of (xs of User), (xs of Answer)
+        '''
+        voters = KBManager.get_voters_for_qn_answers(question_id)
+        answers = KBManager.get_answers_for_qn(question_id)
+        return (voters, answers)
+
+    @staticmethod
+    def get_voters_for_qn_answers(question_id):
+        '''
+        Get the people that need to vote on a particular set of answers
+        for a particular question. Current behavior is EVERYONE who is not
+        an answerer OR the question asker themselves will be in this list
+        '''
+        answers = KBManager.get_answers_for_qn(question_id)
+        if answers is not None:
+            # get the list of user ids
+            user_ids = map(lambda x: x.user_id, answers)
+
+            # get the actual question
+            question = db.session.query(Question).get(question_id)
+
+            # append the asker of the question to the list
+            user_ids.append(question.user_id)
+
+            # get the channel id
+            channel_id = question.channel_id
+
+            # get the channel
+            channel = db.session.query(Channel).get(channel_id)
+
+            if channel is not None:
+                # get list of users in channel
+                users = channel.users
+
+                print "channel users: " + str(users)
+
+                # return all the users that were not answerers
+                return filter(lambda user: user.id not in user_ids, users)
+            else:
+                raise ValueError('Could not find a valid channel!')
+
+        else:
+            print "answers none!"
+            return None
+
+    @staticmethod
+    def get_answers_for_qn(question_id):
+        '''
+        Gets the answers so far for a particular question
+        '''
+        question = db.session.query(Question).get(question_id)
+        if question is not None:
+            return question.answers
+        else:
+            raise ValueError('Question does not exist!')
+
+
+    @staticmethod
     def retrieve_all_modules():
+        '''
+        Gets all the modules that can be subscribed to - by name
+        '''
         return [name[0] for name in db.session.query(Channel.name).all()]
 
     @staticmethod

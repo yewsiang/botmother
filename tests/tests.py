@@ -1,6 +1,6 @@
 from test_base import BaseTestCase
 from app.accounts import TelegramAccountManager, AccountManager, User
-from app.knowledgebase import Channel
+from app.knowledgebase import Channel, Question
 from app import db
 from sqlalchemy.exc import IntegrityError
 from app.knowledgebase import KBManager
@@ -47,7 +47,168 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+
+    def test_can_answer_qn_because_have_not_answered(self):
+        '''
+        Should be able to answer because we haven't answered before
+        '''
+
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.change_question_state(question_id, 1)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is True
+
+    def test_can_answer_qn_because_not_voting(self):
+        '''
+        Should be able to answer because it's not voting time
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+        KBManager.change_question_state(question_id, 0)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is True
+
+    def test_can_answer_qn_actually_cannot_because_voting(self):
+        '''
+        Should not be able to answer question because we
+        answered and it's voting time!
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+        KBManager.change_question_state(question_id, 1)
+
+        assert KBManager.can_user_answer_question(question_id, u1.telegram_user_id) is False
+
+    def test_change_question_state(self):
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        qn = db.session.query(Question).get(question_id)
+        assert qn.state == 0
+
+        KBManager.change_question_state(question_id, 3)
+        assert qn.state == 3
+
+
+    def test_can_user_ask_question_pass(self):
+        '''
+        Ask only a few questions and see if we can ask another one
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        for i in xrange(20):
+            KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.can_user_ask_question(u1.telegram_user_id) is True
+
+    def test_can_user_ask_question(self):
+        '''
+        Ask just above the limit of number of questions and see if we can ask another one
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        for i in xrange(21):
+            KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        assert KBManager.can_user_ask_question(u1.telegram_user_id) is False
+
+    def test_get_voters_for_question_answers(self):
+        '''
+        Returns everyone who has not answered the questions and is in this
+        channel and is NOT the asker of the qn
+        u1 is the question asker and should not be returned
+        u2 is the one who will answer and should not be returned
+        u3 should be returned since he's not in the answerer list
+        u4 should not be returned since he's not in the same channe;
+        '''
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        u2 = self.create_user(124, 0)
+        u2.channels.append(cs2100)
+
+        u3 = self.create_user(125, 0)
+        u3.channels.append(cs2100)
+
+        u4 = self.create_user(126, 0)
+        u4.channels.append(Channel(name='cs2020'))
+
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.add(u3)
+        db.session.add(u4)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i)
+
+        voters = KBManager.get_voters_for_qn_answers(question_id)
+
+        print "voters: " + str(voters)
+        print "u3: " + str(u3)
+
+        assert voters == [u3]
+
+    def test_get_answers_for_question(self):
+        '''
+        Tests that we get the correct list of answers for a question
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i)
+
+        # gets all the answer texts
+        found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+
+        # check that their unordered versions are the same
+        assert set(answers) == set(found_answers)
+
     def test_add_valid_vote_to_valid_answer(self):
+        '''
+        Tests simple case of adding a valid vote to a valid answer
+        '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
         u2 = self.create_user(124, 0)
@@ -59,6 +220,7 @@ class KBManagerTests(BaseTestCase):
         answer_id = KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
 
         assert KBManager.add_vote_to_answer(answer_id, u2.telegram_user_id, 1) is True
+
     def test_add_valid_answer_to_valid_question(self):
         '''
         This tests adding a valid answer to an existing question
