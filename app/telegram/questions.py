@@ -1,5 +1,6 @@
 import telepot
 from app.accounts import AccountManager
+from app.helpers import get_question_by_id
 from app.knowledgebase import KBManager
 from .commands import State
 from telepot.namedtuple import ForceReply
@@ -159,8 +160,11 @@ class AnsweringQuestions:
     # 3) Clicked on "Yes" to confirm their answers
     @classmethod
     def send_answers_to_voters(cls, bot, delegator_bot, question_id):
+        question = get_question_by_id(question_id)
         answers_to_send = KBManager.get_answers_for_qn(question_id)
         voters = KBManager.get_voters_for_qn_answers(question_id)
+
+        print question
         print "answers start here -> "
         print answers_to_send
 
