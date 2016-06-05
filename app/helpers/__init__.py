@@ -1,5 +1,6 @@
 from app import db
 import app.accounts
+import app.knowledgebase
 
 # Create the association table between channels and users
 user_channels_table = db.Table('userchannels', db.Model.metadata,
@@ -19,3 +20,10 @@ def get_user_by_telegram_id(telegram_user_id):
     return db.session.query(app.accounts.User).\
         filter(app.accounts.User.telegram_user_id == telegram_user_id).first()
 
+
+def get_question_by_id(question_id):
+    '''
+    Simple helper to return any question in the database that matches
+    the id given
+    '''
+    return db.session.query(app.knowledgebase.Question).get(question_id)
