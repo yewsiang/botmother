@@ -19,6 +19,7 @@ class State:
 
 
 # Placed here because fuck python
+from .voting import Voting
 from .questions import AskingQuestions, AnsweringQuestions
 
 
@@ -36,7 +37,7 @@ class Command:
 
         # ------------ DEBUGGING PURPOSES -----------
         if command == '/':
-            print "bot.State = " + bot.State
+            print "bot.State = " + bot.state
         # --------------  REMOVE LATER --------------
 
         if command == '/help':
@@ -113,8 +114,10 @@ class Command:
             elif (bot.state == State.ANSWERING_QUESTIONS):
                 Command.process_confirmation_of_answer(bot, delegator_bot, command)
 
+            # Handled by the Voting class
             elif (bot.state == State.VOTING):
                 Command.process_voting(bot, delegator_bot, command)
+
             elif (bot.state == State.CHANGE_SETTINGS):
                 Command.process_change_settings(bot, delegator_bot, command)
             else:
@@ -204,23 +207,21 @@ class Command:
     def process_asking_questions(cls, bot, delegator_bot, command):
         AskingQuestions.process_asking_questions(bot, delegator_bot, command)
 
+    # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
+    # selecting a channel to post the question
     @classmethod
     def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
         AskingQuestions.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
 
+    # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
     @classmethod
     def process_confirmation_of_answer(cls, bot, delegator_bot, command):
         AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, command)
 
     # State.VOTING - When user clicks on answer to vote
-    # TAKE NOTE: For user experience, we do not want to display all the information (all the ints)
     @classmethod
     def process_voting(cls, bot, delegator_bot, command):
-        #
-        # TODO
-        #
-        print "(E) PROCESS VOTING"
-        bot.sender.sendMessage("We are in voting function")
+        Voting.process_voting(bot, delegator_bot, command)
 
     @classmethod
     def process_change_settings(cls, bot, delegator_bot, command):

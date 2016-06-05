@@ -1,5 +1,6 @@
 from .commands import State
-from .questions import AskingQuestions, AnsweringQuestions
+from .questions import AnsweringQuestions
+from .voting import Voting
 
 
 class CallbackQueries:
@@ -17,13 +18,18 @@ class CallbackQueries:
 
         # Callback queries for Answering of questions
         if callback_type == 'AnswerQuestion':
+            # When "Answer Question" button has been clicked after User submits question
             AnsweringQuestions.callback_answer_question(bot, delegator_bot, data, query_id)
         elif callback_type == 'ConfirmAnswer':
+            # When "Yes" or "No" button has been clicked after User submits answer
             AnsweringQuestions.callback_confirm_answer(bot, delegator_bot, data, query_id)
         elif callback_type == 'Sent':
-            delegator_bot.answerCallbackQuery(query_id, text='Your answer has been sent!')
+            delegator_bot.answerCallbackQuery(query_id, text='Your answer has already been sent!')
         elif callback_type == 'Cancelled':
-            delegator_bot.answerCallbackQuery(query_id, text='Your answer was cancelled!')
+            delegator_bot.answerCallbackQuery(query_id, text='Your answer was already cancelled!')
 
-        elif data == 'question_answered':
-            CallbackQueries.question_answered(bot, delegator_bot, data, query_id)
+        # Callback queries for Voting
+        elif callback_type == 'Vote':
+            # When answers have been submitted and sent for voting
+            # User clicks "Vote" button
+            Voting.callback_vote_on_answer(bot, delegator_bot, data, query_id)

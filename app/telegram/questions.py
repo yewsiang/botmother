@@ -87,13 +87,14 @@ class AnsweringQuestions:
         #
         can_user_answer_question = KBManager.can_user_answer_question(question_id, bot.telegram_id)
         if can_user_answer_question:
-            bot.temp_question_id = question_id
+            bot.temp_answer_question_id = question_id
             bot.state = State.ANSWERING_QUESTIONS
             bot.sender.sendMessage("Please type your answer", reply_markup=ForceReply())
         else:
             bot.sender.sendMessage("I'm sorry but we're in the voting process and you have already answered the question. "
                 "You can submit answers again after the voting is over :)!")
 
+    # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
     # After the User typed his answer, this function will send the User a confirmation (Yes/No)
     @classmethod
     def process_confirmation_of_answer(cls, bot, delegator_bot, command):
@@ -106,9 +107,9 @@ class AnsweringQuestions:
 
         markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Yes",
-                        callback_data=('ConfirmAnswer_' + str(bot.temp_question_id) + '_yes')),
+                        callback_data=('ConfirmAnswer_' + str(bot.temp_answer_question_id) + '_yes')),
                      InlineKeyboardButton(text="No",
-                        callback_data=('ConfirmAnswer_' + str(bot.temp_question_id) + '_no'))]
+                        callback_data=('ConfirmAnswer_' + str(bot.temp_answer_question_id) + '_no'))]
                  ])
         #
         # TODO: How to store msg_with_inline_keyboard?
@@ -143,7 +144,7 @@ class AnsweringQuestions:
             delegator_bot.editMessageReplyMarkup(bot.msg_idf, new_markup)
 
             #
-            # TODO: Testing this function
+            # TODO: This function needs to have a Time element (E.g. execute in 15 mins)
             #
             AnsweringQuestions.send_answers_to_voters(bot, delegator_bot, question_id)
 
@@ -161,19 +162,28 @@ class AnsweringQuestions:
     @classmethod
     def send_answers_to_voters(cls, bot, delegator_bot, question_id):
         question = get_question_by_id(question_id)
-        answers_to_send = KBManager.get_answers_for_qn(question_id)
+        answers = KBManager.get_answers_for_qn(question_id)
         voters = KBManager.get_voters_for_qn_answers(question_id)
 
-        print question
-        print "answers start here -> "
-        print answers_to_send
+        #
+        # TODO: Check for the situation where there are no answers
+        #
+        # Sending the Question and Answers to the voters
+        text_to_send = "Question: " + question.text + "\n"
+        text_to_send += "Answers:\n"
+        for id, answer in enumerate(answers):
+            text_to_send += (str(id + 1) + ". " + answer.text + "\n")
+        text_to_send += "\nChoose the answer that you are confident of. Otherwise, choose '0' :)."
 
-        for answer in answers_to_send:
-            print answer
+        # Send a inline keyboard button along
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+                 [InlineKeyboardButton(text="Vote", callback_data="Vote_" + str(question_id) + "_None")]
+             ])
 
-        print voters
-        '''
+        print "---- Text_to_send is ----"
+        print text_to_send
+
+        # Sending to each of the voter
         for voter in voters:
-            delegator_bot.sendMessage(voter.telegram_user_id, answers_to_send)
-        '''
+            delegator_bot.sendMessage(voter.telegram_user_id, text_to_send, reply_markup=markup)
         print "We are sending the answers to the voters!"
