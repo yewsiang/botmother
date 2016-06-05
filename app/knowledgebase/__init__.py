@@ -131,6 +131,8 @@ class KBManager(object):
         '''
         question = db.session.query(Question).get(question_id)
         if question is not None:
+            print "Question: " + str(question)
+            print "Answers: " + str(question.answers)
             return question.answers
         else:
             raise ValueError('Question does not exist!')

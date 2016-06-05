@@ -46,6 +46,9 @@ class Question(db.Model):
         else:
             raise ValueError('Size of question > database 5000 char limit!')
 
+    def __repr__(self):
+        return self.text
+
 
 class Answer(db.Model):
     '''
@@ -75,6 +78,9 @@ class Answer(db.Model):
             self.text = text
         else:
             raise ValueError('Answer is too long for database (<= 5000 chars)')
+
+    def __repr__(self):
+        return self.text
 
 
 class Vote(db.Model):

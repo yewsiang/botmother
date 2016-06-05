@@ -163,6 +163,10 @@ class AnsweringQuestions:
         voters = KBManager.get_voters_for_qn_answers(question_id)
         print "answers start here -> "
         print answers_to_send
+
+        for answer in answers_to_send:
+            print answer
+
         print voters
         '''
         for voter in voters:
