@@ -1,6 +1,3 @@
-import telepot
-from telepot.delegate import per_chat_id, create_open
-from app.accounts import TelegramAccountManager
 from .commands import State
 from .questions import AskingQuestions, AnsweringQuestions
 
@@ -30,13 +27,3 @@ class CallbackQueries:
 
         elif data == 'question_answered':
             CallbackQueries.question_answered(bot, delegator_bot, data, query_id)
-
-    @classmethod
-    def question_answered(cls, bot, delegator_bot, data, query_id):
-        #
-        # BOT EXPIRES WHEN SESSION EXPIRES
-        #
-        bot.sender.sendMessage("This is data : " + data)
-        bot.sender.sendMessage("Question received by callback function!")
-        delegator_bot.answerCallbackQuery(query_id, text='Question sent to be voted!')
-        # bot = telepot.bot(TOKEN)

@@ -97,5 +97,4 @@ class AnsweringQuestions:
                      [InlineKeyboardButton(text="Cancelled", callback_data="Cancelled_None_None")]
                  ])
             bot.state = State.NORMAL
-            bot.sender.sendMessage("Click on Answer Question if you have the answer")
             delegator_bot.editMessageReplyMarkup(bot.msg_idf, new_markup)
