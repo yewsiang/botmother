@@ -1,5 +1,5 @@
 from app.accounts import AccountManager
-from app.knowledgebase import KBManager
+from app.knowledgebase import KBManager, max_questions_per_day
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
@@ -34,10 +34,10 @@ class Command:
         bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
         print bot.subscribed_channels
 
-        # -------- DEBUGGING PURPOSES -------
+        # ------------ DEBUGGING PURPOSES -----------
         if command == '/':
             print "bot.State = " + bot.State
-        # ----------  REMOVE LATER ----------
+        # --------------  REMOVE LATER --------------
 
         if command == '/help':
             # DEPENDING on the STATE of the User, provide different help commands
@@ -66,7 +66,7 @@ class Command:
             elif (bot.state == State.CHANGE_SETTINGS):
                 bot.sender.sendMessage("/help for CHANGE_SETTINGS")
             else:
-                print "Wat?"
+                print "ERROR: There should not be any other states other than those listed"
 
         elif command == '/me':
             # List of modules that have been subscribed by user
@@ -128,8 +128,14 @@ class Command:
 
         if command == '/ask':
             # User wants to ask questions
-            bot.state = State.ASKING_QUESTIONS
-            bot.sender.sendMessage("What are your questions?")
+            # Check if the user has asked too many questions for the day
+            user_can_ask_questions = KBManager.can_user_ask_question(bot.telegram_id)
+            if user_can_ask_questions:
+                bot.state = State.ASKING_QUESTIONS
+                bot.sender.sendMessage("What are your questions?")
+            else:
+                bot.sender.sendMessage("I'm sorry but you can only ask " + str(max_questions_per_day) +
+                    " questions per day. Please continue again tomorrow :)!")
 
         elif command == '/add':
             # Redirect people to /<module code>
@@ -182,7 +188,7 @@ class Command:
             bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")
         return
 
-    # State.DELETING - When user wants to delete a channel
+    # State.DELETING - When User wants to delete a channel
     @classmethod
     def process_deleting_channels(cls, bot, delegator_bot, command):
         print "(B) PROCESS DELETING CHANNELS"
@@ -193,6 +199,7 @@ class Command:
         else:
             bot.sender.sendMessage("You are not even subscribed to " + module_code)
 
+    # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
     @classmethod
     def process_asking_questions(cls, bot, delegator_bot, command):
         AskingQuestions.process_asking_questions(bot, delegator_bot, command)

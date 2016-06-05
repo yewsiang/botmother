@@ -1,7 +1,6 @@
 import telepot
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager
-from .message_blast import MessageBlast
 from .commands import State
 from telepot.namedtuple import ForceReply
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
@@ -12,7 +11,7 @@ class AskingQuestions:
     '''
     This class handles the process by which a user asks questions.
     '''
-    # State.ASKING_QUESTIONS - When user wants to ask questions for a module
+    # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
     @classmethod
     def process_asking_questions(cls, bot, delegator_bot, command):
         print "(C) PROCESS ASKING QUESTIONS"
@@ -25,16 +24,49 @@ class AskingQuestions:
     @classmethod
     def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
         print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
-        module_code = command[1:]
-        #
-        # TODO: Check if the user should be allowed to ask questions
-        # TODO: Check if the user is subscribed in the module in the first place
-        #
+        # User may type "/MOM1000" or "MOM1000", we will support both
+        if command[:1] == "/":
+            module_code = command[1:]
+        else:
+            module_code = command
+
+        # Check if the user is subscribed to the module he is trying to ask questions
+        subscribed_to_channel_already = False
+        for channel in bot.subscribed_channels:
+            if str(channel) == module_code:
+                subscribed_to_channel_already = True
+
+        # Send the question only after the User has subscribed to that module
+        if not subscribed_to_channel_already:
+            bot.state = State.NORMAL
+            bot.sender.sendMessage("I'm sorry but you will need to be subscribed to /" + module_code.upper() +
+                " before you are allowed to post a question for that module")
+        else:
+            # Get everyone in the channel in order to send them the question
+            answerers = KBManager.get_answerers(bot.telegram_id, module_code)
+            AskingQuestions.send_question_to_answerers(bot, delegator_bot, module_code, bot.question_asked, answerers)
+            # Back to NORMAL state after question ahs been sent
+            bot.state = State.NORMAL
+            bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
+                ". The answers will be sent back to you in 15 mins!")
+
+    # Sending questions to answerers after they have finished:
+    # 1) Typing their question,
+    # 2) Selecting a channel
+    @classmethod
+    def send_question_to_answerers(cls, bot, delegator_bot, module_code, question, answerers):
+        # callback_data is supposed to encode the question_id so that when users click
+        # "Answer Question", we will know what question he is answering
+        question_id = KBManager.ask_question(bot.telegram_id, module_code, question)
         answerers = KBManager.get_answerers(bot.telegram_id, module_code)
-        MessageBlast.send_question_to_answerers(bot, delegator_bot, module_code, bot.question_asked, answerers)
-        bot.state = State.NORMAL
-        bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
-            ". The answers will be sent back to you in 15 mins!")
+
+        # Send the question to everyone subscribed to the module
+        for answerer in answerers:
+            markup = InlineKeyboardMarkup(inline_keyboard=[
+                     [InlineKeyboardButton(text="Answer Question",
+                        callback_data=('AnswerQuestion_' + str(question_id) + '_None'))]
+                 ])
+            delegator_bot.sendMessage(answerer.telegram_user_id, question, reply_markup=markup)
 
 
 class AnsweringQuestions:
@@ -46,8 +78,20 @@ class AnsweringQuestions:
     # Callback activated when User presses "Answer Question" button from other Users' questions.
     @classmethod
     def callback_answer_question(cls, bot, delegator_bot, data, query_id):
-        bot.state = State.ANSWERING_QUESTIONS
-        bot.sender.sendMessage('Please type your answer', reply_markup=ForceReply())
+        # Checks if the User is trying to answer the question more than once while it is still under voting.
+        # We do not want to allow the User to spam the voting process with his answers.
+        callback_type, question_id, unused = data.split('_')
+        #
+        # TODO: CHECK FOR CORRECTNESS
+        #
+        can_user_answer_question = KBManager.can_user_answer_question(question_id, bot.telegram_id)
+        if can_user_answer_question:
+            bot.temp_question_id = question_id
+            bot.state = State.ANSWERING_QUESTIONS
+            bot.sender.sendMessage("Please type your answer", reply_markup=ForceReply())
+        else:
+            bot.sender.sendMessage("I'm sorry but we're in the voting process and you have already answered the question. "
+                "You can submit answers again after the voting is over :)!")
 
     # After the User typed his answer, this function will send the User a confirmation (Yes/No)
     @classmethod
@@ -58,11 +102,12 @@ class AnsweringQuestions:
         # TODO: Store the answer to send in DB?
         #
         bot.answer_to_send = command
+
         markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Yes",
-                        callback_data=('ConfirmAnswer_' + str(bot.telegram_id) + '_yes')),
+                        callback_data=('ConfirmAnswer_' + str(bot.temp_question_id) + '_yes')),
                      InlineKeyboardButton(text="No",
-                        callback_data=('ConfirmAnswer_' + str(bot.telegram_id) + '_no'))]
+                        callback_data=('ConfirmAnswer_' + str(bot.temp_question_id) + '_no'))]
                  ])
         #
         # TODO: How to store msg_with_inline_keyboard?
@@ -76,14 +121,18 @@ class AnsweringQuestions:
     # if the User wishes to send his answer
     @classmethod
     def callback_confirm_answer(cls, bot, delegator_bot, data, query_id):
-        callback_type, id1, response = data.split('_')
+        callback_type, question_id, response = data.split('_')
         if response == 'yes':
             # Send answer to list
             bot.sender.sendMessage("Your answer has been sent! You will be sent other people's answers shortly!")
             delegator_bot.answerCallbackQuery(query_id, "Your answer has been sent!")
+
+            # Add the answer to the question
             #
-            # KBManager.add_answer_to_question(,bot.telegram_id,)
+            # TODO: Need to get the answer_to_send from the db later on
             #
+            KBManager.add_answer_to_question(question_id, bot.telegram_id, bot.answer_to_send)
+
             # New markup is given a callback_data of sent_NONE_NONE because the format of callback data is of
             # ABC_DEF_GHI since we will .split('_')
             new_markup = InlineKeyboardMarkup(inline_keyboard=[
@@ -91,10 +140,32 @@ class AnsweringQuestions:
                  ])
             bot.state = State.NORMAL
             delegator_bot.editMessageReplyMarkup(bot.msg_idf, new_markup)
-            print "Send answer to list"
+
+            #
+            # TODO: Testing this function
+            #
+            AnsweringQuestions.send_answers_to_voters(bot, delegator_bot, question_id)
+
         else:
             new_markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Cancelled", callback_data="Cancelled_None_None")]
                  ])
             bot.state = State.NORMAL
             delegator_bot.editMessageReplyMarkup(bot.msg_idf, new_markup)
+
+    # Sending answers to voters after answerers have:
+    # 1) Clicked on "Answer Question" and triggered the Force Reply
+    # 2) Typed their answers and hit "Send"
+    # 3) Clicked on "Yes" to confirm their answers
+    @classmethod
+    def send_answers_to_voters(cls, bot, delegator_bot, question_id):
+        answers_to_send = KBManager.get_answers_for_qn(question_id)
+        voters = KBManager.get_voters_for_qn_answers(question_id)
+        print "answers start here -> "
+        print answers_to_send
+        print voters
+        '''
+        for voter in voters:
+            delegator_bot.sendMessage(voter.telegram_user_id, answers_to_send)
+        '''
+        print "We are sending the answers to the voters!"

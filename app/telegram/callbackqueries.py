@@ -12,10 +12,10 @@ class CallbackQueries:
     def on_answer(cls, bot, delegator_bot, data, query_id):
         # All callback queries will pass through this function and be allocated to
         # a suitable function to handle it based on information in "data"
-        callback_type, id1, id2 = data.split('_')
+        callback_type, param1, param2 = data.split('_')
         print callback_type
 
-        # Callback queries for Asking and Answering of questions
+        # Callback queries for Answering of questions
         if callback_type == 'AnswerQuestion':
             AnsweringQuestions.callback_answer_question(bot, delegator_bot, data, query_id)
         elif callback_type == 'ConfirmAnswer':
