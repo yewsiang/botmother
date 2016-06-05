@@ -1,6 +1,5 @@
 from app import db
 import app.accounts
-import app.knowledgebase
 
 # Create the association table between channels and users
 user_channels_table = db.Table('userchannels', db.Model.metadata,
