@@ -1,0 +1,30 @@
+{# myapp/templates/knowledgebase/module_card.html #}
+{# Assume that we are passed in a variable called 'module' #}
+{% macro module_card(module) %}
+   <div class="ui special cards">
+     <div class="card">
+       <div class="blurring dimmable image">
+         <div class="ui dimmer">
+           <div class="content">
+             <div class="center">
+               <div class="ui inverted button">Add Channel</div>
+             </div>
+           </div>
+         </div>
+         <img src="{{url_for('static', filename='404.jpg')}}">
+       </div>
+       <div class="content">
+         <a class="header">{{module.name.upper()}}</a>
+         <div class="meta">
+           {#<span class="date">{{module.questions|length}}</span>#}
+         </div>
+       </div>
+       <div class="extra content">
+         <a>
+           <i class="users icon"></i>
+           {{module.users|length}} Members
+         </a>
+       </div>
+     </div>
+   </div>
+{% endmacro %}

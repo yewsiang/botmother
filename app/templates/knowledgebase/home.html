@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% import "knowledgebase/module_card.html" as mc%}
+
+
+{% block content %}
+<!-- Code for Module Cards to dim and show text-->
+<script>
+$(document).ready(function() {
+    $('.special.cards .image').dimmer({
+      on: 'hover'
+    });
+});
+</script>
+
+<div class="ui five column grid">
+    {% for module in modules %}
+        <div class="column">
+            {{mc.module_card(module)}}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

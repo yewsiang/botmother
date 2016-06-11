@@ -146,6 +146,15 @@ class KBManager(object):
         return [name[0] for name in db.session.query(Channel.name).all()]
 
     @staticmethod
+    def retrive_all_module_objects():
+        '''
+        For the controller - retrives all the module OBJECTS instead of just
+        the names
+        '''
+        return db.session.query(Channel).all()
+
+
+    @staticmethod
     def get_answerers(telegram_user_id, channel_name):
         '''
         Returns all the people in the module channel

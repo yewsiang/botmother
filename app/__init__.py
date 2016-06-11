@@ -27,18 +27,17 @@ db.init_app(app)
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
+@app.route("/")
+def homepage():
+    return "wat"
+
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
 
-# Import a module / component using its blueprint handler variable (mod_auth)
-# from app.mod_auth.controllers import mod_auth as auth_module
 
-# Register blueprint(s)
-# app.register_blueprint(auth_module)
-# app.register_blueprint(xyz_module)
-# ..
 
 # Before we create the database tables - import all models
 from accounts import User
@@ -57,11 +56,20 @@ db.session.add(Channel(name='bro1000'))
 db.session.add(Channel(name='sis1000'))
 db.session.commit()
 
+
+# Import a module / component using its blueprint handler variable
+from app.knowledgebase.controllers import mod_knowledgebase
+
+# Register blueprint(s)
+app.register_blueprint(mod_knowledgebase)
+# app.register_blueprint(xyz_module)
+# ..
+
 # x = User(2, 3)
 # print x
 # db.session.add(x)
 # db.session.commit()
 
-
-from telegram import bot
-bot.message_loop()
+print "==***+**+***+*++===  WARNING - DISABLED BOT FOR TESTING **+**+*+++==="
+#from telegram import bot
+#bot.message_loop()
