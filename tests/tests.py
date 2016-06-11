@@ -1,4 +1,5 @@
 from test_base import BaseTestCase
+from app.helpers import get_answer_by_id
 from app.accounts import TelegramAccountManager, AccountManager, User
 from app.knowledgebase import Channel, Question
 from app import db
@@ -47,7 +48,6 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
-
     def test_can_answer_qn_because_have_not_answered(self):
         '''
         Should be able to answer because we haven't answered before
@@ -182,7 +182,8 @@ class KBManagerTests(BaseTestCase):
 
     def test_get_answers_for_question(self):
         '''
-        Tests that we get the correct list of answers for a question
+        Tests that we get the correct list of answers for a question.
+        All answers have been confirmed.
         '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
@@ -192,18 +193,56 @@ class KBManagerTests(BaseTestCase):
         db.session.commit()
 
         answers = ["42", "36", "29", "55"]
+        answer_ids = []
 
         question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
 
         # add all the answers
         for i in answers:
-            KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i)
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i))
+
+        # confirmation of all the answers
+        for answer_id in answer_ids:
+            KBManager.confirm_answer(answer_id)
 
         # gets all the answer texts
         found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
 
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
+
+    def test_get_answers_for_question_with_unconfirmed_answers(self):
+        '''
+        Tests that we get the correct list of answers for a question.
+        2/4 answer have been confirmed.
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+        answer_ids = []
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i))
+
+        # confirmation of the first 2 answers
+        for answer_id in answer_ids:
+            if (answer_id == 1 or answer_id == 2):
+                KBManager.confirm_answer(answer_id)
+
+        # gets all the answer texts
+        found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+        expected_answers = ["42", "36"]
+
+        # check that their unordered versions are the same
+        assert set(expected_answers) == set(found_answers)
 
     def test_add_valid_vote_to_valid_answer(self):
         '''

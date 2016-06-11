@@ -26,3 +26,11 @@ def get_question_by_id(question_id):
     the id given
     '''
     return db.session.query(app.knowledgebase.Question).get(question_id)
+
+
+def get_answer_by_id(answer_id):
+    '''
+    Simple helper to return any answer in the database that matches
+    the id given
+    '''
+    return db.session.query(app.knowledgebase.Answer).get(answer_id)
