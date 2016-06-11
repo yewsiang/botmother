@@ -26,9 +26,9 @@ class Modules:
 
             bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
-    # /module - When User types /module to retrieve all modules available for subscription
+    # /modules - When User types /module to retrieve all modules available for subscription
     @classmethod
-    def module_command(cls, bot):
+    def modules_command(cls, bot):
         # Retrieve all the modules that are available for subscription
         list_of_all_modules = KBManager.retrieve_all_modules()
         string_to_send = "Modules available:  "

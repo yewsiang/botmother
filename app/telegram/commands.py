@@ -51,7 +51,7 @@ class Command:
 
         elif command == '/modules':
             # /module - When User types /module to retrieve all modules available for subscription
-            Modules.module_command(bot)
+            Modules.modules_command(bot)
 
         elif command == '/done':
             # Go back to NORMAL state from any state

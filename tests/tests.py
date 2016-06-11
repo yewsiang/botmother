@@ -12,10 +12,6 @@ from app.telegram import Command
 # Create a fake bot that stores the messages sent to the user in a variable
 # to allow us to test the messages sent to the user
 # telepot uses self.bot.sender.sendMessage(msg) to send messages to user
-def test_send_message(self, msg):
-    #self.messages.append(msg)
-    return
-
 
 # Compare 2 lists of messages and make sure they are the same
 def compare_two_lists_sequentially(self, incoming_messages, expected_messages):
@@ -28,23 +24,72 @@ def compare_two_lists_sequentially(self, incoming_messages, expected_messages):
     return are_identical_messages
 
 
+# These fake bots support spoofing of bot.sender.sendMessage().
+# This allows testing of the exact messages sent to the User.
+# (Should have a better way)
 class FakeBot:
+    def __init__(self, telegram_id):
+        self.sender = SecondFakeBot()
+        self.telegram_id = telegram_id
+
+    def get_messages(self):
+        return self.sender.messages
+
+
+class SecondFakeBot:
     def __init__(self):
         self.messages = []
-        self.sender = object
-        self.bot.sender = object
-        #self.bot.sender.sendMessage = testSendMessage(self)
-        assert False
+        self.sendMessage = lambda msg: self.messages.append(msg)
 
-'''
+
 class TelegramTests(BaseTestCase):
-    def test_process_command(self):
-        # Tests that users commands are sent properly
-        fakeBot = FakeBot()
-        #fakeBot.bot.sender.sendMessage("hello")
-        #assert fakeBot.messages[0] == "hello"
-        assert False
-'''
+    def test_fakebot_message_sending(self):
+        '''
+        Tests that users commands are sent properly
+        '''
+        fakeBot = FakeBot(123)
+        fakeBot.sender.sendMessage("Hello")
+        fakeBot.sender.sendMessage("world")
+        expected_messages = ["Hello", "world"]
+        assert fakeBot.get_messages() == expected_messages
+
+    #
+    # Modules class testing
+    #
+    def test_me_command_with_modules(self):
+        '''
+        /me command should retrieve the modules that a User has subscribed
+        '''
+        bot = FakeBot(123)
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        cs1231 = Channel(name='cs1231')
+        u1.channels.append(cs2100)
+        u1.channels.append(cs1231)
+
+        # Call the function in the Telegram module
+        # Modules.me_command(fakeBot)
+        Command.process_commands(bot, bot, '/me')
+
+        print bot.get_messages()
+        expected_messages = ["Your modules subscribed are CS2100 CS1231 "]
+        assert bot.get_messages() == expected_messages
+
+    def test_me_command_without_modules(self):
+        '''
+        /me command should inform user that he doesn't have any modules
+        '''
+        bot = FakeBot(123)
+        u1 = self.create_user(123, 0)
+
+        # Call the function in the Telegram module
+        # Modules.me_command(fakeBot)
+        Command.process_commands(bot, bot, '/me')
+
+        print bot.get_messages()
+        expected_messages = ["You have not subscribed to any mods.\n"
+            "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)"]
+        assert bot.get_messages() == expected_messages
 
 
 class KBManagerTests(BaseTestCase):
