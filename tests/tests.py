@@ -52,7 +52,6 @@ class KBManagerTests(BaseTestCase):
         '''
         Should be able to answer because we haven't answered before
         '''
-
         u1 = self.create_user(123, 0)
         cs2100 = Channel(name='cs2100')
         u1.channels.append(cs2100)
@@ -166,12 +165,17 @@ class KBManagerTests(BaseTestCase):
         db.session.commit()
 
         answers = ["42", "36", "29", "55"]
+        answer_ids = []
 
         question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
 
         # add all the answers
         for i in answers:
-            KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i)
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i))
+
+        # confirmation of the answers
+        for answer_id in answer_ids:
+            KBManager.confirm_answer(answer_id)
 
         voters = KBManager.get_voters_for_qn_answers(question_id)
 
