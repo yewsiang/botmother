@@ -1,6 +1,4 @@
 from app.accounts import AccountManager
-from app.knowledgebase import KBManager, max_questions_per_day
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import pprint
 
 
@@ -19,8 +17,11 @@ class State:
 
 
 # Placed here because fuck python
-from .voting import Voting
+from .modules import Modules
 from .questions import AskingQuestions, AnsweringQuestions
+from .voting import Voting
+from .settings import Settings
+from .help import Help
 
 
 class Command:
@@ -37,59 +38,20 @@ class Command:
 
         # ------------ DEBUGGING PURPOSES -----------
         if command == '/':
-            print "bot.State = " + bot.state
+            print "bot.State = " + str(bot.state)
         # --------------  REMOVE LATER --------------
 
         if command == '/help':
-            # DEPENDING on the STATE of the User, provide different help commands
-            # TODO
-            if bot.state == State.NORMAL:
-                bot.sender.sendMessage("/help - List commands that you can\n"
-                    "/me - List the modules that you are subscribed to\n"
-                    "/ask - Ask questions!\n"  # Changes state
-                    "/modules - List the modules that you can subscribe to\n"
-                    "/<module code> - Add a module (E.g /MOM1000 adds the module MOM1000)\n"
-                    "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
-                    "/settings - Change your settings (E.g notification rate)")  # Changes state
-            elif (bot.state == State.DELETING_CHANNEL):
-                bot.sender.sendMessage("/<module code> - Delete a module that you are subscribed to\n"
-                    "/done - Done with deleting modules\n")
-            elif (bot.state == State.ASKING_QUESTIONS):
-                bot.sender.sendMessage("Send a question to those who are subscribed to the particular module\n"
-                    "/done - Done with asking questions\n")
-            elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
-                bot.sender.sendMessage("/<module code> - Send the question that you've asked to the people"
-                    "subscribed to this particular module\n")
-            elif (bot.state == State.ANSWERING_QUESTIONS):
-                bot.sender.sendMessage("/help for ANSWERING_QUESTIONS")
-            elif (bot.state == State.VOTING):
-                bot.sender.sendMessage("/help for VOTING")
-            elif (bot.state == State.CHANGE_SETTINGS):
-                bot.sender.sendMessage("/help for CHANGE_SETTINGS")
-            else:
-                print "ERROR: There should not be any other states other than those listed"
+            # /help - When User types /help in any State
+            Help.help_according_to_state(bot)
 
         elif command == '/me':
-            # List of modules that have been subscribed by user
-            if bot.subscribed_channels == []:
-                bot.sender.sendMessage("You have not subscribed to any mods.\n"
-                    "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
-            else:
-                # Send user's telegram id and retrieve a list of modules
-                list_of_subscribed_channels = ""
-                for channel in bot.subscribed_channels:
-                    list_of_subscribed_channels += str(channel).upper() + " "
-
-                bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
+            # /me - When User types /me to find out the modules that they've subscribed to
+            Modules.me_command(bot)
 
         elif command == '/modules':
-            # Retrieve all the modules that are available for subscription
-            list_of_all_modules = KBManager.retrieve_all_modules()
-            string_to_send = "Modules available:  "
-            for module in list_of_all_modules:
-                string_to_send += "/" + str(module).upper() + "  "
-            # Send the user a list of modules with "/" appended - easier to subscribe
-            bot.sender.sendMessage(string_to_send)
+            # /module - When User types /module to retrieve all modules available for subscription
+            Modules.module_command(bot)
 
         elif command == '/done':
             # Go back to NORMAL state from any state
@@ -102,24 +64,31 @@ class Command:
             if (bot.state == State.NORMAL):
                 Command.process_normal_commands(bot, delegator_bot, command)
             elif (bot.state == State.DELETING_CHANNEL):
-                Command.process_deleting_channels(bot, delegator_bot, command)
+                Modules.process_deleting_channels(bot, delegator_bot, command)
 
-            # Handled by the AskingQuestions class
+            # AskingQuestions
             elif (bot.state == State.ASKING_QUESTIONS):
-                Command.process_asking_questions(bot, delegator_bot, command)
+                # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
+                AskingQuestions.process_asking_questions(bot, delegator_bot, command)
             elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
-                Command.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
+                # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
+                # selecting a channel to post the question
+                AskingQuestions.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
 
-            # Handled by the AnswerQuestions class
+            # AnswerQuestions
             elif (bot.state == State.ANSWERING_QUESTIONS):
-                Command.process_confirmation_of_answer(bot, delegator_bot, command)
+                # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
+                AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, command)
 
-            # Handled by the Voting class
+            # Voting
             elif (bot.state == State.VOTING):
-                Command.process_voting(bot, delegator_bot, command)
+                # State.VOTING - When user clicks on answer to vote
+                Voting.process_voting(bot, delegator_bot, command)
 
+            # Settings
             elif (bot.state == State.CHANGE_SETTINGS):
-                Command.process_change_settings(bot, delegator_bot, command)
+                # State.CHANGE_SETTINGS - User has typed /settings, and is now changing settings with new messages
+                Settings.process_change_settings(bot, delegator_bot, command)
             else:
                 print "ERROR: There should not be any other states other than those listed"
 
@@ -130,103 +99,27 @@ class Command:
         print bot.telegram_id
 
         if command == '/ask':
-            # User wants to ask questions
-            # Check if the user has asked too many questions for the day
-            user_can_ask_questions = KBManager.can_user_ask_question(bot.telegram_id)
-            if user_can_ask_questions:
-                bot.state = State.ASKING_QUESTIONS
-                bot.sender.sendMessage("What are your questions?")
-            else:
-                bot.sender.sendMessage("I'm sorry but you can only ask " + str(max_questions_per_day) +
-                    " questions per day. Please continue again tomorrow :)!")
+            # /ask - User initiates asking questions by typing "/ask"
+            AskingQuestions.ask_command(bot)
 
         elif command == '/add':
-            # Redirect people to /<module code>
-            bot.sender.sendMessage("Woah. How do you know there is a /add when we didn't tell you"
-                " there is? Please use /<module code> to add the module of your choice :)")
+            # /add - When User types /add
+            # However, we are not supporting /add but /<module code> command. This is just for fun.
+            Modules.add_command(bot)
 
         elif command == '/delete':
-            # User wants to delete modules off his subscription list
-            if bot.subscribed_channels == []:
-                bot.sender.sendMessage("You have not subscribed to any mods.\n"
-                    "/<module code> to add a module (E.g /BRO1000 adds the module BRO1000)")
-            else:
-                # When User types /BRO1000, we will delete BRO1000 from HIS acc
-                bot.state = State.DELETING_CHANNEL
-                bot.sender.sendMessage("What module would you like to delete?")
+            # /delete - When User types /delete
+            Modules.delete_command(bot)
 
         elif command == '/settings':
-            # Allow Users to change their settings (eg notifications)
-            bot.state = State.CHANGE_SETTINGS
-            bot.sender.sendMessage("What settings would you like to change?")
+            Settings.settings_command(bot)
 
         elif command[:1] == '/':
-            # Say, Users do this "/MA1234"
-            # We must search if "MA1234" is a valid module
-            module_code = command[1:]
-            list_of_all_modules = KBManager.retrieve_all_modules()
-
-            # Check if it is a valid module
-            module_exists = module_code in list_of_all_modules
-            if (module_exists):
-                # Check if the User has already subscribed to the channel
-                subscribed_to_channel_already = False
-                for channel in bot.subscribed_channels:
-                    if str(channel) == module_code:
-                        subscribed_to_channel_already = True
-
-                if subscribed_to_channel_already:
-                    bot.sender.sendMessage("You've subscribed to the module already :)")
-                else:
-                    add_channel_succeed = AccountManager.add_channel(bot.telegram_id, module_code)
-                    if add_channel_succeed:
-                        bot.sender.sendMessage("Module added to your subscription")
-                    else:
-                        bot.sender.sendMessage("There is a problem adding your module. Please try again later :(")
-            else:
-                bot.sender.sendMessage("Module does not exist. /modules to see the available modules")
+            # /<module code> - When User types /<module code> in the expectation that it will add <module code>
+            # into their list of subscribed modules
+            Modules.module_code_command(bot, command)
 
         else:
             # User probably typed something invalid
             bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")
         return
-
-    # State.DELETING - When User wants to delete a channel
-    @classmethod
-    def process_deleting_channels(cls, bot, delegator_bot, command):
-        print "(B) PROCESS DELETING CHANNELS"
-        module_code = command[1:]
-        deletedChannel = AccountManager.delete_channel(bot.telegram_id, module_code)
-        if (deletedChannel):
-            bot.sender.sendMessage("You have deleted " + module_code + " from your subscribed modules :(")
-        else:
-            bot.sender.sendMessage("You are not even subscribed to " + module_code)
-
-    # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
-    @classmethod
-    def process_asking_questions(cls, bot, delegator_bot, command):
-        AskingQuestions.process_asking_questions(bot, delegator_bot, command)
-
-    # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
-    # selecting a channel to post the question
-    @classmethod
-    def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
-        AskingQuestions.process_selecting_channel_after_asking_questions(bot, delegator_bot, command)
-
-    # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
-    @classmethod
-    def process_confirmation_of_answer(cls, bot, delegator_bot, command):
-        AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, command)
-
-    # State.VOTING - When user clicks on answer to vote
-    @classmethod
-    def process_voting(cls, bot, delegator_bot, command):
-        Voting.process_voting(bot, delegator_bot, command)
-
-    @classmethod
-    def process_change_settings(cls, bot, delegator_bot, command):
-        #
-        # TODO
-        #
-        print "(F) PROCESS CHANGE SETTINGS"
-        bot.sender.sendMessage("We are in change settings function")

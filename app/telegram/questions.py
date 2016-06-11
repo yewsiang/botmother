@@ -1,7 +1,7 @@
 import telepot
 from app.accounts import AccountManager
 from app.helpers import get_question_by_id
-from app.knowledgebase import KBManager
+from app.knowledgebase import KBManager, max_questions_per_day
 from .commands import State
 from telepot.namedtuple import ForceReply
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
@@ -12,10 +12,27 @@ class AskingQuestions:
     '''
     This class handles the process by which a user asks questions.
     '''
+    # /ask - User initiates asking questions by typing "/ask"
+    @classmethod
+    def ask_command(cls, bot):
+        print "<< (Ask 1) /ask Command >>"
+
+        # User wants to ask questions
+        # Check if the User has asked too many questions for the day
+        user_can_ask_questions = KBManager.can_user_ask_question(bot.telegram_id)
+        if user_can_ask_questions:
+            bot.state = State.ASKING_QUESTIONS
+            bot.sender.sendMessage("Tell us what question you have :). After which, you can choose a module to send the question to!")
+        else:
+            bot.sender.sendMessage("I'm sorry but you can only ask " + str(max_questions_per_day) +
+                " questions per day. Please continue again tomorrow :)!")
+
     # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
     @classmethod
     def process_asking_questions(cls, bot, delegator_bot, command):
-        print "(C) PROCESS ASKING QUESTIONS"
+        print "<< (Ask 2) Question has been keyed in >>"
+
+        # Change the state of the User so that we will know he is going to send a module next
         bot.question_asked = command
         bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         bot.sender.sendMessage("Which module would you like to send the question to?")
@@ -24,7 +41,8 @@ class AskingQuestions:
     # selecting a channel to post the question
     @classmethod
     def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
-        print "(C2) PROCESS SELECTING CHANNEL AFTER ASKING QUESTIONS"
+        print "<< (Ask 3) /<module code> has been keyed in >>"
+
         # User may type "/MOM1000" or "MOM1000", we will support both
         if command[:1] == "/":
             module_code = command[1:]
@@ -56,6 +74,8 @@ class AskingQuestions:
     # 2) Selecting a channel
     @classmethod
     def send_question_to_answerers(cls, bot, delegator_bot, module_code, question, answerers):
+        print "<< (Ask 4) Question will now be sent to answerers >>"
+
         # callback_data is supposed to encode the question_id so that when users click
         # "Answer Question", we will know what question he is answering
         question_id = KBManager.ask_question(bot.telegram_id, module_code, question)
@@ -79,6 +99,8 @@ class AnsweringQuestions:
     # Callback activated when User presses "Answer Question" button from other Users' questions.
     @classmethod
     def callback_answer_question(cls, bot, delegator_bot, data, query_id):
+        print "<< (Answer 1) 'Answer Question' button has been clicked >>"
+
         # Checks if the User is trying to answer the question more than once while it is still under voting.
         # We do not want to allow the User to spam the voting process with his answers.
         callback_type, question_id, unused = data.split('_')
@@ -98,7 +120,8 @@ class AnsweringQuestions:
     # After the User typed his answer, this function will send the User a confirmation (Yes/No)
     @classmethod
     def process_confirmation_of_answer(cls, bot, delegator_bot, command):
-        print "(D2) CONFIRMATION OF ANSWERS"
+        print "<< (Answer 2) User has typed in his answer >>"
+
         # Store the answer to send before the User's confirmation
         #
         # TODO: Store the answer to send in DB?
@@ -123,6 +146,8 @@ class AnsweringQuestions:
     # if the User wishes to send his answer
     @classmethod
     def callback_confirm_answer(cls, bot, delegator_bot, data, query_id):
+        print "<< (Answer 3) 'Yes' or 'No' button has been clicked to confirm answers >>"
+
         callback_type, question_id, response = data.split('_')
         if response == 'yes':
             # Send answer to list
@@ -161,6 +186,8 @@ class AnsweringQuestions:
     # 3) Clicked on "Yes" to confirm their answers
     @classmethod
     def send_answers_to_voters(cls, bot, delegator_bot, question_id):
+        print "<< (Answer 4) Answers to be sent to voters >>"
+
         question = get_question_by_id(question_id)
         answers = KBManager.get_answers_for_qn(question_id)
         voters = KBManager.get_voters_for_qn_answers(question_id)
