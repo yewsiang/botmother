@@ -1,5 +1,4 @@
 import telepot
-from app.accounts import AccountManager
 from app.helpers import get_question_by_id
 from app.knowledgebase import KBManager, max_questions_per_day
 from .commands import State
