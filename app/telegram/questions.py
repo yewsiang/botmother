@@ -138,8 +138,10 @@ class AnsweringQuestions:
         #
         bot.msg_with_inline_keyboard = bot.sender.sendMessage("Send your answer?", reply_markup=markup)
         pprint(bot.msg_with_inline_keyboard)
+        '''
         bot.msg_idf = telepot.message_identifier(bot.msg_with_inline_keyboard)
         print bot.msg_idf
+        '''
 
     # Callback activated when User presses "Yes" or "No" button in response to the Bot asking
     # if the User wishes to send his answer

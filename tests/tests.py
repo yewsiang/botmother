@@ -32,6 +32,8 @@ class FakeBot:
         self.sender = SecondFakeBot()
         self.telegram_id = telegram_id
         self.state = state
+        # hack to support bot.msg_idf usage
+        self.msg_idf = 0
 
     def get_messages(self):
         return self.sender.messages
@@ -40,7 +42,10 @@ class FakeBot:
 class SecondFakeBot:
     def __init__(self):
         self.messages = []
-        self.sendMessage = lambda msg: self.messages.append(msg)
+
+    # reply_markup to prevent error when parameter reply_markup is passed in
+    def sendMessage(self, msg, reply_markup=None):
+        self.messages.append(msg)
 
 
 class FakeDelegatorBot:
@@ -62,7 +67,7 @@ class FakeDelegatorBot:
         self.messages.append(msg)
         self.answer_callback_query_list.append(msg)
 
-    def editMessageReply(self, msg_id, markup=None):
+    def editMessageReplyMarkup(self, msg_id, markup=None):
         msg = [msg_id, markup]
         self.messages.append(msg)
         self.edit_message_reply_list.append(msg)
@@ -98,8 +103,8 @@ class TelegramTests(BaseTestCase):
         expected_messages2 = [[1, "Some message"],
             [2, "Some more message"]]
 
-        delegator_bot.editMessageReply(1, ["Some stuff", 1])
-        delegator_bot.editMessageReply(2, ["Some more stuff", 2])
+        delegator_bot.editMessageReplyMarkup(1, ["Some stuff", 1])
+        delegator_bot.editMessageReplyMarkup(2, ["Some more stuff", 2])
         expected_messages3 = [[1, ["Some stuff", 1]],
             [2, ["Some more stuff", 2]]]
 
@@ -169,9 +174,10 @@ class TelegramTests(BaseTestCase):
     #
     def test_user_asking_question(self):
         '''
-        Test one full cycle of the question asking process with 1 asker and 2 answerers.
+        Test one full cycle of the question asking process with 1 asker and 2 answerers. 1 extra.
         1) Asker asks question
         2) Question gets sent to the 2 answerers
+        Check if the bots & delegator_bots sent the correct messages
         '''
         # Initialize the Users and a bot and delegator_bot for the asker
         bot = FakeBot(1, State.NORMAL)
@@ -219,6 +225,63 @@ class TelegramTests(BaseTestCase):
         assert ((third_msg[2:] == expected_message3) and
             (delegator_bot_messages_without_markup == expected_delegatorbot_message))
 
+    def test_user_answering_question(self):
+        '''
+        (Continued from test_user_asking_question)
+        Test a few Users answering a question that has been asked. (1 asker, 2 answers, 1 extra).
+        After a User asked a question:
+        1) 2 Users reply to the question
+        Check if the bots & delegator_bots sent the correct messages
+        '''
+
+        # (Initialization will be similar to test_user_asking_question)
+        # Initialize the Users and a bot and delegator_bot for the asker
+        bot = FakeBot(1, State.NORMAL)
+        delegator_bot = FakeDelegatorBot()
+        u1 = self.create_user(1, 0)
+        u2 = self.create_user(2, 0)
+        u3 = self.create_user(3, 0)
+        u4 = self.create_user(4, 0)
+        # Create a channel that ALL but ONE (u4) will join (to test if the question gets sent wrongly to u4)
+        db.session.add(Channel(name='pap1000'))
+        AccountManager.add_channel(u1.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u2.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u3.telegram_user_id, 'pap1000')
+
+        # User1 types /ask and is now in State.ASKING_QUESTIONS
+        Command.process_commands(bot, delegator_bot, '/ask')
+        # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
+        # We have to ask him what module he would like to send it to
+        Command.process_commands(bot, delegator_bot, 'This is the question that Im sending')
+        # User1 now types in the /<module code> of the module that he wants to send it to
+        Command.process_commands(bot, delegator_bot, '/pap1000')
+
+        # User2 & User3 answers the question by clicking on the "Answer Question" button.
+        # This triggers a callback query which is handled by the CallbackQueries class.
+        # The below simulates a click on the button.
+        # (Have to do this because we can't import AnsweringQuestions class)
+        CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None", 2)
+        # Simulate User2 answering the question
+        # Current bot has telegram_id of 1, change to 2 and send a message to simulate 2 sending a message
+        bot.telegram_id = 2
+        Command.process_commands(bot, delegator_bot, 'This is my answer!')
+        # Simulate User2 clicking on the "Yes" button to confirm his answer
+        CallbackQueries.on_answer(bot, delegator_bot, "ConfirmAnswer_1_yes", 4)
+
+        print get_answer_by_id(1)
+
+        print "-----"
+        print bot.get_messages()
+        delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
+        print delegator_bot_messages_without_markup
+
+        # CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None", 3)
+
+        assert False
+
+    #
+    # Voting class testing
+    #
 
 
 class KBManagerTests(BaseTestCase):
