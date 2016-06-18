@@ -12,7 +12,7 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
 
-    ADMINS = ['frizensami@gmail.com.com']
+    ADMINS = ['frizensami@gmail.com']
 
     # http://flask.pocoo.org/docs/quickstart/#sessions
     SECRET_KEY = 'secret key'
@@ -23,6 +23,12 @@ class BaseConfig(object):
     # force SQLALCHEMY to echo
     SQLALCHEMY_ECHO = False
 
+    REDIS_URL = "redis://localhost:6379"
+
+    CELERY_BROKER_URL = REDIS_URL
+
+    CELERY_BACKEND = REDIS_URL
+
     # LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
     # make_dir(LOG_FOLDER)
 
@@ -32,7 +38,6 @@ class BaseConfig(object):
     # MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     # UPLOAD_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'uploads')
     # make_dir(UPLOAD_FOLDER)
-
 
 
 class DevelopmentConfig(BaseConfig):

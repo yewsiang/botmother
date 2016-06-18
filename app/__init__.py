@@ -11,6 +11,9 @@ from pprint import pprint
 # Jinja2 for pluralize
 from jinja2_pluralize import pluralize_dj
 
+# Celery job queue
+from celery import Celery
+
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -26,6 +29,7 @@ db = SQLAlchemy(app)
 db.init_app(app)
 # app.register_blueprint(accounts)
 
+
 # Start Telegram bot loop
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
@@ -34,12 +38,31 @@ TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 def homepage():
     return render_template('home.html')
 
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
 
 
+def make_celery(app):
+    celery = Celery(app.import_name, backend=app.config['CELERY_BACKEND'],
+                    broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager
