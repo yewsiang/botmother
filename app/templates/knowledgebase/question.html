@@ -6,9 +6,9 @@
 
 </script>
 {% if answers.all()|length > 0 %}
-    <div class="ui five column grid">
+    <div class="ui one column centered grid">
         {% for answer in answers %}
-            <div class="column">
+            <div class="column centered">
                 {{ac.answer_card(answer)}}
             </div>
         {% endfor %}

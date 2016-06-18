@@ -32,8 +32,7 @@ TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 @app.route("/")
 def homepage():
-    return "wat"
-
+    return render_template('home.html')
 
 # Sample HTTP error handling
 @app.errorhandler(404)
