@@ -22,7 +22,7 @@ var content = {{ search_content|safe }}
 });
 </script>
 {% if modules|length > 0 %}
-    <div class="ui five column grid">
+    <div class="ui four column grid">
         {% for module in modules %}
             <div class="column">
                 {{mc.module_card(module)}}
