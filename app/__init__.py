@@ -8,6 +8,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import telepot
 from pprint import pprint
 
+# Jinja2 for pluralize
+from jinja2_pluralize import pluralize_dj
+
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -51,6 +54,8 @@ db.create_all()
 
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
+TelegramAccountManager.create_account_if_does_not_exist(124, "Yew Siang")
+TelegramAccountManager.create_account_if_does_not_exist(125, "Herbert")
 
 # Seed channels
 db.session.add(Channel(name='gerk1000'))
@@ -59,7 +64,10 @@ db.session.add(Channel(name='pap1000'))
 db.session.add(Channel(name='bro1000'))
 db.session.add(Channel(name='sis1000'))
 
-KBManager.ask_question(123, 'mom1000', "What is life?")
+question_id = KBManager.ask_question(123, 'mom1000', "What is life?")
+KBManager.add_answer_to_question(question_id, 124, "42")
+KBManager.add_answer_to_question(question_id, 125, "43!")
+
 
 db.session.commit()
 
@@ -71,6 +79,9 @@ from app.knowledgebase.controllers import mod_knowledgebase
 app.register_blueprint(mod_knowledgebase)
 # app.register_blueprint(xyz_module)
 # ..
+
+# Does pluralization initialization and checking
+app.jinja_env.filters['pluralize'] = pluralize_dj
 
 # x = User(2, 3)
 # print x

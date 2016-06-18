@@ -4,7 +4,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 # Import the database object from the main app module
 from app import db
 from app.knowledgebase import KBManager
-from app.helpers import get_all_questions_by_channel_name
+from app.helpers import get_all_questions_by_channel_name, get_question_by_id
 
 # Get json to convert objects to JS output
 import json
@@ -41,3 +41,8 @@ def channel(channel_name):
     else:
         raise NotFound()
 
+@mod_knowledgebase.route('/<int:question_id>', methods=['GET'])
+def question(question_id):
+    question = get_question_by_id(question_id)
+    answers = question.answers
+    return render_template('knowledgebase/question.html', question=question, answers=answers)

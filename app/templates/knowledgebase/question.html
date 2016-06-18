@@ -1,19 +1,19 @@
 {% extends 'layout.html' %}
-{% import 'knowledgebase/cards/question_card.html' as qc %}
+{% import 'knowledgebase/cards/answer_card.html' as ac %}
 
 {% block content %}
 <!-- Code for Module Cards to dim and show text-->
 
 </script>
-{% if questions.all()|length > 0 %}
+{% if answers.all()|length > 0 %}
     <div class="ui five column grid">
-        {% for question in questions %}
+        {% for answer in answers %}
             <div class="column">
-                {{qc.question_card(question)}}
+                {{ac.answer_card(answer)}}
             </div>
         {% endfor %}
     </div>
 {% else %}
-    <h1> No questions for this module yet! </h1>
+    <h1> No answers for this question yet! </h1>
 {% endif %}
 {% endblock %}

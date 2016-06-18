@@ -1,5 +1,9 @@
 import os
 
+# Jinja2 for settings
+from jinja2 import Environment
+from jinja2_pluralize import pluralize_dj
+
 
 class BaseConfig(object):
     PROJECT = "fbone"
@@ -32,6 +36,14 @@ class BaseConfig(object):
     # MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     # UPLOAD_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'uploads')
     # make_dir(UPLOAD_FOLDER)
+
+
+
+    # Does pluralization initialization and checking
+    env = Environment()
+    env.filters['pluralize'] = pluralize_dj
+    tmpl = env.from_string('vote{{ 0|pluralize }}')
+    assert tmpl.render() == 'votes'
 
 
 class DevelopmentConfig(BaseConfig):

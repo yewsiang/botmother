@@ -1,16 +1,16 @@
-{% macro question_card(question) %}
+{% macro answer_card(answer) %}
    <div class="ui special cards">
      <div class="card">
        <div class="content">
-         <a class="header">{{question.text}}</a>
+         <a class="header">{{answer.text}}</a>
          <div class="meta">
-          {{question.user.name}}
+          {{answer.user.name}}
          </div>
        </div>
        <div class="extra content">
          <a>
            <i class="users icon"></i>
-            {{question.answers.all()|length}} Answers
+            {{answer.votes.count()}} Votes
          </a>
        </div>
      </div>

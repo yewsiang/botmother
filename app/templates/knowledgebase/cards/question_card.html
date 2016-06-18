@@ -1,0 +1,18 @@
+{% macro question_card(question) %}
+   <div class="ui special cards">
+     <div class="card">
+       <div class="content">
+         <a href="{{url_for('knowledgebase.question', question_id=question.id)}}" class="header">{{question.text}}</a>
+         <div class="meta">
+          {{question.user.name}}
+         </div>
+       </div>
+       <div class="extra content">
+         <a>
+           <i class="users icon"></i>
+            {{question.answers.count()}} Answer{{question.answers.count()|pluralize}}
+         </a>
+       </div>
+     </div>
+   </div>
+{% endmacro %}
