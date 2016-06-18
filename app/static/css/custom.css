@@ -1,9 +1,7 @@
 /* Layout */
 
 html,
-head,{
-   margin: 40px;
-}
+
 body {
    margin:0;
    padding:0;
@@ -17,9 +15,6 @@ body {
    position: relative;
 }
 
-#custompad {
-   margin: 40px
-}
 
 #body {
    margin: 20px;

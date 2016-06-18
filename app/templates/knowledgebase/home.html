@@ -9,6 +9,16 @@ $(document).ready(function() {
     $('.special.cards .image').dimmer({
       on: 'hover'
     });
+
+var content = {{ search_content|safe }}
+
+
+    $('.ui.search')
+      .search({
+        source: content
+      })
+    ;
+
 });
 </script>
     <div class="ui five column grid">
