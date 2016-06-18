@@ -93,7 +93,7 @@ class AccountManager(object):
 
 class TelegramAccountManager(object):
     @staticmethod
-    def create_account_if_does_not_exist(telegram_user_id):
+    def create_account_if_does_not_exist(telegram_user_id, name=""):
         '''
         Check if an account is present in the database
         If it is, return True and don't do anything else
@@ -105,6 +105,8 @@ class TelegramAccountManager(object):
 
             # user does not exist
             new_user = User(telegram_user_id, 0)
+            # Add a name to the user
+            new_user.name = name
             # Add to database
             db.session.add(new_user)
             # Commit changes

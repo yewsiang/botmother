@@ -4,9 +4,13 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 # Import the database object from the main app module
 from app import db
 from app.knowledgebase import KBManager
+from app.helpers import get_all_questions_by_channel_name
 
 # Get json to convert objects to JS output
 import json
+
+# Flask exceptions
+from werkzeug.exceptions import NotFound
 
 # Define the main blueprint for this module: knowledgebase
 mod_knowledgebase = Blueprint('knowledgebase', __name__, url_prefix='/knowledgebase')
@@ -27,4 +31,13 @@ def home():
     # convert to json
     search_content = json.dumps(search_content)
     return render_template('knowledgebase/home.html', modules=modules, search_content=search_content)
+
+
+@mod_knowledgebase.route('/<string:channel_name>', methods=['GET'])
+def channel(channel_name):
+    questions = get_all_questions_by_channel_name(channel_name)
+    if questions is not None:
+        return render_template('knowledgebase/channel.html', questions=questions)
+    else:
+        raise NotFound()
 

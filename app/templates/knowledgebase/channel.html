@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% import 'knowledgebase/question_card.html' as qc %}
+
+{% block content %}
+<!-- Code for Module Cards to dim and show text-->
+<script>
+$(document).ready(function() {
+    $('.special.cards .image').dimmer({
+      on: 'hover'
+    });
+</script>
+
+</script>
+    <div class="ui five column grid">
+        {% for question in questions %}
+            <div class="column">
+                {{qc.question_card(question)}}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

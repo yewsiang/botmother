@@ -40,8 +40,8 @@ def not_found(error):
 
 
 # Before we create the database tables - import all models
-from accounts import User
-from knowledgebase import Question, Answer, Vote, Comment, Channel
+from accounts import User, TelegramAccountManager
+from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 
 # Build the database:
@@ -49,11 +49,18 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel
 db.drop_all()
 db.create_all()
 
+# create a user
+TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
+
+# Seed channels
 db.session.add(Channel(name='gerk1000'))
 db.session.add(Channel(name='mom1000'))
 db.session.add(Channel(name='pap1000'))
 db.session.add(Channel(name='bro1000'))
 db.session.add(Channel(name='sis1000'))
+
+KBManager.ask_question(123, 'mom1000', "What is life?")
+
 db.session.commit()
 
 

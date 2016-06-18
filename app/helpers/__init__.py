@@ -26,3 +26,17 @@ def get_question_by_id(question_id):
     the id given
     '''
     return db.session.query(app.knowledgebase.Question).get(question_id)
+
+
+def get_all_questions_by_channel_name(channel_name):
+    '''
+    Simple helper to get all the questions for a channel, searched by name.
+    Mainly for the controller route to sound sane
+    '''
+    channel = db.session.query(app.knowledgebase.Channel).\
+        filter_by(name=channel_name).first()
+
+    if channel is not None:
+        return channel.questions
+    else:
+        return None
