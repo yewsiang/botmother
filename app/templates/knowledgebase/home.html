@@ -11,12 +11,11 @@ $(document).ready(function() {
     });
 });
 </script>
-
-<div class="ui five column grid">
-    {% for module in modules %}
-        <div class="column">
-            {{mc.module_card(module)}}
-        </div>
-    {% endfor %}
-</div>
+    <div class="ui five column grid">
+        {% for module in modules %}
+            <div class="column">
+                {{mc.module_card(module)}}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
