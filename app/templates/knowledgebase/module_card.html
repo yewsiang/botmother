@@ -15,7 +15,7 @@
          <img src="{{url_for('static', filename='404.jpg')}}">
        </div>
        <div class="content">
-         <a class="header">{{module.name.upper()}}</a>
+         <a href="{{url_for('knowledgebase.channel', channel_name=module.name)}}"" class="header">{{module.name.upper()}}</a>
          <div class="meta">
            {#<span class="date">{{module.questions|length}}</span>#}
          </div>

@@ -11,6 +11,7 @@ $(document).ready(function() {
 </script>
 
 </script>
+{% if questions.all()|length > 0 %}
     <div class="ui five column grid">
         {% for question in questions %}
             <div class="column">
@@ -18,4 +19,7 @@ $(document).ready(function() {
             </div>
         {% endfor %}
     </div>
+{% else %}
+    <h1> No questions for this module yet! </h1>
+{% endif %}
 {% endblock %}

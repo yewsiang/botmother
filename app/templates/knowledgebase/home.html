@@ -21,6 +21,7 @@ var content = {{ search_content|safe }}
 
 });
 </script>
+{% if modules|length > 0 %}
     <div class="ui five column grid">
         {% for module in modules %}
             <div class="column">
@@ -28,4 +29,7 @@ var content = {{ search_content|safe }}
             </div>
         {% endfor %}
     </div>
+{% else %}
+    <h1> No modules yet! </h1>
+{% endif %}
 {% endblock %}
