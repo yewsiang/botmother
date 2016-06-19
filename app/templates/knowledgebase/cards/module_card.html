@@ -23,7 +23,7 @@
        <div class="extra content">
          <a>
            <i class="users icon"></i>
-           {{module.users|length}} Members
+           {{module.users|length}} Member{{module.users|length|pluralize}} | {{module.questions.count()}} Question{{module.questions.count()|pluralize}}
          </a>
        </div>
      </div>

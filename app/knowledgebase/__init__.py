@@ -5,7 +5,7 @@ from app.helpers import get_user_by_telegram_id
 from sqlalchemy.sql import func
 from datetime import datetime, timedelta
 from app.helpers import get_user_by_telegram_id
-
+from flask import url_for
 '''
 Constants
 '''
@@ -213,6 +213,14 @@ class KBManager(object):
 
             else:
                 raise ValueError('User does not exist, cannot ask question!')
+
+    @staticmethod
+    def get_web_link_for_question(question_id):
+        '''
+        Uses url_for (same as in question_card) to get the web link for discussion
+        on this question
+        '''
+        return url_for('knowledgebase.question', question_id=question_id)
 
     @staticmethod
     def add_answer_to_question(question_id, answerer_telegram_user_id, answer_text):

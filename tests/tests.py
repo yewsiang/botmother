@@ -48,6 +48,20 @@ class TelegramTests(BaseTestCase):
 
 class KBManagerTests(BaseTestCase):
 
+    def test_get_correct_web_link(self):
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.change_question_state(question_id, 1)
+
+        web_link = KBManager.get_web_link_for_question(question_id)
+        print "web link: " + str(web_link)
+        assert KBManager.get_web_link_for_question(question_id) == "/knowledgebase/" + str(question_id)
+
     def test_can_answer_qn_because_have_not_answered(self):
         '''
         Should be able to answer because we haven't answered before
