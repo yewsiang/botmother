@@ -1,6 +1,6 @@
 #!/bin/bash
-  
-# run the redis server in the  background
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
 redis-server&
 # Get the PID of the server
 redis_pid=$!

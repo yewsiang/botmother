@@ -69,6 +69,7 @@ print "Celery Initialized"
 from accounts import User, TelegramAccountManager
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
+t
 
 # Build the database:
 # This will create the database file using SQLAlchemy
