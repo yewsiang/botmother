@@ -13,7 +13,8 @@ import json
 from werkzeug.exceptions import NotFound
 
 # Define the main blueprint for this module: knowledgebase
-mod_knowledgebase = Blueprint('knowledgebase', __name__, url_prefix='/knowledgebase')
+mod_knowledgebase = Blueprint(
+    'knowledgebase', __name__, url_prefix='/knowledgebase')
 
 
 @mod_knowledgebase.route('/', methods=['GET'])
@@ -26,7 +27,8 @@ def home():
 
     # Loop through all the modules and add them to the semantic search bar
     for module in modules:
-        search_content.append({'title': module.name.upper()})
+        search_content.append({'title': module.name.upper(),
+                               'url': url_for('knowledgebase.channel', channel_name=module.name)})
 
     # convert to json
     search_content = json.dumps(search_content)
@@ -40,6 +42,7 @@ def channel(channel_name):
         return render_template('knowledgebase/channel.html', questions=questions)
     else:
         raise NotFound()
+
 
 @mod_knowledgebase.route('/<int:question_id>', methods=['GET'])
 def question(question_id):

@@ -34,17 +34,19 @@
                         {{ m.nav_link('homepage', 'Home') }}
                         {{ m.nav_link('knowledgebase.home', 'Modules') }}
 
-                        <div class="ui search">
-                          <div class="ui icon input">
-                            <input class="custom-borderless prompt" type="text" placeholder="Search for modules">
-                            <i class="search icon"></i>
-                          </div>
-                          <div class="results"></div>
+                        <div class="right menu">
+                            <div class="ui aligned search">
+                              <div class="ui icon input">
+                                <input class="custom-borderless prompt" type="text" placeholder="Search for modules">
+                                <i class="search icon"></i>
+                              </div>
+                              <div class="results"></div>
+                        </div>
                         </div>
 
                         {#{{ m.nav_link('map', 'Map') }}
                         {{ m.nav_link('contact', 'Contact') }}#}
-                        <div class="right menu">
+
                         {#
                             <!-- User is logged in -->
                             {% if current_user.is_authenticated %}
@@ -64,7 +66,7 @@
                                 </div>
                             {% endif %}
                         #}
-                        </div>
+
                     </div>
                 </div>
                 <br>
