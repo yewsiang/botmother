@@ -63,6 +63,7 @@ def make_celery(app):
 
 
 celery = make_celery(app)
+print "Celery Initialized"
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager
