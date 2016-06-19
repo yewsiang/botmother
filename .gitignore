@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Bower
+app/static/bower_components/
+
 # C extensions
 *.so
 

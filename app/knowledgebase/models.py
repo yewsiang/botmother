@@ -73,9 +73,13 @@ class Answer(db.Model):
 
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
 
-    def __init__(self, text):
+    # Is the answer confirmed? - Has the User confirmed that he wants to send the answer
+    confirmed = db.Column(db.Boolean)
+
+    def __init__(self, text, pending):
         if len(text) <= 5000:
             self.text = text
+            self.pending = pending
         else:
             raise ValueError('Answer is too long for database (<= 5000 chars)')
 

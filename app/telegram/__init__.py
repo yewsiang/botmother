@@ -1,8 +1,7 @@
 import telepot
 from telepot.delegate import per_application, per_chat_id, create_open
 from .commands import Command, State
-from .questions import AskingQuestions, AnsweringQuestions
-
+from pprint import pprint
 from .callbackqueries import CallbackQueries
 from app.accounts import TelegramAccountManager
 
@@ -59,8 +58,7 @@ class MainBot(telepot.helper.ChatHandler):
             self.sender.sendMessage("Please key in a text command :)")
             return
 
-        command = msg['text'].strip().lower()
-        Command.process_commands(self, bot, command)
+        Command.process_commands(self, bot, msg)
 
     '''
     # Callback_query will be answered by CallbackBot. MainBot ignores such queries.
@@ -71,7 +69,7 @@ class MainBot(telepot.helper.ChatHandler):
     def on_callback_query(self, msg):
         query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
         print "---- CALLBACK QUERY ----"
-        CallbackQueries.on_answer(self, bot, data, query_id)
+        CallbackQueries.on_answer(self, bot, data, query_id, msg['message']['message_id'])
 
     def on_close(self, exception):
         if isinstance(exception, telepot.exception.WaitTooLong):

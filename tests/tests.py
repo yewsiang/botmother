@@ -1,20 +1,17 @@
 from test_base import BaseTestCase
+from app.helpers import get_answer_by_id
 from app.accounts import TelegramAccountManager, AccountManager, User
 from app.knowledgebase import Channel, Question
 from app import db
 from sqlalchemy.exc import IntegrityError
 from app.knowledgebase import KBManager
 
-from app.telegram import Command
+from app.telegram import Command, State, CallbackQueries
 
 
 # Create a fake bot that stores the messages sent to the user in a variable
 # to allow us to test the messages sent to the user
 # telepot uses self.bot.sender.sendMessage(msg) to send messages to user
-def test_send_message(self, msg):
-    #self.messages.append(msg)
-    return
-
 
 # Compare 2 lists of messages and make sure they are the same
 def compare_two_lists_sequentially(self, incoming_messages, expected_messages):
@@ -27,27 +24,206 @@ def compare_two_lists_sequentially(self, incoming_messages, expected_messages):
     return are_identical_messages
 
 
+# These fake bots support spoofing of bot.sender.sendMessage().
+# This allows testing of the exact messages sent to the User.
+# (Should have a better way)
 class FakeBot:
+    def __init__(self, telegram_id, state):
+        self.sender = SecondFakeBot()
+        self.telegram_id = telegram_id
+        self.state = state
+        # hack to support bot.msg_idf usage
+        self.msg_idf = 0
+
+    def get_messages(self):
+        return self.sender.messages
+
+
+class SecondFakeBot:
     def __init__(self):
         self.messages = []
-        self.sender = object
-        self.bot.sender = object
-        #self.bot.sender.sendMessage = testSendMessage(self)
-        assert False
 
-'''
+    # reply_markup to prevent error when parameter reply_markup is passed in
+    def sendMessage(self, msg, reply_markup=None):
+        self.messages.append(msg)
+
+
+class FakeDelegatorBot:
+    def __init__(self):
+        self.messages = []
+        self.send_message_list = []
+        self.answer_callback_query_list = []
+        self.edit_message_reply_list = []
+
+    def sendMessage(self, telegram_id, question, reply_markup=None):
+        msg = [telegram_id, question, reply_markup]
+        self.messages.append(msg)
+        self.send_message_list.append(msg)
+
+    # not supposed to have markup as argument but put here so that it is easier to parse in the tests.
+    # this is because of map(lambda msg: msg[:-1]) which seeks to remove the markup of each message
+    def answerCallbackQuery(self, query_id, msg, markup=None):
+        msg = [query_id, msg, markup]
+        self.messages.append(msg)
+        self.answer_callback_query_list.append(msg)
+
+    def editMessageReplyMarkup(self, msg_id, markup=None):
+        msg = [msg_id, markup]
+        self.messages.append(msg)
+        self.edit_message_reply_list.append(msg)
+
+    def get_messages(self):
+        return self.messages
+
+
 class TelegramTests(BaseTestCase):
-    def test_process_command(self):
-        # Tests that users commands are sent properly
-        fakeBot = FakeBot()
-        #fakeBot.bot.sender.sendMessage("hello")
-        #assert fakeBot.messages[0] == "hello"
-        assert False
-'''
+    # Testing the Fake bots
+    def test_fakebot_send_message(self):
+        '''
+        Tests that users commands are sent properly
+        '''
+        bot = FakeBot(123, State.NORMAL)
+        bot.sender.sendMessage("Hello")
+        bot.sender.sendMessage("world")
+        expected_messages = ["Hello", "world"]
+        assert bot.get_messages() == expected_messages
 
+    def test_fakedelegatorbot_send(self):
+        '''
+        Tests that delegator bot is able to send messages, answer callback queries, and edit message replies
+        '''
+        delegator_bot = FakeDelegatorBot()
+        delegator_bot.sendMessage(1, "How are you?", None)
+        delegator_bot.sendMessage(2, "Wala wala papapya", ["Some random complicated markup stuff", 1])
+        expected_messages1 = [[1, "How are you?", None],
+            [2, "Wala wala papapya", ["Some random complicated markup stuff", 1]]]
 
-class KBManagerTests(BaseTestCase):
+        delegator_bot.answerCallbackQuery(1, "Some message")
+        delegator_bot.answerCallbackQuery(2, "Some more message")
+        expected_messages2 = [[1, "Some message", None],
+            [2, "Some more message", None]]
 
+        delegator_bot.editMessageReplyMarkup(1, ["Some stuff", 1])
+        delegator_bot.editMessageReplyMarkup(2, ["Some more stuff", 2])
+        expected_messages3 = [[1, ["Some stuff", 1]],
+            [2, ["Some more stuff", 2]]]
+
+        assert (delegator_bot.send_message_list == expected_messages1)
+        assert (delegator_bot.answer_callback_query_list == expected_messages2)
+        assert (delegator_bot.edit_message_reply_list == expected_messages3)
+
+    #
+    # Modules class testing
+    #
+    # Testing /me command
+    def test_me_command_with_modules(self):
+        '''
+        /me command should retrieve the modules that a User has subscribed
+        '''
+        bot = FakeBot(123, State.NORMAL)
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        cs1231 = Channel(name='cs1231')
+        u1.channels.append(cs2100)
+        u1.channels.append(cs1231)
+
+        # Call the function in the Telegram module
+        # TODO: Modules.me_command(fakeBot)
+        Command.process_commands(bot, bot, '/me')
+
+        print bot.get_messages()
+        expected_messages = ["Your modules subscribed are CS2100 CS1231 "]
+        assert bot.get_messages() == expected_messages
+
+    def test_me_command_without_modules(self):
+        '''
+        /me command should inform user that he doesn't have any modules
+        '''
+        bot = FakeBot(123, State.NORMAL)
+        u1 = self.create_user(123, 0)
+
+        # Call the function in the Telegram module
+        # Modules.me_command(fakeBot)
+        Command.process_commands(bot, bot, '/me')
+
+        print bot.get_messages()
+        expected_messages = ["You have not subscribed to any mods.\n"
+            "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)"]
+        assert bot.get_messages() == expected_messages
+
+    # Testing /modules command
+    def test_modules_command(self):
+        '''
+        /modules command should retrieve all the available modules
+        '''
+        bot = FakeBot(123, State.NORMAL)
+        u1 = self.create_user(123, 0)
+
+        db.session.add(Channel(name='pap1000'))
+        db.session.add(Channel(name='bro1000'))
+        db.session.add(Channel(name='sis1000'))
+
+        # Call the function in the Telegram module
+        # Modules.me_command(fakeBot)
+        Command.process_commands(bot, bot, '/modules')
+        expected_messages = ["Modules available:  /PAP1000  /BRO1000  /SIS1000  "]
+        assert bot.get_messages() == expected_messages
+
+    #
+    # Questions class testing
+    #
+    def test_user_asking_question(self):
+        '''
+        Test one full cycle of the question asking process with 1 asker and 2 answerers. 1 extra.
+        1) Asker asks question
+        2) Question gets sent to the 2 answerers
+        Check if the bots & delegator_bots sent the correct messages
+        '''
+        # Initialize the Users and a bot and delegator_bot for the asker
+        bot = FakeBot(1, State.NORMAL)
+        delegator_bot = FakeDelegatorBot()
+        u1 = self.create_user(1, 0)
+        u2 = self.create_user(2, 0)
+        u3 = self.create_user(3, 0)
+        u4 = self.create_user(4, 0)
+
+        # Create a channel that ALL but ONE (u4) will join (to test if the question gets sent wrongly to u4)
+        db.session.add(Channel(name='pap1000'))
+        AccountManager.add_channel(u1.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u2.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u3.telegram_user_id, 'pap1000')
+
+        # User1 types /ask and is now in State.ASKING_QUESTIONS
+        Command.process_commands(bot, delegator_bot, '/ask')
+        first_msg = bot.get_messages()
+        expected_message1 = ["Tell us what question you have :). After which, you can choose a module to send the question to!"]
+        assert first_msg == expected_message1
+
+        # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
+        # We have to ask him what module he would like to send it to
+        Command.process_commands(bot, delegator_bot, 'Question by User 1')
+        second_msg = bot.get_messages()
+        expected_message2 = ["Which module would you like to send the question to?"]
+        assert second_msg[1:] == expected_message2
+
+        # User1 now types in the /<module code> of the module that he wants to send it to
+        Command.process_commands(bot, delegator_bot, '/pap1000')
+        third_msg = bot.get_messages()
+        expected_message3 = ["Your question has been sent to the people subscribed to PAP1000. The answers will be sent back to you in 15 mins!"]
+
+        print "------------ bot -------------"
+        print third_msg
+        print "------- delegator bot --------"
+        # AskingQuestions use delegator_bot to send messages to everyone
+        delegator_bot_messages = delegator_bot.get_messages()
+        # Remove the keyboard markup of each of the message
+        delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot_messages)
+        print delegator_bot_messages_without_markup
+        expected_delegatorbot_message = [[2, 'Question by User 1'],
+            [3, 'Question by User 1']]
+
+        assert ((third_msg[2:] == expected_message3) and
+            (delegator_bot_messages_without_markup == expected_delegatorbot_message))
     def test_get_correct_web_link(self):
         u1 = self.create_user(123, 0)
         cs2100 = Channel(name='cs2100')
@@ -62,11 +238,76 @@ class KBManagerTests(BaseTestCase):
         print "web link: " + str(web_link)
         assert KBManager.get_web_link_for_question(question_id) == "/knowledgebase/" + str(question_id)
 
+    def test_user_answering_question(self):
+        '''
+        (Continued from test_user_asking_question)
+        Test a few Users answering a question that has been asked. (1 asker, 2 answers, 1 extra).
+        After a User asked a question:
+        1) 2 Users reply to the question
+        Check if the bots & delegator_bots sent the correct messages
+        '''
+
+        # (Initialization will be similar to test_user_asking_question)
+        # Initialize the Users and a bot and delegator_bot for the asker
+        bot = FakeBot(1, State.NORMAL)
+        delegator_bot = FakeDelegatorBot()
+        u1 = self.create_user(1, 0)
+        u2 = self.create_user(2, 0)
+        u3 = self.create_user(3, 0)
+        u4 = self.create_user(4, 0)
+        # Create a channel that ALL but ONE (u4) will join (to test if the question gets sent wrongly to u4)
+        db.session.add(Channel(name='pap1000'))
+        AccountManager.add_channel(u1.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u2.telegram_user_id, 'pap1000')
+        AccountManager.add_channel(u3.telegram_user_id, 'pap1000')
+
+        # User1 types /ask and is now in State.ASKING_QUESTIONS
+        Command.process_commands(bot, delegator_bot, '/ask')
+        # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
+        # We have to ask him what module he would like to send it to
+        Command.process_commands(bot, delegator_bot, 'Question by User 1')
+        # User1 now types in the /<module code> of the module that he wants to send it to
+        Command.process_commands(bot, delegator_bot, '/pap1000')
+
+        print "----"
+        delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
+        print delegator_bot_messages_without_markup
+        print "----"
+
+        # User2 & User3 answers the question by clicking on the "Answer Question" button.
+        # This triggers a callback query which is handled by the CallbackQueries class.
+        # Simulate User2 answering the question
+        # Current bot has telegram_id of 1, change to 2 and send a message to simulate 2 sending a message
+        bot.telegram_id = 2
+        bot.answer_to_send = 'Question by User 1'
+        # The below simulates a click on the button.
+        # (Have to do this because we can't import AnsweringQuestions class)
+        CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None_None", 2)
+        Command.process_commands(bot, delegator_bot, 'Answer by User 2')
+        # Simulate User2 clicking on the "Yes" button to confirm his answer
+        CallbackQueries.on_answer(bot, delegator_bot, "ConfirmAnswer_1_1_yes", 4)
+
+        print get_answer_by_id(1)
+
+        print "-----"
+        print bot.get_messages()[3:]
+        delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
+        print delegator_bot_messages_without_markup[2:]
+
+        # CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None", 3)
+
+        assert False
+
+    #
+    # Voting class testing
+    #
+
+
+class KBManagerTests(BaseTestCase):
     def test_can_answer_qn_because_have_not_answered(self):
         '''
         Should be able to answer because we haven't answered before
         '''
-
         u1 = self.create_user(123, 0)
         cs2100 = Channel(name='cs2100')
         u1.channels.append(cs2100)
@@ -180,12 +421,17 @@ class KBManagerTests(BaseTestCase):
         db.session.commit()
 
         answers = ["42", "36", "29", "55"]
+        answer_ids = []
 
         question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
 
         # add all the answers
         for i in answers:
-            KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i)
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u2.telegram_user_id, i))
+
+        # confirmation of the answers
+        for answer_id in answer_ids:
+            KBManager.confirm_answer(answer_id)
 
         voters = KBManager.get_voters_for_qn_answers(question_id)
 
@@ -196,7 +442,8 @@ class KBManagerTests(BaseTestCase):
 
     def test_get_answers_for_question(self):
         '''
-        Tests that we get the correct list of answers for a question
+        Tests that we get the correct list of answers for a question.
+        All answers have been confirmed.
         '''
         u1 = self.create_user(123, 0)
         u1.channels.append(Channel(name='cs2100'))
@@ -206,18 +453,58 @@ class KBManagerTests(BaseTestCase):
         db.session.commit()
 
         answers = ["42", "36", "29", "55"]
+        answer_ids = []
 
         question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
 
         # add all the answers
         for i in answers:
-            KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i)
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i))
+
+        # confirmation of all the answers
+        for answer_id in answer_ids:
+            KBManager.confirm_answer(answer_id)
 
         # gets all the answer texts
         found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+        print found_answers
 
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
+        assert False
+
+    def test_get_answers_for_question_with_unconfirmed_answers(self):
+        '''
+        Tests that we get the correct list of answers for a question.
+        2/4 answer have been confirmed.
+        '''
+        u1 = self.create_user(123, 0)
+        u1.channels.append(Channel(name='cs2100'))
+        u2 = self.create_user(124, 0)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        answers = ["42", "36", "29", "55"]
+        answer_ids = []
+
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+
+        # add all the answers
+        for i in answers:
+            answer_ids.append(KBManager.add_answer_to_question(question_id, u1.telegram_user_id, i))
+
+        # confirmation of the first 2 answers
+        for answer_id in answer_ids:
+            if (answer_id == 1 or answer_id == 2):
+                KBManager.confirm_answer(answer_id)
+
+        # gets all the answer texts
+        found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+        expected_answers = ["42", "36"]
+
+        # check that their unordered versions are the same
+        assert set(expected_answers) == set(found_answers)
 
     def test_add_valid_vote_to_valid_answer(self):
         '''
