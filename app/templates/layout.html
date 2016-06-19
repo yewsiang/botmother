@@ -72,20 +72,21 @@
                 <br>
             {% endblock %}
         </div>
-        <!-- Message flashing -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                    {% for category, message in messages %}
-                        <li class="ui {{ category }} message flash">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+
         <div id="body" class="body">
             <div class="pusher">
             <div class="ui container">
                 <div class="full height">
+                        <!-- Message flashing -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="ui list">
+                                {% for category, message in messages %}
+                                    <li class="ui {{ category }} message flash">{{ message }}</li>
+                                {% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endwith %}
                     {% block content %}{% endblock %}
                 </div>
             </div>

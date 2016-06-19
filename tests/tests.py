@@ -471,7 +471,6 @@ class KBManagerTests(BaseTestCase):
 
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
-        assert False
 
     def test_get_answers_for_question_with_unconfirmed_answers(self):
         '''

@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+
+{% block content %}
+    <div class="ui middle aligned center aligned grid">
+      <div class="column custom-column">
+          <h2 class="ui custom-image header">
+            <div class="content">
+              Welcome to the Knowledgebase Family!
+            </div>
+          </h2>
+          <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form" class="ui large form">
+          <div class="ui stacked secondary  segment">
+          {{ register_user_form.hidden_tag() }}
+          {{ render_field_with_errors(register_user_form.email) }}
+          {{ render_field_with_errors(register_user_form.password) }}
+          {% if register_user_form.password_confirm %}
+            {{ render_field_with_errors(register_user_form.password_confirm) }}
+          {% endif %}
+          {{ render_field(register_user_form.submit, class='ui button large fluid green') }}
+          </div>
+          </form>
+{% endblock %}

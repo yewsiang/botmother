@@ -11,6 +11,10 @@ from pprint import pprint
 # Jinja2 for pluralize
 from jinja2_pluralize import pluralize_dj
 
+# Auth
+from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
+
+
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -26,12 +30,13 @@ db = SQLAlchemy(app)
 db.init_app(app)
 # app.register_blueprint(accounts)
 
-
+# AUTH
 # Start Telegram bot loop
 TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
 
 
 @app.route("/")
+@login_required
 def homepage():
     return render_template('home.html')
 
@@ -43,7 +48,7 @@ def not_found(error):
 
 
 # Before we create the database tables - import all models
-from accounts import User, TelegramAccountManager
+from accounts import User, TelegramAccountManager, Role
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 
@@ -71,6 +76,9 @@ KBManager.add_answer_to_question(question_id, 125, "43!")
 
 db.session.commit()
 
+# SECURITY/AUTH
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
 
 # Import a module / component using its blueprint handler variable
 from app.knowledgebase.controllers import mod_knowledgebase
@@ -80,10 +88,8 @@ app.register_blueprint(mod_knowledgebase)
 # app.register_blueprint(xyz_module)
 # ..
 
-# Does pluralization initialization and checking
+# Does pluralization of words based on attached number
 app.jinja_env.filters['pluralize'] = pluralize_dj
-
-from tasks import execute_callback_after_time
 
 # x = User(2, 3)
 # print x

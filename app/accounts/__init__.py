@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Role
 from app.knowledgebase import Channel
 from app import db
 
