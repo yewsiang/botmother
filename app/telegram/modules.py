@@ -23,7 +23,6 @@ class Modules:
             list_of_subscribed_channels = ""
             for channel in bot.subscribed_channels:
                 list_of_subscribed_channels += str(channel).upper() + " "
-
             bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
     # /modules - When User types /module to retrieve all modules available for subscription
@@ -33,7 +32,7 @@ class Modules:
         list_of_all_modules = KBManager.retrieve_all_modules()
         string_to_send = "Modules available:  "
         for module in list_of_all_modules:
-            string_to_send += "/" + str(module).upper() + "  "
+            string_to_send += ("/" + str(module).upper() + "  ")
         # Send the user a list of modules with "/" appended - easier to subscribe
         bot.sender.sendMessage(string_to_send)
 
@@ -86,6 +85,12 @@ class Modules:
             bot.state = State.DELETING_CHANNEL
             bot.sender.sendMessage("What module would you like to delete?")
 
+            # Send user's telegram id and retrieve a list of modules
+            list_of_subscribed_channels = "Your modules subscribed are:\n"
+            for channel in bot.subscribed_channels:
+                list_of_subscribed_channels += ("/" + str(channel).upper() + " ")
+            bot.sender.sendMessage(list_of_subscribed_channels)
+
     # State.DELETING - When User wants to delete a channel.
     # The User has already typed /delete, and is now typing /<module code> to delete <module code>
     @classmethod
@@ -95,6 +100,10 @@ class Modules:
         deletedChannel = AccountManager.delete_channel(bot.telegram_id, module_code)
         if (deletedChannel):
             bot.state = State.NORMAL
-            bot.sender.sendMessage("You have deleted " + module_code + " from your subscribed modules :(")
-        else:
+            bot.sender.sendMessage("You have deleted " + module_code.upper() + " from your subscribed modules :(")
+        elif command[0] == '/':
             bot.sender.sendMessage("You are not even subscribed to " + module_code)
+        else:
+            bot.sender.sendMessage("You can't do that\n"
+             "/help for help\n"
+             "/done to go back")

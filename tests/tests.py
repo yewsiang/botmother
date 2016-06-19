@@ -63,7 +63,7 @@ class FakeDelegatorBot:
     # not supposed to have markup as argument but put here so that it is easier to parse in the tests.
     # this is because of map(lambda msg: msg[:-1]) which seeks to remove the markup of each message
     def answerCallbackQuery(self, query_id, msg, markup=None):
-        msg = [query_id, msg]
+        msg = [query_id, msg, markup]
         self.messages.append(msg)
         self.answer_callback_query_list.append(msg)
 
@@ -100,17 +100,17 @@ class TelegramTests(BaseTestCase):
 
         delegator_bot.answerCallbackQuery(1, "Some message")
         delegator_bot.answerCallbackQuery(2, "Some more message")
-        expected_messages2 = [[1, "Some message"],
-            [2, "Some more message"]]
+        expected_messages2 = [[1, "Some message", None],
+            [2, "Some more message", None]]
 
         delegator_bot.editMessageReplyMarkup(1, ["Some stuff", 1])
         delegator_bot.editMessageReplyMarkup(2, ["Some more stuff", 2])
         expected_messages3 = [[1, ["Some stuff", 1]],
             [2, ["Some more stuff", 2]]]
 
-        assert ((delegator_bot.send_message_list == expected_messages1) and
-            (delegator_bot.answer_callback_query_list == expected_messages2) and
-            (delegator_bot.edit_message_reply_list == expected_messages3)) is True
+        assert (delegator_bot.send_message_list == expected_messages1)
+        assert (delegator_bot.answer_callback_query_list == expected_messages2)
+        assert (delegator_bot.edit_message_reply_list == expected_messages3)
 
     #
     # Modules class testing
@@ -201,7 +201,7 @@ class TelegramTests(BaseTestCase):
 
         # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         # We have to ask him what module he would like to send it to
-        Command.process_commands(bot, delegator_bot, 'This is the question that Im sending')
+        Command.process_commands(bot, delegator_bot, 'Question by User 1')
         second_msg = bot.get_messages()
         expected_message2 = ["Which module would you like to send the question to?"]
         assert second_msg[1:] == expected_message2
@@ -211,7 +211,7 @@ class TelegramTests(BaseTestCase):
         third_msg = bot.get_messages()
         expected_message3 = ["Your question has been sent to the people subscribed to PAP1000. The answers will be sent back to you in 15 mins!"]
 
-        print "------- bot --------"
+        print "------------ bot -------------"
         print third_msg
         print "------- delegator bot --------"
         # AskingQuestions use delegator_bot to send messages to everyone
@@ -219,8 +219,8 @@ class TelegramTests(BaseTestCase):
         # Remove the keyboard markup of each of the message
         delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot_messages)
         print delegator_bot_messages_without_markup
-        expected_delegatorbot_message = [[2, 'This is the question that Im sending'],
-            [3, 'This is the question that Im sending']]
+        expected_delegatorbot_message = [[2, 'Question by User 1'],
+            [3, 'Question by User 1']]
 
         assert ((third_msg[2:] == expected_message3) and
             (delegator_bot_messages_without_markup == expected_delegatorbot_message))
@@ -252,28 +252,34 @@ class TelegramTests(BaseTestCase):
         Command.process_commands(bot, delegator_bot, '/ask')
         # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         # We have to ask him what module he would like to send it to
-        Command.process_commands(bot, delegator_bot, 'This is the question that Im sending')
+        Command.process_commands(bot, delegator_bot, 'Question by User 1')
         # User1 now types in the /<module code> of the module that he wants to send it to
         Command.process_commands(bot, delegator_bot, '/pap1000')
 
+        print "----"
+        delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
+        print delegator_bot_messages_without_markup
+        print "----"
+
         # User2 & User3 answers the question by clicking on the "Answer Question" button.
         # This triggers a callback query which is handled by the CallbackQueries class.
-        # The below simulates a click on the button.
-        # (Have to do this because we can't import AnsweringQuestions class)
-        CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None", 2)
         # Simulate User2 answering the question
         # Current bot has telegram_id of 1, change to 2 and send a message to simulate 2 sending a message
         bot.telegram_id = 2
-        Command.process_commands(bot, delegator_bot, 'This is my answer!')
+        bot.answer_to_send = 'Question by User 1'
+        # The below simulates a click on the button.
+        # (Have to do this because we can't import AnsweringQuestions class)
+        CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None_None", 2)
+        Command.process_commands(bot, delegator_bot, 'Answer by User 2')
         # Simulate User2 clicking on the "Yes" button to confirm his answer
-        CallbackQueries.on_answer(bot, delegator_bot, "ConfirmAnswer_1_yes", 4)
+        CallbackQueries.on_answer(bot, delegator_bot, "ConfirmAnswer_1_1_yes", 4)
 
         print get_answer_by_id(1)
 
         print "-----"
-        print bot.get_messages()
+        print bot.get_messages()[3:]
         delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
-        print delegator_bot_messages_without_markup
+        print delegator_bot_messages_without_markup[2:]
 
         # CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None", 3)
 
@@ -448,9 +454,11 @@ class KBManagerTests(BaseTestCase):
 
         # gets all the answer texts
         found_answers = map(lambda x: x.text, KBManager.get_answers_for_qn(question_id))
+        print found_answers
 
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
+        assert False
 
     def test_get_answers_for_question_with_unconfirmed_answers(self):
         '''

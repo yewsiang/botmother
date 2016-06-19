@@ -9,7 +9,7 @@ from app.helpers import get_user_by_telegram_id, get_answer_by_id
 '''
 Constants
 '''
-max_questions_per_day = 20
+max_questions_per_day = 2000000000000000000
 
 
 class KBManager(object):
@@ -198,11 +198,16 @@ class KBManager(object):
         '''
         Gets the answers so far for a particular question
         '''
+        # The answers returned should preserve the order by which they came in.
+        # This is because the Users will vote according to the order that was returned.
         question = db.session.query(Question).get(question_id)
+        print " ----- QUESTION -----"
+        print question
         if question is not None:
+            sorted_answers = question.answers.order_by(Answer.id)
             print "Question: " + str(question)
-            print "Answers: " + str(question.answers)
-            confirmed_answers = filter(lambda answer: answer.confirmed, question.answers)
+            print "Answers: " + str(sorted_answers)
+            confirmed_answers = filter(lambda answer: answer.confirmed, sorted_answers)
             return confirmed_answers
         else:
             raise ValueError('Question does not exist!')

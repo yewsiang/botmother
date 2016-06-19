@@ -1,5 +1,5 @@
 from app.accounts import AccountManager
-import pprint
+from pprint import pprint
 
 
 # To track the state of the specific user
@@ -31,8 +31,9 @@ class Command:
     The initial commands (/help, /done, /me, /modules) must be supported REGARDLESS of STATE
     '''
     @classmethod
-    def process_commands(cls, bot, delegator_bot, command):
+    def process_commands(cls, bot, delegator_bot, msg, msg_idf=None):
         print "(1) PROCESS COMMANDS"
+        command = msg['text'].strip().lower()
         bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
         print bot.subscribed_channels
 
@@ -41,7 +42,11 @@ class Command:
             print "bot.State = " + str(bot.state)
         # --------------  REMOVE LATER --------------
 
-        if command == '/help':
+        if command == '/start' or command == '/restart':
+            bot.sender.sendMessage("Welcome to NUS Question Bot! Ask questions and answer questions on the go!\n")
+            Help.help_according_to_state(bot)
+
+        elif command == '/help':
             # /help - When User types /help in any State
             Help.help_according_to_state(bot)
 
@@ -69,7 +74,7 @@ class Command:
             # AskingQuestions
             elif (bot.state == State.ASKING_QUESTIONS):
                 # State.ASKING_QUESTIONS - When User types in his question and it is sent to this function
-                AskingQuestions.process_asking_questions(bot, delegator_bot, command)
+                AskingQuestions.process_asking_questions(bot, delegator_bot, msg)
             elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
                 # State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS - When user finished typing his question and is
                 # selecting a channel to post the question
@@ -78,7 +83,7 @@ class Command:
             # AnswerQuestions
             elif (bot.state == State.ANSWERING_QUESTIONS):
                 # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
-                AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, command)
+                AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, msg)
 
             # Voting
             elif (bot.state == State.VOTING):
