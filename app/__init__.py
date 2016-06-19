@@ -63,13 +63,12 @@ def make_celery(app):
 
 
 celery = make_celery(app)
-print "Celery Initialized"
+print "Celery initialized"
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
-t
 
 # Build the database:
 # This will create the database file using SQLAlchemy
