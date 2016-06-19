@@ -9,7 +9,4 @@ def execute_callback_after_time(delay_seconds, callback, kwargs={}):
     '''
     t = Timer(delay_seconds, callback, kwargs=kwargs)
     t.start()
-    print "started"
     return t
-
-

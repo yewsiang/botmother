@@ -85,12 +85,6 @@ app.jinja_env.filters['pluralize'] = pluralize_dj
 
 from tasks import execute_callback_after_time
 
-def callback():
-    print "hello from delay!"
-
-#print "Starting callback"
-#execute_callback_after_time(5, callback)
-
 # x = User(2, 3)
 # print x
 # db.session.add(x)
