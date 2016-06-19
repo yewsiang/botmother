@@ -1,13 +1,14 @@
 amqp==1.4.9
 anyjson==0.3.3
+APScheduler==3.2.0
 billiard==3.3.0.23
-celery==3.1.23
 colorama==0.3.7
 Flask==0.10.1
 Flask-SQLAlchemy==2.1
 Flask-Testing==0.4.2
 Flask-WTF==0.12
 funcsigs==1.0.2
+futures==3.0.5
 green==2.4.0
 gunicorn==19.5.0
 inflect==0.2.5
@@ -25,6 +26,7 @@ requests==2.10.0
 six==1.10.0
 SQLAlchemy==1.0.12
 telepot==8.0
+tzlocal==1.2.2
 urllib3==1.15.1
 Werkzeug==0.11.9
 WTForms==2.1

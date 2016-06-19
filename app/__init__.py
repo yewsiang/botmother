@@ -11,9 +11,6 @@ from pprint import pprint
 # Jinja2 for pluralize
 from jinja2_pluralize import pluralize_dj
 
-# Celery job queue
-from celery import Celery
-
 # Define the WSGI application object
 app = Flask(__name__)
 
@@ -44,26 +41,6 @@ def homepage():
 def not_found(error):
     return render_template('404.html'), 404
 
-
-def make_celery(app):
-    celery = Celery(app.import_name, backend=app.config['CELERY_BACKEND'],
-                    broker=app.config['CELERY_BROKER_URL'])
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-
-    celery.Task = ContextTask
-    return celery
-
-
-celery = make_celery(app)
-print "Celery initialized"
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager
@@ -105,6 +82,14 @@ app.register_blueprint(mod_knowledgebase)
 
 # Does pluralization initialization and checking
 app.jinja_env.filters['pluralize'] = pluralize_dj
+
+from tasks import execute_callback_after_time
+
+def callback():
+    print "hello from delay!"
+
+#print "Starting callback"
+#execute_callback_after_time(5, callback)
 
 # x = User(2, 3)
 # print x
