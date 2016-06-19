@@ -1,13 +1,12 @@
 #!/bin/bash
-trap ctrl_c INT
-
-function ctrl_c {
-  kill $REDIS_PID;
-}
   
-# run the redis server and get its pid on background
+# run the redis server in the  background
 redis-server&
-REDIS_PID = $!
+# Get the PID of the server
+redis_pid=$!
+
+echo "Redis PID"
+echo $redis_pid
 
 sleep 2
 gunicorn -c gunicorn.py --reload app:app
