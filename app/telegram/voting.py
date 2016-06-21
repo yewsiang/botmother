@@ -1,4 +1,5 @@
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
+from app.helpers import get_weblink_by_question_id, get_question_by_id
 from app.knowledgebase import KBManager
 import commands
 
@@ -28,12 +29,6 @@ class Voting:
              ], one_time_keyboard=True)
         bot.sender.sendMessage("Choose the answer that you are confident of. Otherwise, choose '0' :)", reply_markup=markup)
 
-        #
-        # TODO: This function needs to have a Time element as well (E.g. execute in 30 mins after Qns was sent)
-        # Need to place function in appropriate place. This is simply for testing.
-        #
-        Voting.send_answers_and_link_to_participants(bot, delegator_bot, question_id)
-
     # State.VOTING - After User clicks on "Vote" button, his state changes to State.VOTING.
     # Subsequent messages will pass through this function
     @classmethod
@@ -61,7 +56,7 @@ class Voting:
                 # Can now assume that he wanted to vote on one of the answers
                 voted_answer = answers[command - 1]
                 successfully_voted = KBManager.add_vote_to_answer(voted_answer.id, bot.telegram_id, 1)
-                print voted_answer.votes
+
                 if successfully_voted:
                     new_markup = InlineKeyboardMarkup(inline_keyboard=[
                              [InlineKeyboardButton(text="Voted!", callback_data="Voted_None_None_None")]
@@ -71,6 +66,7 @@ class Voting:
                     # Reset the state
                     bot.state = State.NORMAL
                     bot.sender.sendMessage("Thanks for participating in the vote :)")
+
                 else:
                     bot.sender.sendMessage("There has been a problem with your vote. Please try again!", reply_markup=markup)
 
@@ -87,20 +83,66 @@ class Voting:
             # process_commands takes in a msg object with 'text' key
             commands.Command.process_commands(bot, delegator_bot, {'text': command})
 
-    # Sending voting results to interested parties after the vote has concluded:
+    # (Delayed Function)
+    # Sending voting results to intere  ed parties after the vote has concluded:
     # 1) Clicked on "Vote" button
     # 2) Clicked on the keyboard with 9 numbers
     # Forum link is also sent along so that interested parties can continue the discussion
     @classmethod
-    def send_answers_and_link_to_participants(cls, bot, delegator_bot, question_id):
+    def send_answers_and_link_to_participants(cls, bot, delegator_bot, question_id, number_of_answers):
+        # number_of_answers is needed because in the 15mins of voting, there may have been new answers that
+        # have been submitted. It shouldn't be included.
+        # After the voting has finalized, we will send the answers, votes and link to those who participated
+        # Get the link to the question
+        forum_link = get_weblink_by_question_id(question_id)
+
+        # Finding the participants to send to
+        question = get_question_by_id(question_id)
+        answerers_user_ids = map(lambda answer: answer.user.telegram_user_id, question.answers)
+        user_ids = answerers_user_ids + [question.user.telegram_user_id]
+
         #
-        # TODO
+        # Use a hash to add unique voter ids into a list
+        hash_to_determine_uniqueness = {}
+        unique_voter_ids = []
+        # Getting the votes for each answer
+        list_of_answer_with_votes = []
+        for idx, answer in enumerate(question.answers):
+            if idx < number_of_answers:
+                vote_value = 0
+                for vote in answer.votes.all():
+                    try:
+                        # If voter_id not in the hash, add it to the list of unique ids
+                        # This is so that we can send messages later
+                        hash_to_determine_uniqueness[vote.user.telegram_user_id]
+                    except KeyError:
+                        hash_to_determine_uniqueness[vote.user.telegram_user_id] = 1
+                        unique_voter_ids.append(vote.user.telegram_user_id)
+
+                    # Add the total value of the votes of each answer
+                    vote_value += vote.amount
+
+                # Append to the list of answers with votes to sort by vote value
+                list_of_answer_with_votes.append([answer.text, vote_value])
+
+        # Sorting the list of answers by vote_values
+        list_of_answer_with_votes.sort(key=lambda ans_tuple: ans_tuple[1], reverse=True)
+
         #
-        # After the voting has finalized, we will send the answers, votes and link to
-        # those who participated
-        #
-        markup = InlineKeyboardMarkup(inline_keyboard=[
-                 [dict(text='Link to Forum', url='https://core.telegram.org/')]
-             ])
-        print "Wala Wala"
-        # bot.sender.sendMessage("The votreply_markup=markup)
+        # Creating the text to send to the Users
+        text_to_send = ("<b>" + question.channel.name.upper() + "</b>\n"
+                "Question: " + question.text + "\n"
+                "Answers:\n")
+        for idx, ans_tuple in enumerate(list_of_answer_with_votes):
+            # Do not add more answers than number_of_answers
+            text_to_send += (str(idx + 1) + ". " + ans_tuple[0] + "\n"
+                "<b>Upvotes</b>: " + str(ans_tuple[1]) + "\n\n")
+        text_to_send += "The voting results and answers are out! Go to the forum to continue the discussion :)"
+
+        # Send to the participants
+        user_ids = user_ids + unique_voter_ids
+        for user_id in user_ids:
+            markup = InlineKeyboardMarkup(inline_keyboard=[
+                     [dict(text='Link to Forum', url=forum_link)]
+                 ])
+            delegator_bot.sendMessage(user_id, text_to_send, reply_markup=markup, parse_mode='HTML')

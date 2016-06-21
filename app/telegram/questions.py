@@ -1,9 +1,11 @@
 import telepot
-from app.helpers import get_question_by_id
-from app.knowledgebase import KBManager, max_questions_per_day
 from .commands import State
-from telepot.namedtuple import ForceReply
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
+from .voting import Voting
+from app.tasks import execute_callback_after_time
+from app.accounts import AccountManager
+from app.knowledgebase import KBManager, max_questions_per_day
+from app.helpers import get_question_by_id, get_weblink_by_question_id
+from telepot.namedtuple import ForceReply, InlineKeyboardMarkup, InlineKeyboardButton
 from pprint import pprint
 
 
@@ -16,8 +18,12 @@ class AskingQuestions:
     @classmethod
     def ask_command(cls, bot):
         print "<< (Ask 1) /ask Command >>"
+
+        # Retrieve the modules that the User has subscribed to
+        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
         # User must have subscribed to modules first
-        if bot.subscribed_channels == []:
+        if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
                 "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
             return
@@ -42,9 +48,12 @@ class AskingQuestions:
         bot.state = State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         bot.sender.sendMessage("Which module would you like to send the question to?")
 
+        # Retrieve the modules that the User has subscribed to
+        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
         # Automatically list out the modules that the User has subscribed to
         list_of_subscribed_channels = "Your modules subscribed are:\n"
-        for channel in bot.subscribed_channels:
+        for channel in subscribed_channels:
             list_of_subscribed_channels += ("/" + str(channel).upper() + " ")
         bot.sender.sendMessage(list_of_subscribed_channels)
 
@@ -60,9 +69,12 @@ class AskingQuestions:
         else:
             module_code = command
 
+        # Retrieve the modules that the User has subscribed to
+        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
         # Check if the user is subscribed to the module he is trying to ask questions
         subscribed_to_channel_already = False
-        for channel in bot.subscribed_channels:
+        for channel in subscribed_channels:
             if str(channel) == module_code:
                 subscribed_to_channel_already = True
 
@@ -102,6 +114,15 @@ class AskingQuestions:
                         callback_data=('AnswerQuestion_' + str(question_id) + '_None_None'))]
                  ])
             delegator_bot.sendMessage(answerer.telegram_user_id, text_to_send, reply_markup=markup, parse_mode='HTML')
+
+        # Timer function
+        # Wait for 15 mins before sending answers to voters
+        kwargs_for_time_function = {
+            'bot': bot,
+            'delegator_bot': delegator_bot,
+            'question_id': question_id
+        }
+        execute_callback_after_time(15 * 1.25, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
 
 
 class AnsweringQuestions:
@@ -171,11 +192,6 @@ class AnsweringQuestions:
             bot.state = State.NORMAL
             delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
 
-            #
-            # TODO: This function needs to have a Time element (E.g. execute in 15 mins)
-            #
-            AnsweringQuestions.send_answers_to_voters(bot, delegator_bot, question_id)
-
         else:
             new_markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Cancelled", callback_data="Cancelled_None_None_None")]
@@ -183,6 +199,7 @@ class AnsweringQuestions:
             bot.state = State.NORMAL
             delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
 
+    # (Delayed Function)
     # Sending answers to voters after there are 9 answers / 15mins is up:
     # 1) Clicked on "Answer Question" and triggered the Force Reply
     # 2) Typed their answers and hit "Send"
@@ -198,32 +215,36 @@ class AnsweringQuestions:
         # Check that there are answers before sending any messages to the voters
         if len(answers) != 0:
             # Sending the Question and Answers to the voters
-            text_to_send = "<b>" + question.channel.name.upper() + "</b>\n"
-            text_to_send += "Question: " + question.text + "\n"
-            text_to_send += "Answers:\n"
-            for id, answer in enumerate(answers):
-                text_to_send += (str(id + 1) + ". " + answer.text + "\n")
+            text_to_send = ("<b>" + question.channel.name.upper() + "</b>\n"
+                    "Question: " + question.text + "\n"
+                    "Answers:\n")
+            for idx, answer in enumerate(answers):
+                text_to_send += (str(idx + 1) + ". " + answer.text + "\n")
 
             # Send a inline keyboard button along. This will be modified when the User has successfully voted.
             markup = InlineKeyboardMarkup(inline_keyboard=[
                      [InlineKeyboardButton(text="Vote", callback_data="Vote_" + str(question_id) + "_None_None")]
                  ])
 
-            print "---- Text_to_send is ----"
-            print text_to_send
-
             # Sending to each of the voter
             for voter in voters:
                 delegator_bot.sendMessage(voter.telegram_user_id, text_to_send, reply_markup=markup, parse_mode='HTML')
-            print "We are sending the answers to the voters!"
+
+            # Timer function
+            # Wait for another 15 mins before sending results to the participants
+            kwargs_for_time_function = {
+                'bot': bot,
+                'delegator_bot': delegator_bot,
+                'question_id': question_id,
+                'number_of_answers': len(answers)
+            }
+            execute_callback_after_time(15 * 1.25, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
 
         else:
             # Create link to forum and send message to the person asking the question to tell him that there are no answers
-            #
-            # TODO: Create the forum post and return the proper link
-            #
+            forum_link = get_weblink_by_question_id(question_id)
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                     [dict(text='Link to Forum', url='https://core.telegram.org/')]
+                     [dict(text='Link to Forum', url=forum_link)]
                  ])
-            delegator_bot.sendMessage(question.user.telegram_user_id, "There were no answers after 15mins."
-                "We have created a forum post for you and hopefully you will get your answers there :)!", reply_markup=markup)
+            delegator_bot.sendMessage(question.user.telegram_user_id, "There were no answers after 15mins,"
+                "we have created a forum post for you and hopefully you will get your answers there :)!", reply_markup=markup)

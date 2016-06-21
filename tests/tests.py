@@ -2,7 +2,7 @@ from test_base import BaseTestCase
 from app.helpers import get_answer_by_id
 from app.accounts import TelegramAccountManager, AccountManager, User
 from app.knowledgebase import Channel, Question
-from app import db
+from app import db, app
 from sqlalchemy.exc import IntegrityError
 from app.knowledgebase import KBManager
 
@@ -224,19 +224,6 @@ class TelegramTests(BaseTestCase):
 
         assert ((third_msg[2:] == expected_message3) and
             (delegator_bot_messages_without_markup == expected_delegatorbot_message))
-    def test_get_correct_web_link(self):
-        u1 = self.create_user(123, 0)
-        cs2100 = Channel(name='cs2100')
-        u1.channels.append(cs2100)
-
-        # answer question AND change the state to non 0 - should
-        # mean that we can't answer
-        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
-        KBManager.change_question_state(question_id, 1)
-
-        web_link = KBManager.get_web_link_for_question(question_id)
-        print "web link: " + str(web_link)
-        assert KBManager.get_web_link_for_question(question_id) == "/knowledgebase/" + str(question_id)
 
     def test_user_answering_question(self):
         '''

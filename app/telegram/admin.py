@@ -1,4 +1,5 @@
 from .commands import State
+from telepot.namedtuple import ReplyKeyboardHide
 
 
 class Help:
@@ -31,16 +32,42 @@ class Help:
             bot.sender.sendMessage("Send a question to those who are subscribed to the particular module\n"
                 "/done - Done with asking questions\n")
         elif (bot.state == State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS):
-            bot.sender.sendMessage("/<module code> - Send the question that you've asked to the people"
-                "subscribed to this particular module\n")
+            bot.sender.sendMessage("/<module code> - Send the question that you've asked to the people "
+                "subscribed to this particular module\n"
+                "/done - Done with asking questions\n")
         elif (bot.state == State.ANSWERING_QUESTIONS):
-            bot.sender.sendMessage("/help for ANSWERING_QUESTIONS\n"
+            bot.sender.sendMessage("Just type your answer to the question :)!\n"
                 "/done - Go back\n")
         elif (bot.state == State.VOTING):
-            bot.sender.sendMessage("/help for VOTING\n"
+            bot.sender.sendMessage("Choose one of the answers that you're most confident of."
+                "Please choose carefully as there are others learning from your votes :)\n"
                 "/done - Go back\n")
         elif (bot.state == State.CHANGE_SETTINGS):
             bot.sender.sendMessage("/help for CHANGE_SETTINGS\n"
                 "/done - Go back\n")
         else:
             print "ERROR: There should not be any other states other than those listed"
+
+
+class Admin:
+    '''
+    This class handles the administrative commands by the User.
+    Such as /done, /start, /restart
+    '''
+    # /start or /restart - When User starts using the bot
+    @classmethod
+    def start_command(cls, bot):
+        bot.sender.sendMessage("Welcome to NUS Question Bot! Ask questions and answer questions on the go!\n")
+        bot.state = State.NORMAL
+        Help.help_according_to_state(bot)
+
+    # /done - When User types /done in any State
+    @classmethod
+    def done_command(cls, bot):
+        bot.state = State.NORMAL
+        bot.sender.sendMessage("Done :)! /help for help!", reply_markup=ReplyKeyboardHide(hide_keyboard=True))
+
+    # User probably typed something invalid
+    @classmethod
+    def invalid_command(cls, bot):
+        bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")

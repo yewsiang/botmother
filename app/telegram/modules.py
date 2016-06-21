@@ -14,14 +14,17 @@ class Modules:
     # /me - When User types /me to find out the modules that they've subscribed to
     @classmethod
     def me_command(cls, bot):
+        # Retrieve the modules that the User has subscribed to
+        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
         # List of modules that have been subscribed by user
-        if bot.subscribed_channels == []:
+        if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
                 "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
         else:
             # Send user's telegram id and retrieve a list of modules
             list_of_subscribed_channels = ""
-            for channel in bot.subscribed_channels:
+            for channel in subscribed_channels:
                 list_of_subscribed_channels += str(channel).upper() + " "
             bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
@@ -56,9 +59,12 @@ class Modules:
         # Check if it is a valid module
         module_exists = module_code in list_of_all_modules
         if (module_exists):
+            # Retrieve the modules that the User has subscribed to
+            subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
             # Check if the User has already subscribed to the channel
             subscribed_to_channel_already = False
-            for channel in bot.subscribed_channels:
+            for channel in subscribed_channels:
                 if str(channel) == module_code:
                     subscribed_to_channel_already = True
 
@@ -76,8 +82,11 @@ class Modules:
     # /delete - When User types /delete
     @classmethod
     def delete_command(cls, bot):
+        # Retrieve the modules that the User has subscribed to
+        subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
+
         # User wants to delete modules off his subscription list
-        if bot.subscribed_channels == []:
+        if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
                 "/<module code> to add a module (E.g /BRO1000 adds the module BRO1000)")
         else:
@@ -87,7 +96,7 @@ class Modules:
 
             # Send user's telegram id and retrieve a list of modules
             list_of_subscribed_channels = "Your modules subscribed are:\n"
-            for channel in bot.subscribed_channels:
+            for channel in subscribed_channels:
                 list_of_subscribed_channels += ("/" + str(channel).upper() + " ")
             bot.sender.sendMessage(list_of_subscribed_channels)
 
@@ -95,7 +104,6 @@ class Modules:
     # The User has already typed /delete, and is now typing /<module code> to delete <module code>
     @classmethod
     def process_deleting_channels(cls, bot, delegator_bot, command):
-        print "(B) PROCESS DELETING CHANNELS"
         module_code = command[1:]
         deletedChannel = AccountManager.delete_channel(bot.telegram_id, module_code)
         if (deletedChannel):

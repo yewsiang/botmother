@@ -1,5 +1,5 @@
 from .models import Question, Answer, Vote, Comment, Channel
-from app import db
+from app import db, app
 from app.accounts import User
 from app.helpers import get_user_by_telegram_id
 from sqlalchemy.sql import func
@@ -157,14 +157,6 @@ class KBManager(object):
             raise ValueError('Channel does not exist, cannot get answerers!')
 
     @staticmethod
-    def get_web_link_for_question(question_id):
-        '''
-        Uses url_for (same as in question_card) to get the web link for discussion
-        on this question
-        '''
-        return url_for('knowledgebase.question', question_id=question_id)
-
-    @staticmethod
     def add_answer_to_question(question_id, answerer_telegram_user_id, answer_text):
         '''
         This method checks for a valid question, answerer and valid answer_text
@@ -235,7 +227,7 @@ class KBManager(object):
     @staticmethod
     def get_voters_and_answers_for_qn(question_id):
         '''
-        Convenience function to get both the voters and answerers for
+        Convenience function to get both the voters and answers for
         a particular question.
         Returned as tuple of (xs of User), (xs of Answer)
         '''

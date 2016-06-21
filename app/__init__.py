@@ -49,9 +49,10 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-db.drop_all()
-db.create_all()
+# db.drop_all()
+# db.create_all()
 
+'''
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
 TelegramAccountManager.create_account_if_does_not_exist(124, "Yew Siang")
@@ -68,9 +69,8 @@ question_id = KBManager.ask_question(123, 'mom1000', "What is life?")
 KBManager.add_answer_to_question(question_id, 124, "42")
 KBManager.add_answer_to_question(question_id, 125, "43!")
 
-
 db.session.commit()
-
+'''
 
 # Import a module / component using its blueprint handler variable
 from app.knowledgebase.controllers import mod_knowledgebase
@@ -90,7 +90,6 @@ from tasks import execute_callback_after_time
 # db.session.add(x)
 # db.session.commit()
 
-print "==***+**+***+*++===  WARNING - DISABLED BOT FOR TESTING **+**+*+++==="
-#from telegram import bot
-#bot.message_loop()
+from telegram import bot
+bot.message_loop()
 print " "

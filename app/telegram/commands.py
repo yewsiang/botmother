@@ -1,7 +1,3 @@
-from app.accounts import AccountManager
-from pprint import pprint
-
-
 # To track the state of the specific user
 class State:
     NORMAL = 0
@@ -21,7 +17,8 @@ from .modules import Modules
 from .questions import AskingQuestions, AnsweringQuestions
 from .voting import Voting
 from .settings import Settings
-from .help import Help
+from .admin import Help, Admin
+from pprint import pprint
 
 
 class Command:
@@ -32,19 +29,14 @@ class Command:
     '''
     @classmethod
     def process_commands(cls, bot, delegator_bot, msg, msg_idf=None):
-        print "(1) PROCESS COMMANDS"
         command = msg['text'].strip().lower()
-        bot.subscribed_channels = AccountManager.get_subscribed_channels(bot.telegram_id)
-        print bot.subscribed_channels
-
         # ------------ DEBUGGING PURPOSES -----------
         if command == '/':
             print "bot.State = " + str(bot.state)
         # --------------  REMOVE LATER --------------
 
         if command == '/start' or command == '/restart':
-            bot.sender.sendMessage("Welcome to NUS Question Bot! Ask questions and answer questions on the go!\n")
-            Help.help_according_to_state(bot)
+            Admin.start_command(bot)
 
         elif command == '/help':
             # /help - When User types /help in any State
@@ -60,8 +52,7 @@ class Command:
 
         elif command == '/done':
             # Go back to NORMAL state from any state
-            bot.state = State.NORMAL
-            bot.sender.sendMessage("Done :)! /help for help!")
+            Admin.done_command(bot)
 
         else:
             # Once the general commands are catered, the command will be sent to an appropriate
@@ -100,9 +91,6 @@ class Command:
     # State.NORMAL - Function that will be called when the usual queries are called
     @classmethod
     def process_normal_commands(cls, bot, delegator_bot, command):
-        print "(A) PROCESS NORMAL COMMANDS"
-        print bot.telegram_id
-
         if command == '/ask':
             # /ask - User initiates asking questions by typing "/ask"
             AskingQuestions.ask_command(bot)
@@ -125,6 +113,5 @@ class Command:
             Modules.module_code_command(bot, command)
 
         else:
-            # User probably typed something invalid
-            bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")
+            Admin.invalid_command(bot)
         return
