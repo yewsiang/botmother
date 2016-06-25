@@ -43,7 +43,8 @@ class Help:
                 "Please choose carefully as there are others learning from your votes :)\n"
                 "/done - Go back\n")
         elif (bot.state == State.CHANGE_SETTINGS):
-            bot.sender.sendMessage("/help for CHANGE_SETTINGS\n"
+            bot.sender.sendMessage("Change your settings over here\n"
+                "/messagesperday - Change number of messages we send to you per day\n"
                 "/done - Go back\n")
         else:
             print "ERROR: There should not be any other states other than those listed"
