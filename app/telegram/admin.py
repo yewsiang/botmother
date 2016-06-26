@@ -1,4 +1,5 @@
 from .commands import State
+from .points import Points
 from telepot.namedtuple import ReplyKeyboardHide
 
 
@@ -10,18 +11,22 @@ class Help:
     # /help - When User types /help in any State
     @classmethod
     def help_according_to_state(cls, bot):
+        # Address User by his title
+        #
+        # title, points_to_next_level = Points.get_title(bot)
+        #
+
         # DEPENDING on the STATE of the User, provide different help commands
-        #
-        # TODO
-        #
         if bot.state == State.NORMAL:
             bot.sender.sendMessage("<b>NUS Question Bot</b>\n"
+                # "Dear <b>" + title + "</b>,\n"
                 "/ask - <b>Ask questions</b> about specific modules!\n"  # Changes state
                 "/me - Modules that you have subscribed to\n"
                 "/modules -Modules to join!\n"
-                "/&lt;module code&gt; - Add a module\n(E.g /MOM1000)\n"
+                "/&lt;module code&gt; - Add a module\n(E.g /CS1010)\n"
                 "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
-                "/settings - Change your settings (E.g notification rate)\n"  # Changes state
+                "/points - Get your points & badges\n"
+                # "/settings - Change your settings (E.g notification rate)\n"  # Changes state
                 "/help - Help :)\n\n"
                 "Also, look out for questions by your peers after you've subscribed to a module!",
                 parse_mode='HTML')

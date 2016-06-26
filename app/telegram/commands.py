@@ -16,6 +16,7 @@ class State:
 from .modules import Modules
 from .questions import AskingQuestions, AnsweringQuestions
 from .voting import Voting
+from .points import Points
 from .settings import Settings
 from .admin import Help, Admin
 from pprint import pprint
@@ -25,7 +26,7 @@ class Command:
     '''
     All commands are first passed into this function
     A second function will be called depending on the State at which the user is in
-    The initial commands (/help, /done, /me, /modules) must be supported REGARDLESS of STATE
+    The initial commands (/help, /me, /modules, /points, /done) must be supported REGARDLESS of STATE
     '''
     @classmethod
     def process_commands(cls, bot, delegator_bot, msg, msg_idf=None):
@@ -49,6 +50,10 @@ class Command:
         elif command == '/modules':
             # /module - When User types /module to retrieve all modules available for subscription
             Modules.modules_command(bot)
+
+        elif command == '/points':
+            # /points - When User types /points to retrieve his points & badges
+            Points.points_command(bot)
 
         elif command == '/done':
             # Go back to NORMAL state from any state
@@ -103,10 +108,11 @@ class Command:
         elif command == '/delete':
             # /delete - When User types /delete
             Modules.delete_command(bot)
-
-        elif command == '/settings':
-            Settings.settings_command(bot)
-
+            '''
+            # Temporarily not supported
+            elif command == '/settings':
+                Settings.settings_command(bot)
+            '''
         elif command[:1] == '/':
             # /<module code> - When User types /<module code> in the expectation that it will add <module code>
             # into their list of subscribed modules

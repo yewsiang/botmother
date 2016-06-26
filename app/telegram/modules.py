@@ -20,7 +20,7 @@ class Modules:
         # List of modules that have been subscribed by user
         if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
-                "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
+                "/<module code> to add a module (E.g /CS1010 adds the module CS1010)")
         else:
             # Send user's telegram id and retrieve a list of modules
             list_of_subscribed_channels = ""
@@ -71,6 +71,9 @@ class Modules:
             if subscribed_to_channel_already:
                 bot.sender.sendMessage("You've subscribed to the module already :)")
             else:
+                #
+                # TODO: Tell the user the number of users and activitiy of the module
+                #
                 add_channel_succeed = AccountManager.add_channel(bot.telegram_id, module_code)
                 if add_channel_succeed:
                     bot.sender.sendMessage("Module added to your subscription")
@@ -88,13 +91,14 @@ class Modules:
         # User wants to delete modules off his subscription list
         if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
-                "/<module code> to add a module (E.g /BRO1000 adds the module BRO1000)")
+                "/<module code> to add a module (E.g /CS1010 adds the module CS1010)")
         else:
-            # When User types /BRO1000, we will delete BRO1000 from HIS acc
+            # When User types /CS1010, we will delete CS1010 from HIS acc
             bot.state = State.DELETING_CHANNEL
             bot.sender.sendMessage("What module would you like to delete?")
 
             # Send user's telegram id and retrieve a list of modules
+            list_of_subscribed_channels = "Your modules subscribed are:\n"
             list_of_subscribed_channels = "Your modules subscribed are:\n"
             for channel in subscribed_channels:
                 list_of_subscribed_channels += ("/" + str(channel).upper() + " ")

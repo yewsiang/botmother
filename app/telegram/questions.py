@@ -25,7 +25,7 @@ class AskingQuestions:
         # User must have subscribed to modules first
         if subscribed_channels == []:
             bot.sender.sendMessage("You have not subscribed to any mods.\n"
-                "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)")
+                "/<module code> to add a module (E.g /CS1010 adds the module CS1010)")
             return
 
         # User wants to ask questions
@@ -63,7 +63,7 @@ class AskingQuestions:
     def process_selecting_channel_after_asking_questions(cls, bot, delegator_bot, command):
         print "<< (Ask 3) /<module code> has been keyed in >>"
 
-        # User may type "/MOM1000" or "MOM1000", we will support both
+        # User may type "/CS1010" or "CS1010", we will support both
         if command[:1] == "/":
             module_code = command[1:]
         else:
@@ -122,7 +122,7 @@ class AskingQuestions:
             'delegator_bot': delegator_bot,
             'question_id': question_id
         }
-        execute_callback_after_time(15 * 1.25, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
+        execute_callback_after_time(15 * 1.5, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
 
 
 class AnsweringQuestions:
@@ -238,7 +238,7 @@ class AnsweringQuestions:
                 'question_id': question_id,
                 'number_of_answers': len(answers)
             }
-            execute_callback_after_time(15 * 1.25, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
+            execute_callback_after_time(15 * 1.5, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
 
         else:
             # Create link to forum and send message to the person asking the question to tell him that there are no answers

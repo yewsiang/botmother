@@ -59,13 +59,11 @@ TelegramAccountManager.create_account_if_does_not_exist(124, "Yew Siang")
 TelegramAccountManager.create_account_if_does_not_exist(125, "Herbert")
 
 # Seed channels
-db.session.add(Channel(name='gerk1000'))
-db.session.add(Channel(name='mom1000'))
-db.session.add(Channel(name='pap1000'))
-db.session.add(Channel(name='bro1000'))
-db.session.add(Channel(name='sis1000'))
+db.session.add(Channel(name='CS1010'))
+db.session.add(Channel(name='CS1020'))
+db.session.add(Channel(name='BOBO1000'))
 
-question_id = KBManager.ask_question(123, 'mom1000', "What is life?")
+question_id = KBManager.ask_question(123, 'bobo1000', "What is life?")
 KBManager.add_answer_to_question(question_id, 124, "42")
 KBManager.add_answer_to_question(question_id, 125, "43!")
 

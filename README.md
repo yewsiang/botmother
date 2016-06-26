@@ -1,5 +1,5 @@
 #**BotMother**
-
+[![Build Status](https://travis-ci.org/yewsiang/botmother.svg?branch=master)](https://travis-ci.org/yewsiang/botmother)
 ##**A Chat-Based Forum System**
 
 By Sriram Sami and Tang Yew Siang
