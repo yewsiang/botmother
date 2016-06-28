@@ -28,9 +28,22 @@ class Modules:
                 list_of_subscribed_channels += str(channel).upper() + " "
             bot.sender.sendMessage('Your modules subscribed are ' + list_of_subscribed_channels)
 
-    # /modules - When User types /module to retrieve all modules available for subscription
+    # /modules - When User types /modules command. All faculties will be returned and after selecting a faculty,
+    # the User will be able to retrieve modules available for subscription
     @classmethod
     def modules_command(cls, bot):
+        #
+        # TODO: Show all the different faculties
+        #
+        '''
+        list_of_all_faculties = KBManager.retrieve_all_faculties()
+        string_to_send = "Faculties: "
+        for faculty in list_of_all_faculties:
+            string_to_send += ("/" + str(faculty).upper() + "  ")
+        string_to_send += "\n\nSelect the faculty of the module that you wish to join :)"
+        # Send the user a list of faculties with "/" appended - easier to subscribe
+        bot.sender.sendMessage(string_to_send)
+        '''
         # Retrieve all the modules that are available for subscription
         list_of_all_modules = KBManager.retrieve_all_modules()
         string_to_send = "Modules available:  "
@@ -39,13 +52,49 @@ class Modules:
         # Send the user a list of modules with "/" appended - easier to subscribe
         bot.sender.sendMessage(string_to_send)
 
+    # /<faculty code> - When User types /<faculty code> to find out the modules in the faculty.
+    # Should be done after the User types a /modules command.
+    #
+    # Used in commands.py to determine if it is a faculty_code_command or module_code_command.
+    # Return value required so module_code_command can be executed if it is 'command[:1]' is not a valid faculty code
+    #
+    # Function can be called after /modules, or any time by the User
+    @classmethod
+    def faculty_code_command(cls, bot, command):
+        #
+        # TODO: Show the User the modules in the faculty
+        #
+        '''
+        faculty_code = command[1:]
+        modules_from_faculty = KBManager.retrieve_all_modules_from_faculty(command)
+        # If faculty_code is valid
+        if modules_from_faculty is not None:
+            string_to_send = "Modules available in <b>" + faculty_code + "</b>:"
+            for module in modules_from_faculty:
+                # Send the user a list of modules with "/" appended - easier to subscribe
+                string_to_send += ("/" + str(module).upper() + "  ")
+            # Reset the bot's state if the User came from the /modules command
+            if (bot.state == State.SELECTING_FACULTY):
+                bot.state = State.NORMAL
+            bot.sender.sendMessage(string_to_send, parse_mode='HTML')
+            return True
+        else:
+            # Reply the User if he came from the /modules command
+            if (bot.state == State.SELECTING_FACULTY):
+                bot.sender.sendMessage("I'm sorry but that is not a valid faculty :o\n"
+                    "/done if you do not wish to browse the modules!")
+            return False
+        '''
+        print "hi"
+
     # /add - When User types /add
     # However, we are not supporting /add but /<module code> command. This is just for fun.
     @classmethod
     def add_command(cls, bot):
         # Redirect people to /<module code>
         bot.sender.sendMessage("Woah. How do you know there is a /add when we didn't tell you"
-            " there is? Please use /<module code> to add the module of your choice :)")
+            " there is? Please use /modules to see what modules there are and /<module code>"
+            " to add the module of your choice :)")
 
     # /<module code> - When User types /<module code> in the expectation that it will add <module code>
     # into their list of subscribed modules
@@ -71,12 +120,25 @@ class Modules:
             if subscribed_to_channel_already:
                 bot.sender.sendMessage("You've subscribed to the module already :)")
             else:
-                #
-                # TODO: Tell the user the number of users and activitiy of the module
-                #
                 add_channel_succeed = AccountManager.add_channel(bot.telegram_id, module_code)
                 if add_channel_succeed:
                     bot.sender.sendMessage("Module added to your subscription")
+                    #
+                    # TODO: Tell the user the number of users and activitiy of the module
+                    #
+                    '''
+                    num_users, time_since_last_question = KBManager.get_module_activity(module_code)
+                    string_to_send = "<b>" + module_code + "/<b> has a total of <b>" + num_users +
+                        "</b> number of students in the channel!\n\n"
+                    # There is at least 1 question
+                    if time_since_last_question is not None:
+                        string_to_send += "The last question was asked " + time_since_last_question + " ago!"
+                    else:
+                        # Encourage people to ask questions
+                        string_to_send += "No questions have been asked yet! Be the one to start the ball rolling!"
+
+                    bot.sender.sendMessage(string_to_send, parse_mode='HTML')
+                    '''
                 else:
                     bot.sender.sendMessage("There is a problem adding your module. Please try again later :(")
         else:

@@ -24,7 +24,7 @@ class Help:
                 # "Dear <b>" + title + "</b>,\n"
                 "/ask - <b>Ask questions</b> about specific modules!\n"  # Changes state
                 "/me - Modules that you have subscribed to\n"
-                "/modules -Modules to join!\n"
+                "/modules - Modules to join!\n"
                 "/&lt;module code&gt; - Add a module\n(E.g /CS1010)\n"
                 "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
                 "/points - Get your points & badges\n"
@@ -32,6 +32,10 @@ class Help:
                 "/help - Help :)\n\n"
                 "Also, look out for questions by your peers after you've subscribed to a module!",
                 use_aliases=True), parse_mode='HTML')
+        elif (bot.state == State.SELECTING_FACULTY):
+            bot.sender.sendMessage("/<faculty> - Show the modules within the faculty\n"
+                "/&lt;module code&gt; - Add a module\n(E.g /CS1010)\n"
+                "/done - Done with browsing modules\n")
         elif (bot.state == State.DELETING_CHANNEL):
             bot.sender.sendMessage("/<module code> - Delete a module that you are subscribed to\n"
                 "/done - Done with deleting modules\n")

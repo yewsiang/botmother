@@ -1,14 +1,15 @@
 # To track the state of the specific user
 class State:
     NORMAL = 0
-    DELETING_CHANNEL = 1
 
-    ASKING_QUESTIONS = 2
-    SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS = 3
+    SELECTING_FACULTY = 1
+    DELETING_CHANNEL = 2
 
+    ASKING_QUESTIONS = 3
+    SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS = 4
     ANSWERING_QUESTIONS = 5
-
     VOTING = 6
+
     CHANGE_SETTINGS = 7
 
 
@@ -64,6 +65,8 @@ class Command:
             # function depending on the user's State
             if (bot.state == State.NORMAL):
                 Command.process_normal_commands(bot, delegator_bot, command)
+            elif (bot.state == State.SELECTING_FACULTY):
+                Modules.faculty_code_command(bot, delegator_bot, command)
             elif (bot.state == State.DELETING_CHANNEL):
                 Modules.process_deleting_channels(bot, delegator_bot, command)
 
@@ -80,7 +83,6 @@ class Command:
             elif (bot.state == State.ANSWERING_QUESTIONS):
                 # State.ANSWERING_QUESTIONS - User clicks "Answer Question" and enters his answer.
                 AnsweringQuestions.process_confirmation_of_answer(bot, delegator_bot, msg)
-
             # Voting
             elif (bot.state == State.VOTING):
                 # State.VOTING - When user clicks on answer to vote
@@ -114,6 +116,16 @@ class Command:
                 Settings.settings_command(bot)
             '''
         elif command[:1] == '/':
+            #
+            # TODO
+            # Can either be faculty or module code
+            #
+            '''
+            valid_faculty_code = Modules.faculty_code_command(bot, command)
+            # Means User may be typing module_code
+            if is not valid_faculty_code:
+            '''
+
             # /<module code> - When User types /<module code> in the expectation that it will add <module code>
             # into their list of subscribed modules
             Modules.module_code_command(bot, command)
