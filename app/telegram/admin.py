@@ -1,5 +1,6 @@
+import emoji
 from .commands import State
-from .points import Points
+from .points import Points, Badges
 from telepot.namedtuple import ReplyKeyboardHide
 
 
@@ -18,7 +19,8 @@ class Help:
 
         # DEPENDING on the STATE of the User, provide different help commands
         if bot.state == State.NORMAL:
-            bot.sender.sendMessage("<b>NUS Question Bot</b>\n"
+            Badges.print_badges()
+            bot.sender.sendMessage(emoji.emojize("<b>NUS Question Bot :thumbs_up_sign:</b>\n"
                 # "Dear <b>" + title + "</b>,\n"
                 "/ask - <b>Ask questions</b> about specific modules!\n"  # Changes state
                 "/me - Modules that you have subscribed to\n"
@@ -29,7 +31,7 @@ class Help:
                 # "/settings - Change your settings (E.g notification rate)\n"  # Changes state
                 "/help - Help :)\n\n"
                 "Also, look out for questions by your peers after you've subscribed to a module!",
-                parse_mode='HTML')
+                use_aliases=True), parse_mode='HTML')
         elif (bot.state == State.DELETING_CHANNEL):
             bot.sender.sendMessage("/<module code> - Delete a module that you are subscribed to\n"
                 "/done - Done with deleting modules\n")

@@ -1,3 +1,4 @@
+import emoji
 from app.knowledgebase import KBManager
 
 
@@ -5,13 +6,33 @@ class Badges:
     '''
     This class holds the titles and badges of Users with the corresponding points.
     '''
-    NOTHING = (0, "Peon")
-    FIRST = (1, "Acolyte")
-    SECOND = (5, "Apprentice")
-    THIRD = (10, "Warrior")
-    FOURTH = (25, "Promise")
-    FIFTH = (50, "Knight")
-    SIXTH = (100, "Hero")
+    '''
+    1st col = Points
+    2nd col = Title (people-like)
+    3rd col = Emojis of people
+    4th col = Title (food-like)
+    5th col = Emojis of food
+    '''
+    NOTHING = (0, "Peon", ":hankey:", "Poopie", ":hankey:")
+    FIRST = (1, "Acolyte", ":baby:", "Nana", ":banana:")
+    SECOND = (5, "Apprentice", ":ghost:", "Mee Sua", ":ramen:")
+    THIRD = (10, "Warrior", ":santa:", "Drumstick", ":poultry_leg:")
+    FOURTH = (25, "Promise", ":angel:", "Sunny", ":egg:")
+    FIFTH = (50, "Knight", ":horse_racing:", "Half Cake", ":cake:")
+    SIXTH = (100, "Hero", ":crown:", "Glam Cake", ":birthday:")
+
+    # Prints out the badges and emojis for viewing
+    @classmethod
+    def print_badges(cls):
+        print emoji.emojize(
+            Badges.NOTHING[1] + ": " + Badges.NOTHING[2] + " | " + Badges.NOTHING[3] + ": " + Badges.NOTHING[4] + "\n" +
+            Badges.FIRST[1] + ": " + Badges.FIRST[2] + " | " + Badges.FIRST[3] + ": " + Badges.FIRST[4] + "\n" +
+            Badges.SECOND[1] + ": " + Badges.SECOND[2] + " | " + Badges.SECOND[3] + ": " + Badges.SECOND[4] + "\n" +
+            Badges.THIRD[1] + ": " + Badges.THIRD[2] + " | " + Badges.THIRD[3] + ": " + Badges.THIRD[4] + "\n" +
+            Badges.FOURTH[1] + ": " + Badges.FOURTH[2] + " | " + Badges.FOURTH[3] + ": " + Badges.FOURTH[4] + "\n" +
+            Badges.FIFTH[1] + ": " + Badges.FIFTH[2] + " | " + Badges.FIFTH[3] + ": " + Badges.FIFTH[4] + "\n" +
+            Badges.SIXTH[1] + ": " + Badges.SIXTH[2] + " | " + Badges.SIXTH[3] + ": " + Badges.SIXTH[4],
+            use_aliases=True)
 
 
 class Points:
