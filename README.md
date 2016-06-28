@@ -1,5 +1,8 @@
 #**BotMother**
 [![Build Status](https://travis-ci.org/yewsiang/botmother.svg?branch=master)](https://travis-ci.org/yewsiang/botmother)
+[![Code Climate](https://codeclimate.com/github/yewsiang/botmother/badges/gpa.svg)](https://codeclimate.com/github/yewsiang/botmother)
+[![Issue Count](https://codeclimate.com/github/yewsiang/botmother/badges/issue_count.svg)](https://codeclimate.com/github/yewsiang/botmother)
+[![Test Coverage](https://codeclimate.com/github/yewsiang/botmother/badges/coverage.svg)](https://codeclimate.com/github/yewsiang/botmother/coverage)
 ##**A Chat-Based Forum System**
 
 By Sriram Sami and Tang Yew Siang
