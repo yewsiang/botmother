@@ -762,12 +762,12 @@ class UserTests(BaseTestCase):
         self.create_user()
 
         # user does not exist
-        new_user_2 = User(123, 4)
+        #new_user_2 = self.create_user(123, 0)
         # Add to database
-        db.session.add(new_user_2)
+        #db.session.add(new_user_2)
 
         # Commit changes - SHOULD FAIL because of unique telegram id constraint
-        self.assertRaises(IntegrityError, db.session.commit)
+        self.assertRaises(IntegrityError, self.create_user, 123, 0)
 
     def test_get_channels_none(self):
         '''

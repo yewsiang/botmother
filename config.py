@@ -23,7 +23,9 @@ class BaseConfig(object):
     # force SQLALCHEMY to echo
     SQLALCHEMY_ECHO = False
 
+    # FLASK-SECURITY
     SECURITY_REGISTERABLE = True
+    SECURITY_CONFIRMABLE = True
 
     # LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
     # make_dir(LOG_FOLDER)

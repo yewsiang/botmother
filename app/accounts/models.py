@@ -43,7 +43,7 @@ class User(db.Model):
     Flask-Security Part
     '''
 
-   # Define models
+    # Security fields
     roles_users = db.Table('roles_users',
                            db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
                            db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
@@ -55,17 +55,8 @@ class User(db.Model):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, telegram_user_id, user_type):
-        self.telegram_user_id = telegram_user_id
-        self.user_type = user_type
-
     def __repr__(self):
         return str(self.telegram_user_id)
-
-'''
-    @login_manager.user_loader
-    def user_loader(db_id):
-        return get_user_by_id(int(db_id))
 
     @property
     def is_authenticated(self):
@@ -81,8 +72,23 @@ class User(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+'''
+    def __init__(self, telegram_user_id, user_type, **kwargs):
+
+        self.telegram_user_id = telegram_user_id
+        self.user_type = user_type
+        # Set the rest of the attributes as required (solves Flask-Auth issue)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 '''
 
+'''
+
+    @login_manager.user_loader
+    def user_loader(db_id):
+        return get_user_by_id(int(db_id))
+'''
 
 class Role(db.Model, RoleMixin):
     '''

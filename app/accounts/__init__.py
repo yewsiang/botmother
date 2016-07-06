@@ -104,7 +104,7 @@ class TelegramAccountManager(object):
                 scalar() is None:
 
             # user does not exist
-            new_user = User(telegram_user_id, 0)
+            new_user = User(telegram_user_id=telegram_user_id, user_type=0)
             # Add a name to the user
             new_user.name = name
             # Add to database

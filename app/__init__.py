@@ -14,6 +14,9 @@ from jinja2_pluralize import pluralize_dj
 # Auth
 from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
 
+# For confirmation mail sending
+from flask_mail import Mail
+
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -79,6 +82,14 @@ db.session.commit()
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
+
+# SECURITY-MAIL
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'nusbotmother@gmail.com'
+app.config['MAIL_PASSWORD'] = 'cawwR73cT2VQRkZN'
+mail = Mail(app)
 
 # Import a module / component using its blueprint handler variable
 from app.knowledgebase.controllers import mod_knowledgebase
