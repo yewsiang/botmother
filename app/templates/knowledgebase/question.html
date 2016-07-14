@@ -6,12 +6,15 @@
 
 </script>
 {% if answers.all()|length > 0 %}
-    <div class="ui one column centered grid">
-        {% for answer in answers %}
-            <div class="column centered">
-                {{ac.answer_card(answer)}}
-            </div>
-        {% endfor %}
+    <div class="ui one column grid container centered padded">
+      <div class="ui comments">
+      	<h3 class="ui dividing header">{{answers[0].question.text}}</h3>
+          {% for answer in answers %}
+              <div class="column centered">
+                  {{ac.answer_card(answer)}}
+              </div>
+          {% endfor %}
+      </div>
     </div>
 {% else %}
     <h1> No answers for this question yet! </h1>

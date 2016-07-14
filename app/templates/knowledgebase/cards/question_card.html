@@ -1,6 +1,6 @@
 {% macro question_card(question) %}
    <div class="ui special cards">
-     <div class="card">
+     <div class="ui container card">
        <div class="content">
          <a href="{{url_for('knowledgebase.question', question_id=question.id)}}" class="header">{{question.text}}</a>
          <div class="meta">

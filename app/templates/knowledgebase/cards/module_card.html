@@ -4,7 +4,7 @@
 {% macro module_card(module) %}
    <div class="ui special cards">
      <div class="card">
-       <div class="blurring dimmable image">
+       <!--<div class="blurring dimmable image">
          <div class="ui dimmer">
            <div class="content">
              <div class="center">
@@ -13,7 +13,7 @@
            </div>
          </div>
          <img src="{{url_for('static', filename='404.jpg')}}">
-       </div>
+       </div>-->
        <div class="content">
          <a href="{{url_for('knowledgebase.channel', channel_name=module.name)}}"" class="header">{{module.name.upper()}}</a>
          <div class="meta">

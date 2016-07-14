@@ -4,7 +4,7 @@
 {% block content %}
 <!-- Code for Module Cards to dim and show text-->
 {% if questions.all()|length > 0 %}
-    <div class="ui five column grid">
+    <div class="ui two column grid container">
         {% for question in questions %}
             <div class="column">
                 {{qc.question_card(question)}}
