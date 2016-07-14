@@ -43,8 +43,8 @@ class SecondFakeBot:
     def __init__(self):
         self.messages = []
 
-    # reply_markup to prevent error when parameter reply_markup is passed in
-    def sendMessage(self, msg, reply_markup=None):
+    # reply_markup & parse_mode to prevent error when parameters are passed in
+    def sendMessage(self, msg, reply_markup=None, parse_mode=None):
         self.messages.append(msg)
 
 
@@ -55,7 +55,7 @@ class FakeDelegatorBot:
         self.answer_callback_query_list = []
         self.edit_message_reply_list = []
 
-    def sendMessage(self, telegram_id, question, reply_markup=None):
+    def sendMessage(self, telegram_id, question, reply_markup=None, parse_mode=None):
         msg = [telegram_id, question, reply_markup]
         self.messages.append(msg)
         self.send_message_list.append(msg)
@@ -128,8 +128,9 @@ class TelegramTests(BaseTestCase):
         u1.channels.append(cs1231)
 
         # Call the function in the Telegram module
-        # TODO: Modules.me_command(fakeBot)
-        Command.process_commands(bot, bot, '/me')
+        # Creating a message object
+        Command.process_commands(bot, bot,
+            {'text': '/me'})
 
         print bot.get_messages()
         expected_messages = ["Your modules subscribed are CS2100 CS1231 "]
@@ -144,11 +145,12 @@ class TelegramTests(BaseTestCase):
 
         # Call the function in the Telegram module
         # Modules.me_command(fakeBot)
-        Command.process_commands(bot, bot, '/me')
+        Command.process_commands(bot, bot,
+            {'text': '/me'})
 
         print bot.get_messages()
         expected_messages = ["You have not subscribed to any mods.\n"
-            "/<module code> to add a module (E.g /PAP1000 adds the module PAP1000)"]
+            "/<module code> to add a module (E.g /CS1010 adds the module CS1010)"]
         assert bot.get_messages() == expected_messages
 
     # Testing /modules command
@@ -165,7 +167,8 @@ class TelegramTests(BaseTestCase):
 
         # Call the function in the Telegram module
         # Modules.me_command(fakeBot)
-        Command.process_commands(bot, bot, '/modules')
+        Command.process_commands(bot, bot, 
+            {'text': '/modules'})
         expected_messages = ["Modules available:  /PAP1000  /BRO1000  /SIS1000  "]
         assert bot.get_messages() == expected_messages
 
@@ -194,20 +197,23 @@ class TelegramTests(BaseTestCase):
         AccountManager.add_channel(u3.telegram_user_id, 'pap1000')
 
         # User1 types /ask and is now in State.ASKING_QUESTIONS
-        Command.process_commands(bot, delegator_bot, '/ask')
+        Command.process_commands(bot, delegator_bot,
+            {'text': '/ask'})
         first_msg = bot.get_messages()
         expected_message1 = ["Tell us what question you have :). After which, you can choose a module to send the question to!"]
         assert first_msg == expected_message1
 
         # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         # We have to ask him what module he would like to send it to
-        Command.process_commands(bot, delegator_bot, 'Question by User 1')
+        Command.process_commands(bot, delegator_bot,
+            {'text': 'Question by User 1'})
         second_msg = bot.get_messages()
-        expected_message2 = ["Which module would you like to send the question to?"]
+        expected_message2 = ["Which module would you like to send the question to?", "Your modules subscribed are:\n/PAP1000 "]
         assert second_msg[1:] == expected_message2
 
         # User1 now types in the /<module code> of the module that he wants to send it to
-        Command.process_commands(bot, delegator_bot, '/pap1000')
+        Command.process_commands(bot, delegator_bot,
+            {'text': '/pap1000'})
         third_msg = bot.get_messages()
         expected_message3 = ["Your question has been sent to the people subscribed to PAP1000. The answers will be sent back to you in 15 mins!"]
 
@@ -219,11 +225,11 @@ class TelegramTests(BaseTestCase):
         # Remove the keyboard markup of each of the message
         delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot_messages)
         print delegator_bot_messages_without_markup
-        expected_delegatorbot_message = [[2, 'Question by User 1'],
-            [3, 'Question by User 1']]
+        expected_delegatorbot_message = [[2, '<b>PAP1000</b>\nQuestion: Question by User 1'],
+            [3, '<b>PAP1000</b>\nQuestion: Question by User 1']]
 
-        assert ((third_msg[2:] == expected_message3) and
-            (delegator_bot_messages_without_markup == expected_delegatorbot_message))
+        assert (third_msg[3:] == expected_message3)
+        assert (delegator_bot_messages_without_markup == expected_delegatorbot_message)
 
     def test_user_answering_question(self):
         '''
@@ -249,12 +255,15 @@ class TelegramTests(BaseTestCase):
         AccountManager.add_channel(u3.telegram_user_id, 'pap1000')
 
         # User1 types /ask and is now in State.ASKING_QUESTIONS
-        Command.process_commands(bot, delegator_bot, '/ask')
+        Command.process_commands(bot, delegator_bot,
+            {'text': '/ask'})
         # User1 asks a question and is now in State.SELECTING_CHANNEL_AFTER_ASKING_QUESTIONS
         # We have to ask him what module he would like to send it to
-        Command.process_commands(bot, delegator_bot, 'Question by User 1')
+        Command.process_commands(bot, delegator_bot,
+            {'text': 'Question by User 1'})
         # User1 now types in the /<module code> of the module that he wants to send it to
-        Command.process_commands(bot, delegator_bot, '/pap1000')
+        Command.process_commands(bot, delegator_bot,
+            {'text': '/pap1000'})
 
         print "----"
         delegator_bot_messages_without_markup = map(lambda msg: msg[:-1], delegator_bot.get_messages())
@@ -270,7 +279,8 @@ class TelegramTests(BaseTestCase):
         # The below simulates a click on the button.
         # (Have to do this because we can't import AnsweringQuestions class)
         CallbackQueries.on_answer(bot, delegator_bot, "AnswerQuestion_1_None_None", 2)
-        Command.process_commands(bot, delegator_bot, 'Answer by User 2')
+        Command.process_commands(bot, delegator_bot,
+            {'text': 'Answer by User 2'})
         # Simulate User2 clicking on the "Yes" button to confirm his answer
         CallbackQueries.on_answer(bot, delegator_bot, "ConfirmAnswer_1_1_yes", 4)
 
@@ -458,7 +468,6 @@ class KBManagerTests(BaseTestCase):
 
         # check that their unordered versions are the same
         assert set(answers) == set(found_answers)
-        assert False
 
     def test_get_answers_for_question_with_unconfirmed_answers(self):
         '''
