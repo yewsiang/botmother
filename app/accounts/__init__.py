@@ -1,5 +1,6 @@
-from .models import User
+from .models import User, Role
 from app.knowledgebase import Channel
+from app.helpers import get_user_by_telegram_id
 from app import db
 
 
@@ -104,7 +105,7 @@ class TelegramAccountManager(object):
                 scalar() is None:
 
             # user does not exist
-            new_user = User(telegram_user_id, 0)
+            new_user = User(telegram_user_id=telegram_user_id, user_type=0)
             # Add a name to the user
             new_user.name = name
             # Add to database
@@ -116,3 +117,29 @@ class TelegramAccountManager(object):
             return False
         else:
             return True
+
+    @staticmethod
+    def get_points(telegram_user_id):
+        '''
+        Simple get of the user's current points.
+        If no user by this id - return none
+        '''
+        user = get_user_by_telegram_id(telegram_user_id)
+        if user is not None:
+            return user.points
+        else:
+            return None
+
+    @staticmethod
+    def award_points(telegram_user_id, points):
+        '''
+        Adds points to user if user exists, otherwise returns none
+        '''
+        user = get_user_by_telegram_id(telegram_user_id)
+        if user is not None:
+            user.points = user.points + points
+            db.session.add(user)
+            db.session.commit()
+        else:
+            return None
+

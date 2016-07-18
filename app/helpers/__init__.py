@@ -25,12 +25,18 @@ def get_user_by_telegram_id(telegram_user_id):
     return db.session.query(app.accounts.User).\
         filter(app.accounts.User.telegram_user_id == telegram_user_id).first()
 
+
+def get_user_by_id(db_id):
+    return db.session.query(app.accounts.User).get(db_id)
+
+
 def get_question_by_id(question_id):
     '''
     Simple helper to return any question in the database that matches
     the id given
     '''
     return db.session.query(app.knowledgebase.Question).get(question_id)
+
 
 def get_all_questions_by_channel_name(channel_name):
     '''
@@ -44,6 +50,7 @@ def get_all_questions_by_channel_name(channel_name):
         return channel.questions
     else:
         return None
+
 
 def get_answer_by_id(answer_id):
     '''

@@ -3,5 +3,5 @@
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 echo "Gunicorn starting!"
-gunicorn -c gunicorn.py app:app
-
+gunicorn -c gunicorn.py --reload app:app
+#gunicorn -c gunicorn.py app:app

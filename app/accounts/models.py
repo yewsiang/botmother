@@ -1,5 +1,7 @@
 from app import db
-from app.helpers import user_channels_table
+from app.helpers import user_channels_table, get_user_by_id
+from flask.ext.security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required
 
 
 class User(db.Model):
@@ -30,6 +32,9 @@ class User(db.Model):
 
     user_type = db.Column(db.Integer)
 
+    # POINTS SYSTEM FOR GAMIFICATION
+    points = db.Column(db.Integer, default=0)
+
     votes = db.relationship('Vote', backref='user', lazy='dynamic')
 
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
@@ -37,9 +42,66 @@ class User(db.Model):
     channels = db.relationship(
         'Channel', secondary=user_channels_table, back_populates="users")
 
-    def __init__(self, telegram_user_id, user_type):
-        self.telegram_user_id = telegram_user_id
-        self.user_type = user_type
+    '''
+    Flask-Security Part
+    '''
+
+    # Security fields
+    roles_users = db.Table('roles_users',
+                           db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
+                           db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
+
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
 
     def __repr__(self):
         return str(self.telegram_user_id)
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
+'''
+    def __init__(self, telegram_user_id, user_type, **kwargs):
+
+        self.telegram_user_id = telegram_user_id
+        self.user_type = user_type
+        # Set the rest of the attributes as required (solves Flask-Auth issue)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+'''
+
+'''
+
+    @login_manager.user_loader
+    def user_loader(db_id):
+        return get_user_by_id(int(db_id))
+'''
+
+class Role(db.Model, RoleMixin):
+    '''
+    Defines user roles in the system (for Flask-Security)
+    '''
+
+    ''' TABLE NAME '''
+
+    __tablename__ = 'roles'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))

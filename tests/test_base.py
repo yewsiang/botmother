@@ -13,7 +13,7 @@ class BaseTestCase(TestCase):
 
     def create_user(self, telegram_user_id=123, user_type=0):
         # user does not exist
-        new_user = User(telegram_user_id, user_type)
+        new_user = User(telegram_user_id=telegram_user_id, user_type=user_type)
         # Add to database
         db.session.add(new_user)
         # Commit changes

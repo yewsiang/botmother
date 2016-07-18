@@ -7,6 +7,19 @@
    border-style: none !important;
 }
 
+body > .grid {
+  height: 100%;
+}
+/*
+.custom-image {
+  margin-top: 100px !important;
+
+}
+*/
+.custom-column {
+  max-width: 450px;
+}
+
 /* Layout */
 /*
 html,

@@ -1,7 +1,7 @@
 from test_base import BaseTestCase
 from app.helpers import get_answer_by_id
 from app.accounts import TelegramAccountManager, AccountManager, User
-from app.knowledgebase import Channel, Question
+from app.knowledgebase import Channel, Question, Faculty
 from app import db, app
 from sqlalchemy.exc import IntegrityError
 from app.knowledgebase import KBManager
@@ -301,6 +301,51 @@ class TelegramTests(BaseTestCase):
 
 
 class KBManagerTests(BaseTestCase):
+    def test_get_module_activity(self):
+        u1 = self.create_user(123, 0)
+        cs2100 = Channel(name='cs2100')
+        u1.channels.append(cs2100)
+
+        # answer question AND change the state to non 0 - should
+        # mean that we can't answer
+        question_id = KBManager.ask_question(123, 'cs2100', 'what is life?')
+        KBManager.add_answer_to_question(question_id, u1.telegram_user_id, "42")
+        KBManager.change_question_state(question_id, 0)
+
+        print KBManager.get_module_activity('cs2100')
+    def test_retreive_all_faculty_modules(self):
+
+        fac1 = Faculty(name="SOC")
+        fac2 = Faculty(name="FOE")
+
+        cs2100 = Channel(name='cs2100')
+        cs2020 = Channel(name='cs2020')
+
+        fac1.channels.append(cs2100)
+        fac2.channels.append(cs2020)
+
+        db.session.add(fac1)
+        db.session.add(fac2)
+        db.session.add(cs2100)
+        db.session.add(cs2020)
+        db.session.commit()
+
+        assert list(KBManager.retrieve_all_modules_from_faculty('SOC')) == [cs2100]
+
+    def test_retrieve_all_faculties(self):
+        '''
+        Simple get of all faculties
+        '''
+        fac1 = Faculty(name="SOC")
+        fac2 = Faculty(name="FOE")
+
+        db.session.add(fac1)
+        db.session.add(fac2)
+        db.session.commit()
+
+        assert KBManager.retrieve_all_faculties() == [fac1, fac2]
+
+
     def test_can_answer_qn_because_have_not_answered(self):
         '''
         Should be able to answer because we haven't answered before
@@ -759,12 +804,12 @@ class UserTests(BaseTestCase):
         self.create_user()
 
         # user does not exist
-        new_user_2 = User(123, 4)
+        #new_user_2 = self.create_user(123, 0)
         # Add to database
-        db.session.add(new_user_2)
+        #db.session.add(new_user_2)
 
         # Commit changes - SHOULD FAIL because of unique telegram id constraint
-        self.assertRaises(IntegrityError, db.session.commit)
+        self.assertRaises(IntegrityError, self.create_user, 123, 0)
 
     def test_get_channels_none(self):
         '''
@@ -793,6 +838,28 @@ class UserTests(BaseTestCase):
 
 
 class TelegramAccountManagerTests(BaseTestCase):
+    def test_get_user_points(self):
+        '''
+        Tests that we can get the current number of points for the user
+        '''
+        u1 = self.create_user(123, 0)
+
+        assert TelegramAccountManager.get_points(123) == 0
+
+        u1.points = 200
+
+        assert TelegramAccountManager.get_points(123) == 200
+
+    def test_award_user_points(self):
+        '''
+        Tests that we can freely add points to a user
+        '''
+        u1 = self.create_user(123, 0)
+        assert u1.points == 0
+
+        TelegramAccountManager.award_points(123, 5)
+        assert u1.points == 5
+
     def test_create_if_not_exists(self):
         '''
         Tests that the create account method works properly
