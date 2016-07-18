@@ -35,6 +35,12 @@ class User(db.Model):
     # POINTS SYSTEM FOR GAMIFICATION
     points = db.Column(db.Integer, default=0)
 
+    # OTP system
+    current_otp = db.Column(db.Integer)
+
+    otp_expiry = db.Column(db.DateTime)
+
+    # Relationships
     votes = db.relationship('Vote', backref='user', lazy='dynamic')
 
     comments = db.relationship('Comment', backref='user', lazy='dynamic')

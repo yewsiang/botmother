@@ -59,8 +59,8 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-db.drop_all()
-db.create_all()
+# db.drop_all()
+# db.create_all()
 
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
@@ -91,9 +91,11 @@ mail = Mail(app)
 
 # Import a module / component using its blueprint handler variable
 from app.knowledgebase.controllers import mod_knowledgebase
+from app.auth.controllers import mod_auth
 
 # Register blueprint(s)
 app.register_blueprint(mod_knowledgebase)
+app.register_blueprint(mod_auth)
 # app.register_blueprint(xyz_module)
 # ..
 
@@ -106,5 +108,6 @@ app.jinja_env.filters['pluralize'] = pluralize_dj
 # db.session.commit()
 
 from telegram import bot
-bot.message_loop()
+print "****************BOT DISABLED*************"
+# bot.message_loop()
 print " "

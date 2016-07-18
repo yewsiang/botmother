@@ -2,6 +2,8 @@ from .models import User, Role
 from app.knowledgebase import Channel
 from app.helpers import get_user_by_telegram_id
 from app import db
+from random import randint
+from datetime import datetime, timedelta
 
 
 class AccountManager(object):
@@ -138,6 +140,20 @@ class TelegramAccountManager(object):
         user = get_user_by_telegram_id(telegram_user_id)
         if user is not None:
             user.points = user.points + points
+            db.session.add(user)
+            db.session.commit()
+        else:
+            return None
+
+    @staticmethod
+    def generate_and_store_otp(telegram_user_id):
+        '''
+        For the given user - stores a randomly generated OTP and expiry
+        '''
+        user = get_user_by_telegram_id(telegram_user_id)
+        if user is not None:
+            user.current_otp = randint(100000, 999999)
+            user.otp_expiry = datetime.now() + timedelta(seconds=60)
             db.session.add(user)
             db.session.commit()
         else:
