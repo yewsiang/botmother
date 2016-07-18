@@ -41,6 +41,13 @@ def homepage():
 def not_found(error):
     return render_template('404.html'), 404
 
+# Functions for Jinja
+import math, random
+colors = ["red", "orange", "yellow", "olive", "green", "teal", "blue", "violet", "purple", "pink", "brown", "grey", "black"]
+def random_color():
+    return colors[int(math.floor(random.random() * len(colors)))]
+app.jinja_env.globals.update(random_color=random_color)
+
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager

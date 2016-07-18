@@ -10,17 +10,16 @@ $(document).ready(function() {
       on: 'hover'
     });
 
-var content = {{ search_content|safe }}
-
+    var content = {{ search_content|safe }}
 
     $('.ui.search')
       .search({
         source: content
       })
     ;
-
 });
 </script>
+
 {% if modules|length > 0 %}
     <div class="ui four column grid">
         {% for module in modules %}

@@ -1,3 +1,7 @@
+.custom-center {
+   margin-left: auto !important;
+   margin-right: auto !important;
+}
 
 .custom-borderless {
    border-style: none !important;

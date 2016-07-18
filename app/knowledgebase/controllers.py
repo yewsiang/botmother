@@ -39,7 +39,7 @@ def home():
 def channel(channel_name):
     questions = get_all_questions_by_channel_name(channel_name)
     if questions is not None:
-        return render_template('knowledgebase/channel.html', questions=questions)
+        return render_template('knowledgebase/channel.html', questions=questions, channel_name=channel_name)
     else:
         raise NotFound()
 
