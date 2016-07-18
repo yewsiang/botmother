@@ -20,10 +20,9 @@
           <div class="metadata">
             <span class="date">Today at 5:42PM</span>
             <i class="users icon"></i>
-            <span class="votes">{{question.votes.count()}} Answer{{question.answers.count()|pluralize}}3 Votes</span>
+            <span class="votes">3 Votes</span>
           </div>
           <button class="ui mini green basic right floated button" style="margin-top:-2px">
-          <!--<i class="hand spock icon"></i>-->
           Reply
           </button>
         </div>
@@ -31,7 +30,6 @@
 
     	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem </h3>
 
-      <!--
       <form class="ui reply form">
         <div class="field">
           <textarea></textarea>
@@ -40,7 +38,6 @@
           <i class="icon edit"></i> Add Reply
         </div>
       </form>
-      -->
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
