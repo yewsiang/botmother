@@ -142,7 +142,6 @@ class Comment(db.Model):
         'Comment', backref=db.backref('parent', remote_side=[id]))
 
 
-
 class Channel(db.Model):
     '''
     Channel model - stores users that belong to it, the channel name,
@@ -160,6 +159,8 @@ class Channel(db.Model):
     # 500 characters limited channel
     name = db.Column(db.String(500))
 
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculties.id'))
+
     questions = db.relationship('Question', backref='channel', lazy='dynamic')
 
     users = db.relationship(
@@ -169,6 +170,28 @@ class Channel(db.Model):
     def __init__(self, **kwargs):
         if (kwargs['name'] is not None):
             self.name = kwargs['name'].lower()
+
+    def __repr__(self):
+        return str(self.name)
+
+
+class Faculty(db.Model):
+    '''
+    Faculty model - every module will have one faculty - every faculty will
+    have many modules under it
+    '''
+
+    ''' TABLE NAME '''
+
+    __tablename__ = 'faculties'
+
+    ''' ATTRIBUTES '''
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(500))
+
+    channels = db.relationship('Channel', backref='faculty', lazy='dynamic')
 
     def __repr__(self):
         return str(self.name)

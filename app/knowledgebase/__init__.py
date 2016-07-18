@@ -1,4 +1,4 @@
-from .models import Question, Answer, Vote, Comment, Channel
+from .models import Question, Answer, Vote, Comment, Channel, Faculty
 from app import db, app
 from app.accounts import User
 from app.helpers import get_user_by_telegram_id
@@ -13,6 +13,53 @@ max_questions_per_day = 2000000000000000000
 
 
 class KBManager(object):
+    #
+    # FACULTIES
+    #
+    @staticmethod
+    def retrieve_all_faculties():
+        '''
+        Gets a list of all faculaties currently in the system
+        '''
+        return db.session.query(Faculty).all()
+
+    @staticmethod
+    def retrieve_all_modules_from_faculty(faculty_name):
+        '''
+        Looks for a faculty with the given name and returns all associated
+        modules
+        '''
+        fac = db.session.query(Faculty).filter(Faculty.name == faculty_name).first()
+        if fac is not None:
+            # Force non-lazy
+            return list(fac.channels)
+        else:
+            return None
+
+    @staticmethod
+    def get_module_activity(module_name):
+        '''
+        Returns a tuple of (Number of Users, Time since last question) given
+        a module code
+        '''
+        mod = db.session.query(Channel).filter(Channel.name == module_name).first()
+        if mod is not None:
+            num_users = len(mod.users)
+
+            questions = mod.questions
+            if questions.count() > 0:
+                # if we have at least one asked question - return the time difference between
+                # now and when the questions was asked
+                by_date_created = mod.questions.order_by(Question.date_created)
+                question_with_latest_date = by_date_created.first()
+                time_difference = datetime.now() - question_with_latest_date.date_created
+                return (num_users, time_difference)
+            else:
+                # If we have no questions - no timedelta to return
+                return (num_users, None)
+        else:
+            return None
+
     #
     # ASK QUESTIONS
     #
@@ -131,7 +178,6 @@ class KBManager(object):
         the names
         '''
         return db.session.query(Channel).all()
-
 
     @staticmethod
     def get_answerers(telegram_user_id, channel_name):
