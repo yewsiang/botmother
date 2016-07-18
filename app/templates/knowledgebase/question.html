@@ -9,6 +9,8 @@
   <div class="ui one column grid container padded">
     <div class="ui comments custom-center">
 
+    <h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{find_channel_name(question.channel_id)}}</h3>
+
       <div class="comment">
         <a class="avatar" style="margin-top:-5px">
           <img src="../../static/404.jpg">
@@ -18,13 +20,27 @@
           <div class="metadata">
             <span class="date">Today at 5:42PM</span>
             <i class="users icon"></i>
-            <span class="votes">3 Votes</span>
+            <span class="votes">{{question.votes.count()}} Answer{{question.answers.count()|pluralize}}3 Votes</span>
           </div>
-          <button class="ui mini green basic right floated button" style="margin-top:-2px">Reply</button>
+          <button class="ui mini green basic right floated button" style="margin-top:-2px">
+          <!--<i class="hand spock icon"></i>-->
+          Reply
+          </button>
         </div>
       </div>
 
     	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem </h3>
+
+      <!--
+      <form class="ui reply form">
+        <div class="field">
+          <textarea></textarea>
+        </div>
+        <div class="ui blue labeled submit icon button">
+          <i class="icon edit"></i> Add Reply
+        </div>
+      </form>
+      -->
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
@@ -33,7 +49,7 @@
 
 {% else %}
     <div class="text" align="center">
-      <h3 class="ui teal header"> No answers for this question yet</h3>
+      <h3 class="ui header" style="color: teal"> No answers for this question yet</h3>
       <p style="color: teal"> Be the first one to answer the question and earn bonus points ^^!</p>
     </div>
 {% endif %} 

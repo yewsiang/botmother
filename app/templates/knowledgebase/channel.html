@@ -4,7 +4,7 @@
 {% block content %}
 <!-- Code for Module Cards to dim and show text-->
 
-<h3 class="ui header floated left" style="margin-bottom:0px; color:teal">{{channel_name.upper()}}</h3>
+<h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{channel_name.upper()}}</h3>
 
 {% if questions.all()|length > 0 %}
 	
@@ -24,7 +24,7 @@
 
 {% else %}
 	<div class="text" align="center">
-    <h3 class="ui teal header"> No questions for this module yet </h3>
+    <h3 class="ui header" style="margin-top:10px; color:teal"> No questions for this module yet </h3>
     <p style="color: teal"> Be the first to ask a question! Head over to the our Telegram bot by searching @NUSQuestionsBot!</p>
 	</div>
 {% endif %}

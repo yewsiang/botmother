@@ -42,11 +42,17 @@ def not_found(error):
     return render_template('404.html'), 404
 
 # Functions for Jinja
+# Random colors for the cards
 import math, random
 colors = ["red", "orange", "yellow", "olive", "green", "teal", "blue", "violet", "purple", "pink", "brown", "grey", "black"]
 def random_color():
     return colors[int(math.floor(random.random() * len(colors)))]
+# Find channel name to print on the page
+def find_channel_name(channel_id):
+    channel = db.session.query(Channel).get(channel_id)
+    return channel.name.upper()
 app.jinja_env.globals.update(random_color=random_color)
+app.jinja_env.globals.update(find_channel_name=find_channel_name)
 
 
 # Before we create the database tables - import all models
