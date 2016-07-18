@@ -14,15 +14,13 @@ class Help:
     @classmethod
     def help_according_to_state(cls, bot):
         # Address User by his title
-        #
-        # title, points_to_next_level = Points.get_title(bot)
-        #
+        title, points_to_next_level = Points.get_title(bot)
 
         # DEPENDING on the STATE of the User, provide different help commands
         if bot.state == State.NORMAL:
             Badges.print_badges()
-            bot.sender.sendMessage(emoji.emojize("<b>NUS Question Bot :thumbs_up_sign:</b>\n"
-                # "Dear <b>" + title + "</b>,\n"
+            bot.sender.sendMessage(emoji.emojize("<b>NUS Question Bot :thumbs_up_sign:</b>\n\n"
+                "Dear <b>" + title[1] + "</b>" + title[2] + ",\n"
                 "/ask - <b>Ask questions</b> about specific modules!\n"  # Changes state
                 "/me - Modules that you have subscribed to\n"
                 "/modules - Modules to join!\n"
@@ -30,6 +28,7 @@ class Help:
                 "/delete - Delete modules that you do not want to receive updates from\n"  # Changes state
                 "/points - Get your points & badges\n"
                 # "/settings - Change your settings (E.g notification rate)\n"  # Changes state
+                "/verify - Receive a One-Time Password to register a web account\n"
                 "/help - Help :)\n\n"
                 "Also, look out for questions by your peers after you've subscribed to a module!",
                 use_aliases=True), parse_mode='HTML')
@@ -74,6 +73,7 @@ class Admin:
         bot.state = State.NORMAL
         Help.help_according_to_state(bot)
 
+    # /verify - When User types /verify - will generate a one-time password and send it to them. Also sets it in their user object
     @classmethod
     def verify_command(cls, bot):
         otp = TelegramAccountManager.generate_and_store_otp(bot.telegram_id)

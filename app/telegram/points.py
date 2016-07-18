@@ -1,5 +1,5 @@
 import emoji
-from app.knowledgebase import KBManager
+from app.accounts import TelegramAccountManager
 
 
 class Badges:
@@ -46,7 +46,7 @@ class Points:
     def points_command(cls, bot):
         '''
         title, points_to_next_level = Points.get_title(bot)
-        text_to_send = "Dear " + title + ",\n"
+        text_to_send = "Dear " + title[0] + ",\n"
            "You currently have " + points + " Karma points\n"
         if points_to_next_level is None:
            # The person is a hero
@@ -66,37 +66,35 @@ class Points:
     # According to the User's points, give him a title
     @classmethod
     def get_title(cls, bot):
-        '''
-        points = KBManager.get_points(bot.telegram_user_id)
+        points = TelegramAccountManager.get_points(bot.telegram_id)
+        points += 50
         # Points = 0: Peon
         if points == Badges.NOTHING[0]:
             points_to_next_level = Badges.FIRST[0] - points
-            return (Badges.NOTHING[1], points_to_next_level)
+            return (Badges.NOTHING, points_to_next_level)
         # 1 to 4
         elif points < Badges.FIRST[0]:
             points_to_next_level = Badges.SECOND[0] - points
-            return (Badges.FIRST[1], points_to_next_level)
+            return (Badges.FIRST, points_to_next_level)
         # 5 to 9
         elif points <= Badges.SECOND[0]:
             points_to_next_level = Badges.THIRD[0] - points
-            return (Badges.SECOND[1], points_to_next_level)
+            return (Badges.SECOND, points_to_next_level)
         # 10 to 24
         elif points <= Badges.THIRD[0]:
             points_to_next_level = Badges.FOURTH[0] - points
-            return (Badges.THIRD[1], points_to_next_level)
+            return (Badges.THIRD, points_to_next_level)
         # 25 to 49
         elif points <= Badges.FOURTH[0]:
             points_to_next_level = Badges.FIFTH[0] - points
-            return (Badges.FOURTH[1], points_to_next_level)
+            return (Badges.FOURTH, points_to_next_level)
         # 50 to 99
         elif points <= Badges.FIFTH[0]:
             points_to_next_level = Badges.SIXTH[0] - points
-            return (Badges.FIFTH[1], points_to_next_level)
+            return (Badges.FIFTH, points_to_next_level)
         # 100 and above: Hero
         else:
-            return (Badges.SIXTH[1], None)
-        '''
-        print "hi"
+            return (Badges.SIXTH, None)
 
     # Award a User with points because of participation
     # Returns a tuple of (True/False of awarding of points, Updated points of user)
