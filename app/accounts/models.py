@@ -32,6 +32,9 @@ class User(db.Model):
 
     user_type = db.Column(db.Integer)
 
+    # POINTS SYSTEM FOR GAMIFICATION
+    points = db.Column(db.Integer, default=0)
+
     votes = db.relationship('Vote', backref='user', lazy='dynamic')
 
     comments = db.relationship('Comment', backref='user', lazy='dynamic')

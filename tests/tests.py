@@ -828,6 +828,28 @@ class UserTests(BaseTestCase):
 
 
 class TelegramAccountManagerTests(BaseTestCase):
+    def test_get_user_points(self):
+        '''
+        Tests that we can get the current number of points for the user
+        '''
+        u1 = self.create_user(123, 0)
+
+        assert TelegramAccountManager.get_points(123) == 0
+
+        u1.points = 200
+
+        assert TelegramAccountManager.get_points(123) == 200
+
+    def test_award_user_points(self):
+        '''
+        Tests that we can freely add points to a user
+        '''
+        u1 = self.create_user(123, 0)
+        assert u1.points == 0
+
+        TelegramAccountManager.award_points(123, 5)
+        assert u1.points == 5
+
     def test_create_if_not_exists(self):
         '''
         Tests that the create account method works properly
