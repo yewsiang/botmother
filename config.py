@@ -23,11 +23,9 @@ class BaseConfig(object):
     # force SQLALCHEMY to echo
     SQLALCHEMY_ECHO = False
 
-    REDIS_URL = "redis://localhost:6379"
-
-    CELERY_BROKER_URL = REDIS_URL
-
-    CELERY_BACKEND = REDIS_URL
+    # FLASK-SECURITY
+    SECURITY_REGISTERABLE = True
+    SECURITY_CONFIRMABLE = True
 
     # LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
     # make_dir(LOG_FOLDER)

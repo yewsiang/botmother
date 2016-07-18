@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{# {% include "security/_messages.html" %} #}
+{% block content %}
+
+<div class="ui middle aligned center aligned grid">
+  <div class="column custom-column">
+      <h2 class="ui custom-image header">
+        <div class="content">
+          Log-in to your account
+        </div>
+      </h2>
+      <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form" class="ui large form">
+        {{ login_user_form.hidden_tag() }}
+
+        <div class="ui stacked secondary  segment">
+                {{ render_field_with_errors(login_user_form.email) }}
+                {{ render_field_with_errors(login_user_form.password) }}
+            <!--
+            <div class="field">
+                {{ render_field_with_errors(login_user_form.remember, class="ui checkbox") }}
+            </div>
+            -->
+              {{ render_field(login_user_form.next) }}
+              {{ render_field(login_user_form.submit, class='ui button large fluid green') }}
+        </div>
+    </form>
+
+    <div class="ui message">
+          New to us? <a href="{{url_for_security('register')}}">Register</a>
+    </div>
+
+
+  </div>
+</div>
+{% endblock %}
+{# {% include "security/_menu.html" %} #}
