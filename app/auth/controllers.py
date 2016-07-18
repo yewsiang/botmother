@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from flask.ext.security import login_required, current_user
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask.ext.security import login_required, current_user, login_user, logout_user
 from models import OTPForm
 from datetime import datetime
 from app.accounts import TelegramAccountManager
@@ -14,11 +14,23 @@ def home():
     form = OTPForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        otp = form.otp.data
-        # Validate the OTP for the user
-        if current_user.current_otp == int(otp) and current_user.otp_expiry > datetime.now():
-            return ""
+        otp = int(form.otp.data)
+        if current_user.telegram_user_id is None:
+            merged_user = TelegramAccountManager.merge_accounts_through_otp(current_user, otp)
+
+            if merged_user is not None:
+                # success state
+                print "Success!"
+                logout_user()
+                login_user(merged_user)
+                flash('Successfully registered OTP!', 'success')
+            else:
+                # failure state
+                print "Failure :("
+                flash('Failed to register OTP!', 'error')
         else:
-            return ""
+            print current_user.telegram_user_id
+            print "User is already merged!"
+            flash('You have already merged with your Telegram account :)')
 
     return render_template('auth/register_otp.html', form=form)

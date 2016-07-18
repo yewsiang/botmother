@@ -55,6 +55,11 @@ class Command:
             # /points - When User types /points to retrieve his points & badges
             Points.points_command(bot)
 
+        elif command == '/verify':
+            # /verify - When User types /verify - will generate a one-time password
+            # and send it to them. Also sets it in their user object
+            Admin.verify_command(bot)
+
         elif command == '/done':
             # Go back to NORMAL state from any state
             Admin.done_command(bot)

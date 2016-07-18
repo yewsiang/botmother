@@ -37,7 +37,6 @@ class User(db.Model):
 
     # OTP system
     current_otp = db.Column(db.Integer)
-
     otp_expiry = db.Column(db.DateTime)
 
     # Relationships

@@ -55,7 +55,6 @@
                                 <a class="item">{{ current_user.name }}</a>
                            <!-- User is not logged in -->
                             {% else %}
-                                {{ m.nav_link('security.register', 'Sign Up') }}
                                 {{ m.nav_link('security.login', 'Sign In') }}
                             {% endif %}
 

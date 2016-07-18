@@ -59,8 +59,8 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-# db.drop_all()
-# db.create_all()
+#db.drop_all()
+#db.create_all()
 
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
@@ -109,5 +109,5 @@ app.jinja_env.filters['pluralize'] = pluralize_dj
 
 from telegram import bot
 print "****************BOT DISABLED*************"
-# bot.message_loop()
+bot.message_loop()
 print " "

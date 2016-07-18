@@ -26,7 +26,7 @@ class BaseConfig(object):
     # FLASK-SECURITY
     SECURITY_REGISTERABLE = True
     SECURITY_CONFIRMABLE = True
-    SECURITY_POST_CONFIRM_VIEW = "/auth/"
+    SECURITY_POST_CONFIRM_VIEW = "/auth/register_otp"
 
     # LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
     # make_dir(LOG_FOLDER)

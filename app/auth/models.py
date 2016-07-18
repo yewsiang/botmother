@@ -1,5 +1,6 @@
 from flask_security.forms import ConfirmRegisterForm, Required, Form, SubmitField
-from wtforms import StringField
+from wtforms import StringField, IntegerField
+from wtforms.validators import NumberRange
 
 
 class ExtendedRegisterForm(ConfirmRegisterForm):
@@ -7,5 +8,5 @@ class ExtendedRegisterForm(ConfirmRegisterForm):
 
 
 class OTPForm(Form):
-    otp = StringField('OTP', [Required()])
+    otp = IntegerField('OTP', [Required(), NumberRange(min=100000, max=999999, message="OTP is invalid!")])
     submit = SubmitField()

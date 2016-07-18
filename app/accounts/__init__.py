@@ -4,6 +4,7 @@ from app.helpers import get_user_by_telegram_id
 from app import db
 from random import randint
 from datetime import datetime, timedelta
+from flask.ext.security import login_user, logout_user
 
 
 class AccountManager(object):
@@ -152,10 +153,80 @@ class TelegramAccountManager(object):
         '''
         user = get_user_by_telegram_id(telegram_user_id)
         if user is not None:
-            user.current_otp = randint(100000, 999999)
+            otp = randint(100000, 999999)
+            user.current_otp = otp
             user.otp_expiry = datetime.now() + timedelta(seconds=60)
             db.session.add(user)
             db.session.commit()
+            return otp
         else:
             return None
+
+    @staticmethod
+    def merge_accounts_through_otp(current_user, otp):
+        '''
+        Looks through database for a user with the input otp.
+        If it sees a user with an unexpired OTP - merges the two users into one.
+        '''
+        telegram_user_with_otp = db.session.query(User).filter(User.current_otp == otp).first()
+        if telegram_user_with_otp is not None:
+            if telegram_user_with_otp.otp_expiry > datetime.now():
+                # If we have a valid user with the OTP and it's unexpired,
+                # merge the two accounts
+                success = TelegramAccountManager.merge_accounts(current_user, telegram_user_with_otp)
+                print "Merge success"
+                return telegram_user_with_otp
+            else:
+                print "Merge failure - expired OTP"
+                return None
+        else:
+            print "Merge failure - no user with OTP"
+            return None
+
+    @staticmethod
+    def merge_accounts(web_user, telegram_user):
+        '''
+        Given a web-user and a telegram user - merges the important information from the
+        telegram user into the web user and then deletes the web user
+        '''
+        with db.session.no_autoflush:
+            temp_dict = {}
+            temp_dict['name'] = web_user.name
+
+            # Add gamification points together
+            temp_dict['points'] = telegram_user.points + web_user.points
+
+            # Merge security info
+            temp_dict['email'] = web_user.email
+            temp_dict['password'] = web_user.password
+            temp_dict['active'] = web_user.active
+            temp_dict['confirmed_at'] = web_user.confirmed_at
+            temp_dict['roles'] = web_user.roles
+
+            # Delete the web account
+            db.session.delete(web_user)
+            db.session.commit()
+
+            # The web user will have a name - the telegram user will not
+            telegram_user.name = temp_dict['name']
+
+            # Add gamification points together
+            telegram_user.points = temp_dict['points']
+
+            # Merge security info
+            telegram_user.email = temp_dict['email']
+            telegram_user.password = temp_dict['password']
+            telegram_user.active = temp_dict['active']
+            telegram_user.confirmed_at = temp_dict['confirmed_at']
+            telegram_user.roles = temp_dict['roles']
+
+            # Relationship merging as needed
+
+            # Add the changed telegram acct
+            db.session.add(telegram_user)
+            db.session.commit()
+
+            # Return success
+            return True
+
 

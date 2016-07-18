@@ -2,6 +2,7 @@ import emoji
 from .commands import State
 from .points import Points, Badges
 from telepot.namedtuple import ReplyKeyboardHide
+from app.accounts import TelegramAccountManager
 
 
 class Help:
@@ -69,6 +70,11 @@ class Admin:
         bot.state = State.NORMAL
         Help.help_according_to_state(bot)
 
+    @classmethod
+    def verify_command(cls, bot):
+        otp = TelegramAccountManager.generate_and_store_otp(bot.telegram_id)
+        bot.sender.sendMessage("Your One-Time Password for registration is " + str(otp))
+
     # /done - When User types /done in any State
     @classmethod
     def done_command(cls, bot):
@@ -79,3 +85,4 @@ class Admin:
     @classmethod
     def invalid_command(cls, bot):
         bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")
+
