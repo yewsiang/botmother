@@ -16,7 +16,6 @@ from werkzeug.exceptions import NotFound
 mod_knowledgebase = Blueprint(
     'knowledgebase', __name__, url_prefix='/knowledgebase')
 
-
 @mod_knowledgebase.route('/', methods=['GET'])
 def home():
     # Retrieve the last

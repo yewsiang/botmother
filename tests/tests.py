@@ -838,6 +838,28 @@ class UserTests(BaseTestCase):
 
 
 class TelegramAccountManagerTests(BaseTestCase):
+    def test_merge_two_accounts(self):
+        '''
+        Merges a web and telegram account into one
+        '''
+        telegram_user = self.create_user(123, 0)
+        web_user = self.create_user(124, 0)
+
+        web_user.email = "a@a.com"
+        web_user.password = "123456"
+
+        db.session.add(telegram_user)
+        db.session.add(web_user)
+        db.session.commit()
+
+        assert TelegramAccountManager.merge_accounts(web_user, telegram_user) is True
+
+        assert telegram_user.email == "a@a.com"
+        assert telegram_user.password == "123456"
+
+
+
+
     def test_get_user_points(self):
         '''
         Tests that we can get the current number of points for the user
