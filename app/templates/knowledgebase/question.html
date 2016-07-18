@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% import 'knowledgebase/cards/answer_card.html' as ac %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
 
 {% block content %}
 {% set selected_color = random_color() %}
@@ -22,22 +23,38 @@
             <i class="users icon"></i>
             <span class="votes">3 Votes</span>
           </div>
-          <button class="ui mini green basic right floated button" style="margin-top:-2px">
-          Reply
+          {% if current_user.is_authenticated %}
+            <button class="ui mini green basic right floated button" style="margin-top:-2px">
+            Reply
+          {% else %}
+            <button class="ui mini green basic right floated disabled button" style="margin-top:-2px">
+            Sign in to Reply
+          {% endif %}
           </button>
         </div>
       </div>
 
     	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem </h3>
 
+{% if current_user.is_authenticated %}
+      <form method="POST" class="ui reply form">
+          {{ form.hidden_tag() }}
+          {{ render_field_with_errors(form.reply) }}
+          {{ render_field(form.submit, class='ui blue submit button') }}
+      </form>
+{#
+{% else %}
+
       <form class="ui reply form">
-        <div class="field">
-          <textarea></textarea>
+        <div class="disabled field">
+          <textarea>Sign in to Reply</textarea>
         </div>
-        <div class="ui blue labeled submit icon button">
-          <i class="icon edit"></i> Add Reply
+        <div class="ui disabled blue labeled submit icon button">
+          <i class="icon edit"></i> Sign in to Reply
         </div>
       </form>
+#}
+{% endif %}
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
@@ -49,8 +66,8 @@
       <h3 class="ui header" style="color: teal"> No answers for this question yet</h3>
       <p style="color: teal"> Be the first one to answer the question and earn bonus points ^^!</p>
     </div>
-{% endif %} 
+{% endif %}
 
     </div>
-  </div>  
+  </div>
 {% endblock %}
