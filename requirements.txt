@@ -3,6 +3,7 @@ anyjson==0.3.3
 billiard==3.3.0.23
 blinker==1.4
 colorama==0.3.7
+emoji==0.3.9
 Flask==0.10.1
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
