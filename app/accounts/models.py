@@ -2,6 +2,7 @@ from app import db
 from app.helpers import user_channels_table, get_user_by_id
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
+from sqlalchemy import orm
 
 
 class User(db.Model):
@@ -80,6 +81,16 @@ class User(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+    @orm.reconstructor
+    def init_on_load(self):
+        '''
+        Gives us a telegram_user_id anyways even if we're a web account
+        '''
+        if self.telegram_user_id is None:
+            self.telegram_user_id = -1 * self.id
+            db.session.add(self)
+            db.session.commit()
 
 '''
     def __init__(self, telegram_user_id, user_type, **kwargs):

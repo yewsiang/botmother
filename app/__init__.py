@@ -71,9 +71,9 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-#db.drop_all()
-#db.create_all()
-
+# db.drop_all()
+# db.create_all()
+'''
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
 TelegramAccountManager.create_account_if_does_not_exist(124, "Yew Siang")
@@ -89,7 +89,7 @@ KBManager.add_answer_to_question(question_id, 124, "42")
 KBManager.add_answer_to_question(question_id, 125, "43!")
 
 db.session.commit()
-
+'''
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterForm)

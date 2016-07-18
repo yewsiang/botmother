@@ -1,10 +1,12 @@
 # Import flask dependencies
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask.ext.security import current_user
 
 # Import the database object from the main app module
 from app import db
 from app.knowledgebase import KBManager
 from app.helpers import get_all_questions_by_channel_name, get_question_by_id
+from app.knowledgebase.forms import ReplyForm
 
 # Get json to convert objects to JS output
 import json
@@ -43,8 +45,18 @@ def channel(channel_name):
         raise NotFound()
 
 
-@mod_knowledgebase.route('/<int:question_id>', methods=['GET'])
+@mod_knowledgebase.route('/<int:question_id>', methods=['GET', 'POST'])
 def question(question_id):
+    form = ReplyForm(request.form)
     question = get_question_by_id(question_id)
     answers = question.answers
-    return render_template('knowledgebase/question.html', question=question, answers=answers)
+
+    print current_user.is_authenticated
+
+    if request.method == 'POST' and form.validate() and current_user.is_authenticated:
+        # Do something with the form info if the current user is good to go
+        # and the input is sensible
+        KBManager.add_answer_to_question(question_id, current_user.telegram_user_id, form.reply.data)
+        flash('Answer added!', 'success')
+
+    return render_template('knowledgebase/question.html', question=question, answers=answers, form=form)
