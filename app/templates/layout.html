@@ -34,38 +34,34 @@
                         {{ m.nav_link('homepage', 'Home') }}
                         {{ m.nav_link('knowledgebase.home', 'Modules') }}
 
+
                         <div class="right menu">
-                            <div class="ui aligned search">
+
+                            <div class="ui search">
                               <div class="ui icon input">
                                 <input class="custom-borderless prompt" type="text" placeholder="Search for modules">
                                 <i class="search icon"></i>
                               </div>
                               <div class="results"></div>
-                        </div>
-                        </div>
+                            </div>
 
                         {#{{ m.nav_link('map', 'Map') }}
                         {{ m.nav_link('contact', 'Contact') }}#}
 
-                        {#
+
                             <!-- User is logged in -->
                             {% if current_user.is_authenticated %}
-                                <div class="item">
-                                    <a class="ui primary button" href="/user/account">{{ current_user.name }} {{ current_user.surname }}</a>
-                                </div>
-                                <div class="item">
-                                    <a class="ui default button" href="/user/signout">Sign out</a>
-                                </div>
-                            <!-- User is not logged in -->
+                                {{ m.nav_link('security.logout', 'Log out')}}
+                                <a class="item">{{ current_user.name }}</a>
+                           <!-- User is not logged in -->
                             {% else %}
-                                <div class="item">
-                                    <a class="ui primary button" href="/user/signin">Sign in</a>
-                                </div>
-                                <div class="item">
-                                    <a class="ui default button" href="/user/signup">Sign up</a>
-                                </div>
+                                {{ m.nav_link('security.register', 'Sign Up') }}
+                                {{ m.nav_link('security.login', 'Sign In') }}
                             {% endif %}
-                        #}
+
+
+                        </div>
+
 
                     </div>
                 </div>

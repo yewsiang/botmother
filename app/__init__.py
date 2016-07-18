@@ -17,6 +17,9 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
 # For confirmation mail sending
 from flask_mail import Mail
 
+# For a replacement register form
+from app.auth import ExtendedRegisterForm
+
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -54,7 +57,7 @@ def not_found(error):
 from accounts import User, TelegramAccountManager, Role
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
 
-
+'''
 # Build the database:
 # This will create the database file using SQLAlchemy
 db.drop_all()
@@ -78,10 +81,11 @@ KBManager.add_answer_to_question(question_id, 125, "43!")
 
 
 db.session.commit()
+'''
 
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+security = Security(app, user_datastore, confirm_register_form=ExtendedRegisterForm)
 
 # SECURITY-MAIL
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
