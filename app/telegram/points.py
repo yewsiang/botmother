@@ -67,7 +67,6 @@ class Points:
     @classmethod
     def get_title(cls, bot):
         points = TelegramAccountManager.get_points(bot.telegram_id)
-        points += 50
         # Points = 0: Peon
         if points == Badges.NOTHING[0]:
             points_to_next_level = Badges.FIRST[0] - points
