@@ -9,14 +9,12 @@
         <span class="date">{#{{answer.date_created}}#}</span>
         <i class="users icon"></i>
         <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
-        <form method="post">
           <button class="ui small compact icon basic button">
             <i class="chevron up icon"></i>
           </button>
           <button class="ui small compact icon basic button">
             <i class="chevron down icon"></i>
           </button>
-        </form>
       </div>
       <div class="text">{{answer.text}}</div>
       <div class="actions">
