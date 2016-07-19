@@ -34,7 +34,7 @@ class Help:
                 use_aliases=True), parse_mode='HTML')
         elif (bot.state == State.SELECTING_FACULTY):
             bot.sender.sendMessage("/<faculty> - Show the modules within the faculty\n"
-                "/&lt;module code&gt; - Add a module\n(E.g /CS1010)\n"
+                "/<module code> - Add a module\n(E.g /CS1010)\n"
                 "/done - Done with browsing modules\n")
         elif (bot.state == State.DELETING_CHANNEL):
             bot.sender.sendMessage("/<module code> - Delete a module that you are subscribed to\n"
@@ -89,4 +89,3 @@ class Admin:
     @classmethod
     def invalid_command(cls, bot):
         bot.sender.sendMessage("You're not allowed to do this.\n/help for help :)")
-
