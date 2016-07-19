@@ -71,7 +71,7 @@ class Command:
             if (bot.state == State.NORMAL):
                 Command.process_normal_commands(bot, delegator_bot, command)
             elif (bot.state == State.SELECTING_FACULTY):
-                Modules.faculty_code_command(bot, delegator_bot, command)
+                Modules.faculty_code_command(bot, command)
             elif (bot.state == State.DELETING_CHANNEL):
                 Modules.process_deleting_channels(bot, delegator_bot, command)
 
@@ -121,19 +121,13 @@ class Command:
                 Settings.settings_command(bot)
             '''
         elif command[:1] == '/':
-            #
-            # TODO
             # Can either be faculty or module code
-            #
-            '''
             valid_faculty_code = Modules.faculty_code_command(bot, command)
             # Means User may be typing module_code
-            if is not valid_faculty_code:
-            '''
-
-            # /<module code> - When User types /<module code> in the expectation that it will add <module code>
-            # into their list of subscribed modules
-            Modules.module_code_command(bot, command)
+            if not valid_faculty_code:
+                # /<module code> - When User types /<module code> in the expectation that it will add <module code>
+                # into their list of subscribed modules
+                Modules.module_code_command(bot, command)
 
         else:
             Admin.invalid_command(bot)

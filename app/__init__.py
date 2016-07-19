@@ -67,22 +67,33 @@ app.jinja_env.globals.update(find_channel_name=find_channel_name)
 
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager, Role
-from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager
+from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager, Faculty
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-#db.drop_all()
-#db.create_all()
+db.drop_all()
+db.create_all()
 
 # create a user
 TelegramAccountManager.create_account_if_does_not_exist(123, "Sriram")
 TelegramAccountManager.create_account_if_does_not_exist(124, "Yew Siang")
 TelegramAccountManager.create_account_if_does_not_exist(125, "Herbert")
 
-# Seed channels
-db.session.add(Channel(name='CS1010'))
-db.session.add(Channel(name='CS1020'))
-db.session.add(Channel(name='BOBO1000'))
+# Seed channels & faculties
+fac1 = Faculty(name="SCIENCE")
+fac2 = Faculty(name="COMPUTING")
+CS1010 = Channel(name='CS1010')
+CS1020 = Channel(name='CS1020')
+BOBO1000 = Channel(name='BOBO1000')
+fac1.channels.append(BOBO1000)
+fac2.channels.append(CS1010)
+fac2.channels.append(CS1020)
+
+db.session.add(fac1)
+db.session.add(fac2)
+db.session.add(CS1010)
+db.session.add(CS1020)
+db.session.add(BOBO1000)
 
 question_id = KBManager.ask_question(123, 'bobo1000', "What is life?")
 KBManager.add_answer_to_question(question_id, 124, "42")

@@ -32,11 +32,9 @@ class Modules:
     # the User will be able to retrieve modules available for subscription
     @classmethod
     def modules_command(cls, bot):
-        #
-        # TODO: Show all the different faculties
-        #
-        '''
+        # Show all the different faculties
         list_of_all_faculties = KBManager.retrieve_all_faculties()
+        bot.state = State.SELECTING_FACULTY
         string_to_send = "Faculties: "
         for faculty in list_of_all_faculties:
             string_to_send += ("/" + str(faculty).upper() + "  ")
@@ -51,6 +49,7 @@ class Modules:
             string_to_send += ("/" + str(module).upper() + "  ")
         # Send the user a list of modules with "/" appended - easier to subscribe
         bot.sender.sendMessage(string_to_send)
+        '''
 
     # /<faculty code> - When User types /<faculty code> to find out the modules in the faculty.
     # Should be done after the User types a /modules command.
@@ -61,15 +60,12 @@ class Modules:
     # Function can be called after /modules, or any time by the User
     @classmethod
     def faculty_code_command(cls, bot, command):
-        #
-        # TODO: Show the User the modules in the faculty
-        #
-        '''
+        # Show the User the modules in the faculty
         faculty_code = command[1:]
-        modules_from_faculty = KBManager.retrieve_all_modules_from_faculty(command)
+        modules_from_faculty = KBManager.retrieve_all_modules_from_faculty(faculty_code.upper())
         # If faculty_code is valid
         if modules_from_faculty is not None:
-            string_to_send = "Modules available in <b>" + faculty_code + "</b>:"
+            string_to_send = "Modules available in <b>" + faculty_code.title() + "</b>:"
             for module in modules_from_faculty:
                 # Send the user a list of modules with "/" appended - easier to subscribe
                 string_to_send += ("/" + str(module).upper() + "  ")
@@ -84,8 +80,6 @@ class Modules:
                 bot.sender.sendMessage("I'm sorry but that is not a valid faculty :o\n"
                     "/done if you do not wish to browse the modules!")
             return False
-        '''
-        print "hi"
 
     # /add - When User types /add
     # However, we are not supporting /add but /<module code> command. This is just for fun.
