@@ -44,8 +44,8 @@ class Points:
     # /points - When User types /points to retrieve his points & badges
     @classmethod
     def points_command(cls, bot):
-        '''
         title, points_to_next_level = Points.get_title(bot)
+        points = TelegramAccountManager.get_points(bot.telegram_id)
         text_to_send = "Dear " + title[0] + ",\n"
            "You currently have " + points + " Karma points\n"
         if points_to_next_level is None:
@@ -60,14 +60,11 @@ class Points:
                 text_to_send += "You just need another " + points_to_next_level +
                     " points to advance to the next level!\n"
                     "Earn points by contributing questions & answers that are rated to the community :)!\n"
-        '''
-        print "hi"
 
     # According to the User's points, give him a title
     @classmethod
     def get_title(cls, bot):
         points = TelegramAccountManager.get_points(bot.telegram_id)
-        points += 50
         # Points = 0: Peon
         if points == Badges.NOTHING[0]:
             points_to_next_level = Badges.FIRST[0] - points
