@@ -57,7 +57,7 @@ class Points:
                 text_to_send += ("You just need <b>ONE</b> more point to go to the next level!\n\n"
                 "Earn points by contributing questions & answers that are rated to the community :)!\n")
             else:
-                text_to_send += ("You just need another <b>" + points_to_next_level +
+                text_to_send += ("You just need another <b>" + str(points_to_next_level) +
                     "</b> points to advance to the next level!\n\n"
                     "Earn points by contributing questions & answers that are rated to the community :)!\n")	
         bot.sender.sendMessage(text_to_send, parse_mode='HTML');
@@ -71,23 +71,23 @@ class Points:
             points_to_next_level = Badges.FIRST[0] - points
             return (Badges.NOTHING, points_to_next_level)
         # 1 to 4
-        elif points < Badges.FIRST[0]:
+        elif points >= Badges.FIRST[0] and points < Badges.SECOND[0]:
             points_to_next_level = Badges.SECOND[0] - points
             return (Badges.FIRST, points_to_next_level)
         # 5 to 9
-        elif points <= Badges.SECOND[0]:
+        elif points >= Badges.SECOND[0] and points < Badges.THIRD[0]:
             points_to_next_level = Badges.THIRD[0] - points
             return (Badges.SECOND, points_to_next_level)
         # 10 to 24
-        elif points <= Badges.THIRD[0]:
+        elif points >= Badges.THIRD[0] and points < Badges.FOURTH[0]:
             points_to_next_level = Badges.FOURTH[0] - points
             return (Badges.THIRD, points_to_next_level)
         # 25 to 49
-        elif points <= Badges.FOURTH[0]:
+        elif points >= Badges.FOURTH[0] and points < Badges.FIFTH[0]:
             points_to_next_level = Badges.FIFTH[0] - points
             return (Badges.FOURTH, points_to_next_level)
         # 50 to 99
-        elif points <= Badges.FIFTH[0]:
+        elif points >= Badges.FIFTH[0] and points < Badges.SIXTH[0]:
             points_to_next_level = Badges.SIXTH[0] - points
             return (Badges.FIFTH, points_to_next_level)
         # 100 and above: Hero
@@ -98,6 +98,6 @@ class Points:
     # Returns a tuple of (True/False of awarding of points, Updated points of user)
     @classmethod
     def award_points(cls, telegram_user_id, points):
-        # succeed, updated_points = KBManager.award_points(telegram_user_id, points)
-        # return (succeed, updated_points)
-        print "hi"
+        succeed, updated_points = TelegramAccountManager.award_points(telegram_user_id, points)
+        return (succeed, updated_points)
+ 

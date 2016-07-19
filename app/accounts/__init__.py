@@ -136,15 +136,16 @@ class TelegramAccountManager(object):
     @staticmethod
     def award_points(telegram_user_id, points):
         '''
-        Adds points to user if user exists, otherwise returns none
+        Adds points to user if user exists, otherwise returns false 
         '''
         user = get_user_by_telegram_id(telegram_user_id)
         if user is not None:
             user.points = user.points + points
             db.session.add(user)
             db.session.commit()
+            return (True, user.points)
         else:
-            return None
+            return (False, user.points) 
 
     @staticmethod
     def generate_and_store_otp(telegram_user_id):
