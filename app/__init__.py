@@ -71,6 +71,7 @@ from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager, F
 
 # Build the database:
 # This will create the database file using SQLAlchemy
+'''
 db.drop_all()
 db.create_all()
 
@@ -100,6 +101,7 @@ KBManager.add_answer_to_question(question_id, 124, "42")
 KBManager.add_answer_to_question(question_id, 125, "43!")
 
 db.session.commit()
+'''
 
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

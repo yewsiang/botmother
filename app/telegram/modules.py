@@ -1,6 +1,8 @@
 from .commands import State
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager
+from datetime import timedelta
+import emoji
 
 
 class Modules:
@@ -35,21 +37,12 @@ class Modules:
         # Show all the different faculties
         list_of_all_faculties = KBManager.retrieve_all_faculties()
         bot.state = State.SELECTING_FACULTY
-        string_to_send = "Faculties: "
+        string_to_send = emoji.emojize(":school: Faculties: \n", use_aliases=True)
         for faculty in list_of_all_faculties:
             string_to_send += ("/" + str(faculty).upper() + "  ")
         string_to_send += "\n\nSelect the faculty of the module that you wish to join :)"
         # Send the user a list of faculties with "/" appended - easier to subscribe
         bot.sender.sendMessage(string_to_send)
-        '''
-        # Retrieve all the modules that are available for subscription
-        list_of_all_modules = KBManager.retrieve_all_modules()
-        string_to_send = "Modules available:  "
-        for module in list_of_all_modules:
-            string_to_send += ("/" + str(module).upper() + "  ")
-        # Send the user a list of modules with "/" appended - easier to subscribe
-        bot.sender.sendMessage(string_to_send)
-        '''
 
     # /<faculty code> - When User types /<faculty code> to find out the modules in the faculty.
     # Should be done after the User types a /modules command.
@@ -115,24 +108,39 @@ class Modules:
                 bot.sender.sendMessage("You've subscribed to the module already :)")
             else:
                 add_channel_succeed = AccountManager.add_channel(bot.telegram_id, module_code)
+
+                # Informing the User of the activity of the channel
                 if add_channel_succeed:
                     bot.sender.sendMessage("Module added to your subscription")
-                    #
-                    # TODO: Tell the user the number of users and activitiy of the module
-                    #
-                    '''
+                    # Tell the user the number of users and activitiy of the module
                     num_users, time_since_last_question = KBManager.get_module_activity(module_code)
-                    string_to_send = "<b>" + module_code + "/<b> has a total of <b>" + num_users +
-                        "</b> number of students in the channel!\n\n"
+                    string_to_send = ("<b>" + module_code.upper() + "</b> has a total of <b>" + str(num_users) +
+                        "</b> students in the channel!\n\n")
                     # There is at least 1 question
                     if time_since_last_question is not None:
-                        string_to_send += "The last question was asked " + time_since_last_question + " ago!"
+                        # Difference between GMT and GMT + 8
+                        time_since_last_question -= timedelta(hours=8)
+                        string_to_send += "Fun fact: The last question was asked "
+                        # To show nicely to the User
+                        days = time_since_last_question.days
+                        hours, remainder = divmod(time_since_last_question.seconds, 3600)
+                        minutes, seconds = divmod(remainder, 60)
+
+                        if days is not 0:
+                            string_to_send += ("<b>" + str(days) + "</b> days ")
+                        if hours is not 0:
+                            string_to_send += ("<b>" + str(hours) + "</b> hours ")
+                        if minutes is not 0:
+                            string_to_send += ("<b>" + str(minutes) + "</b> minutes ")
+                        if seconds is not 0:
+                            string_to_send += ("<b>" + str(seconds) + "</b> seconds ")
+                        string_to_send += "ago!"
                     else:
                         # Encourage people to ask questions
                         string_to_send += "No questions have been asked yet! Be the one to start the ball rolling!"
 
                     bot.sender.sendMessage(string_to_send, parse_mode='HTML')
-                    '''
+
                 else:
                     bot.sender.sendMessage("There is a problem adding your module. Please try again later :(")
         else:
