@@ -6,9 +6,17 @@
     <div class="content">
       <a class="author">{{answer.user.name}}</a>
       <div class="metadata">
-        <span class="date">Today at 5:42PM</span>
+        <span class="date">{#{{answer.date_created}}#}</span>
         <i class="users icon"></i>
         <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
+        <form method="post">
+          <button class="ui small compact icon basic button">
+            <i class="chevron up icon"></i>
+          </button>
+          <button class="ui small compact icon basic button">
+            <i class="chevron down icon"></i>
+          </button>
+        </form>
       </div>
       <div class="text">{{answer.text}}</div>
       <div class="actions">
@@ -16,7 +24,7 @@
       </div>
     </div>
   </div>
-      
+     <!--
   <div class="comment">
     <a class="avatar">
       <img src="../../static/404.jpg">
@@ -74,5 +82,5 @@
       </div>
     </div>
   </div>
-
+-->
 {% endmacro %}

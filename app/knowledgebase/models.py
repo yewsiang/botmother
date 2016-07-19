@@ -73,6 +73,8 @@ class Answer(db.Model):
 
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
 
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
     # Is the answer confirmed? - Has the User confirmed that he wants to send the answer
     confirmed = db.Column(db.Boolean)
 
