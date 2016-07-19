@@ -46,7 +46,7 @@ class Points:
     def points_command(cls, bot):
         title, points_to_next_level = Points.get_title(bot)
         points = TelegramAccountManager.get_points(bot.telegram_id)
-        text_to_send = "Dear " + title[0] + ",\n"
+        text_to_send = "Dear " + title[0] + ",\n" + 
            "You currently have " + points + " Karma points\n"
         if points_to_next_level is None:
            # The person is a hero
@@ -58,7 +58,7 @@ class Points:
                 "Earn points by contributing questions & answers that are rated to the community :)!\n"
             else:
                 text_to_send += "You just need another " + points_to_next_level +
-                    " points to advance to the next level!\n"
+                    " points to advance to the next level!\n" +
                     "Earn points by contributing questions & answers that are rated to the community :)!\n"
 
     # According to the User's points, give him a title
