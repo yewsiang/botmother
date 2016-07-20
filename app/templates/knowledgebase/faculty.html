@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% import "knowledgebase/cards/module_card.html" as mc%}
+
+
+{% block content %}
+<!-- Code for Module Cards to dim and show text-->
+<script>
+$(document).ready(function() {
+    $('.special.cards .image').dimmer({
+      on: 'hover'
+    });
+
+    var content = {{ search_content|safe }}
+
+    $('.ui.search')
+      .search({
+        source: content
+      })
+    ;
+});
+</script>
+
+{% if modules|length > 0 %}
+    <div class="ui four column grid">
+        {% for module in modules %}
+            <div class="column">
+                {{mc.module_card(module)}}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h1> No modules yet! </h1>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,7 @@
    <div class="{{selected_color}} ui link special cards">
      <div class="ui card" style="width:100%">
        <div class="content">
-          <a href="{{url_for('knowledgebase.question', question_id=question.id)}}" class="header">{{question.text}}</a>
+          <a href="{{url_for('knowledgebase.question', question_id=question.id)}}" class="ui text custom-no-decoration" style="color:black">{{question.text}}</a>
        </div>
        <div class="extra content" style="padding-bottom:5px; padding-top:5px">
           <a href="{{url_for('knowledgebase.question', question_id=question.id)}}">

@@ -13,7 +13,7 @@ def get_weblink_by_question_id(question_id):
     '''
     Given a question_id, it would generate the link that would lead to the question
     '''
-    weblink = "127.0.0.1:8000/knowledgebase/" + str(question_id)
+    weblink = "botmother.themetamorph.net/knowledgebase/" + str(question_id)
     return weblink
 
 def get_user_by_telegram_id(telegram_user_id):

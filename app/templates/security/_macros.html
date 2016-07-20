@@ -26,6 +26,40 @@
   </p>
 {% endmacro %}
 
-{% macro render_field(field) %}
+{% macro render_reply_field(field) %}
   <p>{{ field(**kwargs)|safe }}</p>
 {% endmacro %}
+
+<!-- Separate forms for the reply messages for answers and comments -->
+{% macro render_reply_field_with_errors(field) %}
+  <p>
+    <h3 class="ui header" style="color:teal">{{ field.label }}</h3>
+
+    {% if field.errors %}
+
+    <div class="field error">
+      {{ field(**kwargs)|safe }}
+        <div class="ui list">
+          {% for error in field.errors %}
+            <div class="icon item">
+              <i class="warning sign icon"></i>
+                <div class="content"><p>{{ error }}</p></div>
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+
+    {% else %}
+
+    <div class="field">
+    {{ field(class="field", **kwargs)|safe }}
+    </div>
+
+    {% endif %}
+  </p>
+{% endmacro %}
+
+{% macro render_reply_field(field) %}
+  <p class="custom-align-center">{{ field(**kwargs)|safe }}</p>
+{% endmacro %}
+

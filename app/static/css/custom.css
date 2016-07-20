@@ -1,12 +1,25 @@
 /* Hack because of ugly formatting of forms in templates/security/login_user.html */
 .custom .ui.stacked.segment:after {
-    border-width: 0px !important;
-    background: rgba(0, 0, 0, 0);
+  border-width: 0px !important;
+  background: rgba(0, 0, 0, 0);
 }
 
+.custom-reply-form {
+  min-height: 3em !important;
+  height: 3em !important;
+}
+
+/* To squeeze most pages into a decent width */
+.custom-80percent-width {
+  width: 80% !important;
+}
+/* Centering */
 .custom-center {
-   margin-left: auto !important;
-   margin-right: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.custom-align-center {
+  text-align: center !important;
 }
 
 .custom-borderless {
@@ -15,6 +28,10 @@
 
 .custom-nopadding {
   padding: 1px !important;
+}
+
+.custom-no-decoration {
+  text-decoration: none !important;
 }
 
 body > .grid {

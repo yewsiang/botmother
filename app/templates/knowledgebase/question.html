@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% import 'knowledgebase/cards/answer_card.html' as ac %}
-{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% from "security/_macros.html" import render_reply_field_with_errors, render_reply_field %}
 
 {% block content %}
 {% set selected_color = random_color() %}
@@ -54,10 +54,7 @@ function vote_answer_down(answer_id) {
             <span class="date">{{question.date_created.strftime('%d %b %Y %H:%M')}}</span>
 
           </div>
-          {% if current_user.is_authenticated %}
-            <button class="ui mini green basic right floated button" style="margin-top:-2px">
-            Reply
-          {% else %}
+          {% if not current_user.is_authenticated %}
             <button class="ui mini green basic right floated disabled button" style="margin-top:-2px">
             Sign in to Reply
           {% endif %}
@@ -68,11 +65,6 @@ function vote_answer_down(answer_id) {
     	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px"> {{question.text}} </h3>
       {% if current_user.is_authenticated %}
 
-      <form method="POST" class="ui reply form">
-          {{ form.hidden_tag() }}
-          {{ render_field_with_errors(form.reply) }}
-          {{ render_field(form.submit, class='ui blue submit button') }}
-      </form>
 {#
 {% else %}
 
@@ -98,6 +90,12 @@ function vote_answer_down(answer_id) {
         {% endif %}
 
       {% endfor %}
+
+      <form method="POST" class="ui reply form">
+          {{ form.hidden_tag() }}
+          {{ render_reply_field_with_errors(form.reply, class='custom-reply-form') }}
+          {{ render_reply_field(form.submit, class='ui green small custom-centered submit button') }}
+      </form>
 
 {% else %}
     <div class="text" align="center">
