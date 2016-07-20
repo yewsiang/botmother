@@ -65,13 +65,16 @@ app.jinja_env.globals.update(random_color=random_color)
 app.jinja_env.globals.update(find_channel_name=find_channel_name)
 
 
+
 # Before we create the database tables - import all models
 from accounts import User, TelegramAccountManager, Role
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager, Faculty
 
+'''
+
 # Build the database:
 # This will create the database file using SQLAlchemy
-'''
+# db.drop_all()
 db.drop_all()
 db.create_all()
 
@@ -101,6 +104,7 @@ KBManager.add_answer_to_question(question_id, 124, "42")
 KBManager.add_answer_to_question(question_id, 125, "43!")
 
 db.session.commit()
+
 '''
 
 # SECURITY/AUTH
@@ -134,5 +138,5 @@ app.jinja_env.filters['pluralize'] = pluralize_dj
 
 from telegram import bot
 
-bot.message_loop()
+#bot.message_loop()
 print " "

@@ -1,4 +1,4 @@
-from app import db
+from app import app, db
 from app.helpers import user_channels_table, get_user_by_id
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
@@ -63,6 +63,16 @@ class User(db.Model):
     confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+    def user_vote_status_on_answer(self, answer_id):
+        '''
+        Alias for KBManager method - to access from UI
+        '''
+        from app.knowledgebase import KBManager
+        return KBManager.user_vote_status_on_answer(answer_id, self.telegram_user_id)
+
+    def get_url_for_image(self):
+        return "../../static/img/avatars/" + str(self.id % 1000) + ".png"
 
     def __repr__(self):
         return str(self.telegram_user_id)

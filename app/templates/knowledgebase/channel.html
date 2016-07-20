@@ -7,15 +7,15 @@
 <h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{channel_name.upper()}}</h3>
 
 {% if questions.all()|length > 0 %}
-	
-	<p class="ui header">Newest</p>	
+
+	<p class="ui header">Newest</p>
   {% for question in questions %}
     <div class="column">
       {{qc.question_card(question)}}
     </div>
   {% endfor %}
 
-	<p class="ui header">Highly Voted</p>	
+	<p class="ui header">Highly Voted</p>
   {% for question in questions %}
     <div class="column">
       {{qc.question_card(question)}}

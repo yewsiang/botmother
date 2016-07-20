@@ -13,6 +13,10 @@
    border-style: none !important;
 }
 
+.custom-nopadding {
+  padding: 1px !important;
+}
+
 body > .grid {
   height: 100%;
 }

@@ -33,10 +33,7 @@
                     <div class="ui secondary pointing  menu">
                         <!--{{ m.nav_link('homepage', 'Home') }}-->
                         {{ m.nav_link('knowledgebase.home', 'Modules') }}
-
-
-                        <div class="right menu">
-
+                        <a class="item custom-nopadding">
                             <div class="ui search">
                               <div class="ui icon input">
                                 <input class="custom-borderless prompt" type="text" placeholder="Search for modules">
@@ -44,6 +41,10 @@
                               </div>
                               <div class="results"></div>
                             </div>
+                        </a>
+
+                        <div class="right menu">
+
 
                         {#{{ m.nav_link('map', 'Map') }}
                         {{ m.nav_link('contact', 'Contact') }}#}
@@ -53,6 +54,9 @@
                             {% if current_user.is_authenticated %}
                                 {{ m.nav_link('security.logout', 'Log out')}}
                                 <a class="item">{{ current_user.name }}</a>
+                                <a class="item custom-nopadding">
+                                <img class="ui mini circular image" src={{current_user.get_url_for_image()}}></img>
+                                </a>
                            <!-- User is not logged in -->
                             {% else %}
                                 {{ m.nav_link('security.login', 'Sign In') }}

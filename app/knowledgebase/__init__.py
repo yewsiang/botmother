@@ -328,6 +328,8 @@ class KBManager(object):
         '''
         This method checks for a valid answer and voter, then adds
         the vote object to both
+        Returns True if the vote_amount is the new vote_amount (successful change)
+        or False if the vote was reset to 0 (double upvote/downvote)
         '''
         answer = db.session.query(Answer).get(answer_id)
 
@@ -335,21 +337,96 @@ class KBManager(object):
             voter = get_user_by_telegram_id(voter_telegram_id)
 
             if voter is not None:
-                '''
-                answer and voter exist and are valid, create a new vote
-                and add it to both of them
-                '''
-                new_vote = Vote(amount=vote_amount)
+                vote_status = KBManager.user_vote_status_on_answer(answer.id, voter_telegram_id)
+                # We need to check if we can even vote on this
+                # I.e. we haven't voted OR we are upvoting when this is a downvote / vice versa
+                is_opposite_vote = (vote_status ^ vote_amount)
+                if vote_status == 0:
+                    '''
+                    answer and voter exist and are valid, create a new vote
+                    and add it to both of them
+                    '''
+                    new_vote = Vote(amount=vote_amount)
 
-                voter.votes.append(new_vote)
-                answer.votes.append(new_vote)
+                    voter.votes.append(new_vote)
+                    answer.votes.append(new_vote)
 
-                db.session.add(voter)
-                db.session.add(answer)
-                db.session.commit()
+                    db.session.add(voter)
+                    db.session.add(answer)
+                    db.session.commit()
 
-                return True
+                    #print "Adding vote"
+
+                    return True
+
+                elif is_opposite_vote:
+                    # Change the user's vote to the correct amount
+                    vote_to_change = KBManager.get_first_user_vote(answer_id, voter_telegram_id)
+                    vote_to_change.amount = vote_amount
+                    db.session.add(vote_to_change)
+                    db.session.commit()
+
+                    #print "Changing vote"
+
+                    return True
+                else:
+                    # Remove the vote (if we double up/downvote - assume removal)
+
+                    vote_to_remove = KBManager.get_first_user_vote(answer_id, voter_telegram_id)
+                    db.session.delete(vote_to_remove)
+                    db.session.commit()
+                    return False
+
             else:
                 raise ValueError('Voter is not a valid user!')
         else:
             raise ValueError('Answer cannot be found to add vote to!')
+
+    @staticmethod
+    def get_first_user_vote(answer_id, telegram_user_id):
+        '''
+        Returns the first vote that this user has cast for this answer
+        '''
+        answer = db.session.query(Answer).get(answer_id)
+        user = get_user_by_telegram_id(telegram_user_id)
+
+        if answer is not None and user is not None:
+            filtered_votes = answer.votes.filter(Vote.user_id == user.id)
+            if filtered_votes.count() == 0:
+                # we have never voted on this
+                return None
+            else:
+                return filtered_votes.first()
+        else:
+            raise ValueError('Answer or user cannot be None!')
+
+    @staticmethod
+    def vote_type(vote):
+        '''
+        Takes in either None or a vote. If the vote is None,
+        return 0. If it's a positive vote, returns 1 (upvote). Else
+        if it's negative, returns -1
+        '''
+        if vote is not None:
+            if vote.amount > 0:
+                return 1
+            elif vote.amount < 0:
+                return -1
+            else:
+                print "Should never have a 0 amount vote"
+                return 0
+        else:
+            return 0
+
+    @staticmethod
+    def user_vote_status_on_answer(answer_id, telegram_user_id):
+        '''
+        Gets the user's voting status on a particular answer - with ref to the
+        vote_type function
+        '''
+        return KBManager.vote_type(KBManager.get_first_user_vote(answer_id, telegram_user_id))
+
+
+
+
+

@@ -1,14 +1,42 @@
-{% macro answer_card(answer) %}
+{% macro answer_card(answer, current_user, vote_status) %}
   <div class="comment">
-    <a class="avatar">
-      <img src="../../static/404.jpg">
+    <a class="ui avatar circular image">
+      <img src={{answer.user.get_url_for_image()}}>
     </a>
     <div class="content">
       <a class="author">{{answer.user.name}}</a>
       <div class="metadata">
-        <span class="date">Today at 5:42PM</span>
-        <i class="users icon"></i>
+
+      {% set upvote_function = "vote_answer_up(" ~ answer.id ~ ")"%}
+      {% set downvote_function = "vote_answer_down(" ~ answer.id ~ ")" %}
+      {% set upvote_id = answer.id ~ "_up" %}
+      {% set downvote_id = answer.id ~ "_down" %}
+
+      {% set has_upvoted = vote_status == 1 %}
+      {% set has_downvoted = vote_status == -1 %}
+
+          {% if current_user.is_authenticated %}
+            {% if has_upvoted %}
+            <button id={{upvote_id}} onclick={{upvote_function}} class="ui mini compact icon circular green button" style="margin-top: -5px">
+            {% else %}
+            <button id={{upvote_id}} onclick={{upvote_function}} class="ui mini compact icon circular basic green button" style="margin-top: -5px">
+            {% endif %}
+            <i class="chevron up icon"></i>
+            </button>
+          {% endif %}
+
         <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
+          {% if current_user.is_authenticated %}
+            {% if has_downvoted %}
+            <button id={{downvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular red button" style="margin-top: -5px">
+            {% else %}
+            <button id={{downvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular basic red button" style="margin-top: -5px">
+            {% endif %}
+            <i class="chevron down icon"></i>
+            </button>
+          {% endif %}
+
+        <span class="date">{{answer.date_created.strftime('%d %b %Y %H:%M')}}</span>
       </div>
       <div class="text">{{answer.text}}</div>
       <div class="actions">
@@ -16,7 +44,7 @@
       </div>
     </div>
   </div>
-      
+     <!--
   <div class="comment">
     <a class="avatar">
       <img src="../../static/404.jpg">
@@ -74,5 +102,5 @@
       </div>
     </div>
   </div>
-
+-->
 {% endmacro %}

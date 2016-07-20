@@ -4,24 +4,55 @@
 
 {% block content %}
 {% set selected_color = random_color() %}
-<!-- Code for Module Cards to dim and show text-->
 
+<script>
+// Button-click voting
+
+function vote_callback(data) {
+  var answer_id = data.answer_id;
+  var new_vote_state = data.new_vote_state;
+
+  console.log(data);
+
+
+  var up_string = '#' + answer_id + "_up";
+  var down_string = '#' + answer_id + "_down";
+
+  if (new_vote_state == 0) {
+    $(up_string).addClass("basic");
+    $(down_string).addClass("basic");
+  } else if (new_vote_state == 1) {
+    $(up_string).removeClass("basic");
+    $(down_string).addClass("basic");
+  } else if (new_vote_state == -1) {
+    $(up_string).addClass("basic");
+    $(down_string).removeClass("basic");
+  }
+}
+
+function vote_answer_up(answer_id) {
+  $.post('answers/' + answer_id + '/upvote', null, vote_callback);
+}
+
+function vote_answer_down(answer_id) {
+  $.post('answers/' + answer_id + '/downvote', null, vote_callback);
+}
 </script>
+
   <div class="ui one column grid container padded">
-    <div class="ui comments custom-center">
+    <div class="ui comments custom-center" style="width: 80%">
 
     <h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{find_channel_name(question.channel_id)}}</h3>
 
       <div class="comment">
-        <a class="avatar" style="margin-top:-5px">
-          <img src="../../static/404.jpg">
+        <a class="ui circular avatar image" style="margin-top:-10px">
+          <img src="{{ question.user.get_url_for_image() }}">
         </a>
         <div class="content">
-          <span class="author">Author</span>
+          <span class="author">{{question.user.name}}</span>
           <div class="metadata">
-            <span class="date">Today at 5:42PM</span>
-            <i class="users icon"></i>
-            <span class="votes">3 Votes</span>
+            <span class="date">{{question.date_created.strftime('%d %b %Y %H:%M')}}</span>
+
           </div>
           {% if current_user.is_authenticated %}
             <button class="ui mini green basic right floated button" style="margin-top:-2px">
@@ -34,9 +65,9 @@
         </div>
       </div>
 
-    	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem </h3>
+    	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px"> {{question.text}} </h3>
+      {% if current_user.is_authenticated %}
 
-{% if current_user.is_authenticated %}
       <form method="POST" class="ui reply form">
           {{ form.hidden_tag() }}
           {{ render_field_with_errors(form.reply) }}
@@ -58,7 +89,10 @@
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
-        {{ac.answer_card(answer)}}
+
+        {% set vote_status = current_user.user_vote_status_on_answer(answer.id) %}
+        {{ac.answer_card(answer, current_user, vote_status)}}
+
       {% endfor %}
 
 {% else %}
