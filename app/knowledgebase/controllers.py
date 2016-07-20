@@ -60,7 +60,7 @@ def question(question_id):
     return render_template('knowledgebase/question.html', question=question, answers=answers, form=form)
 
 
-@mod_knowledgebase.route('/answers/<int:answer_id>/upvote', methods=['GET', 'POST'])
+@mod_knowledgebase.route('/answers/<int:answer_id>/upvote', methods=['POST'])
 @login_required
 def upvote(answer_id):
     answer = db.session.query(Answer).get(answer_id)
@@ -73,7 +73,7 @@ def upvote(answer_id):
         return "", 404
 
 
-@mod_knowledgebase.route('/answers/<int:answer_id>/downvote', methods=['GET', 'POST'])
+@mod_knowledgebase.route('/answers/<int:answer_id>/downvote', methods=['POST'])
 @login_required
 def downvote(answer_id):
     answer = db.session.query(Answer).get(answer_id)
