@@ -3,9 +3,19 @@
 
 {% block content %}
 <!-- Code for Module Cards to dim and show text-->
-<div class="custom-80percent-width" style="margin-left: auto; margin-right: auto">
-	<h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{channel_name.upper()}}</h3>
+<div class="ui five column grid" style="margin-top:2px; margin-bottom:8px">
+    <div class="column custom-nopadding">
+    <a href="javascript:history.back()" class="ui" style="color:gray">Go Back</a>
+    </div>
+    <div class="column custom-nopadding"></div>
+    <div class="column custom-nopadding">
+        <h3 class="ui header custom-align-center" style="color:teal">{{channel_name.upper()}}</h3>
+    </div>
+    <div class="column custom-nopadding"></div>
+    <div class="column custom-nopadding"></div>
+</div>
 
+<div class="custom-80percent-width" style="margin-left: auto; margin-right: auto">
 	{% if questions.all()|length > 0 %}
 
 		<p class="ui header">Newest</p>

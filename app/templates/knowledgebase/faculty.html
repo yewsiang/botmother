@@ -6,21 +6,27 @@
 <!-- Code for Module Cards to dim and show text-->
 <script>
 $(document).ready(function() {
-    $('.special.cards .image').dimmer({
-      on: 'hover'
-    });
-
     var content = {{ search_content|safe }}
 
     $('.ui.search')
       .search({
         source: content
-      })
-    ;
+      });
 });
 </script>
 
 {% if modules|length > 0 %}
+    <div class="ui five column grid" style="margin-top:3px">
+        <div class="column custom-nopadding">
+        <a href="javascript:history.back()" class="ui" style="color:gray">Go Back</a>
+        </div>
+        <div class="column custom-nopadding"></div>
+        <div class="column custom-nopadding">
+            <h3 class="ui header custom-align-center" style="color:teal">{{faculty_name.title()}}</h3>
+        </div>
+        <div class="column custom-nopadding"></div>
+        <div class="column custom-nopadding"></div>
+    </div>
     <div class="ui four column grid">
         {% for module in modules %}
             <div class="column">

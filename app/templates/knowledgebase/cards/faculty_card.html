@@ -1,0 +1,23 @@
+{# myapp/templates/knowledgebase/faculty_card.html #}
+{# Assume that we are passed in a variable called 'faculty' #}
+{# A macro plugin for a Faculty card #}
+
+{% macro faculty_card(faculty) %}
+  {% set selected_color = random_color() %}
+   <div class="{{selected_color}} ui link special cards">
+     <div class="card">
+       <div class="content">
+         <a href="{{url_for('knowledgebase.faculty', faculty_name=faculty.name)}}" class="header">{{faculty.name.upper()}}</a>
+         <div class="meta">
+           {#<span class="date">{{faculty.questions|length}}</span>#}
+         </div>
+       </div>
+       <div class="extra content">
+         <a href="{{url_for('knowledgebase.faculty', faculty_name=faculty.name)}}">
+           <i class="book icon"></i>
+           {{faculty.channels.all()|length}} Module{{faculty.channels.all()|length|pluralize}}
+         </a>
+       </div>
+     </div>
+   </div>
+{% endmacro %}

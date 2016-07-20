@@ -18,8 +18,10 @@ from werkzeug.exceptions import NotFound
 mod_knowledgebase = Blueprint(
     'knowledgebase', __name__, url_prefix='/knowledgebase')
 
+
 @mod_knowledgebase.route('/', methods=['GET'])
 def home():
+    '''
     # Retrieve the last
     modules = KBManager.retrive_all_module_objects()
 
@@ -34,9 +36,35 @@ def home():
     # convert to json
     search_content = json.dumps(search_content)
     return render_template('knowledgebase/home.html', modules=modules, search_content=search_content)
+    '''
+    # Retrieve the last
+    faculties = KBManager.retrieve_all_faculties()
+    modules = KBManager.retrive_all_module_objects()
+
+    # Convert the modules to search content
+    search_content = []
+
+    # Loop through all the modules and add them to the semantic search bar
+    for module in modules:
+        search_content.append({'title': module.name.upper(),
+                               'url': url_for('knowledgebase.channel', channel_name=module.name)})
 
 
-@mod_knowledgebase.route('/<string:channel_name>', methods=['GET'])
+    # convert to json
+    search_content = json.dumps(search_content)
+    return render_template('knowledgebase/home.html', faculties=faculties, search_content=search_content)
+
+
+@mod_knowledgebase.route('/<string:faculty_name>', methods=['GET'])
+def faculty(faculty_name):
+    modules = KBManager.retrieve_all_modules_from_faculty(faculty_name)
+    if modules is not None:
+        return render_template('knowledgebase/faculty.html', modules=modules, faculty_name=faculty_name)
+    else:
+        raise NotFound()
+
+
+@mod_knowledgebase.route('/modules/<string:channel_name>', methods=['GET'])
 def channel(channel_name):
     questions = get_all_questions_by_channel_name(channel_name)
     if questions is not None:

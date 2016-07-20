@@ -1,15 +1,11 @@
 {% extends "layout.html" %}
-{% import "knowledgebase/cards/module_card.html" as mc%}
+{% import "knowledgebase/cards/faculty_card.html" as fc%}
 
 
 {% block content %}
-<!-- Code for Module Cards to dim and show text-->
+<!-- Code for Faculty Cards to show text-->
 <script>
 $(document).ready(function() {
-    $('.special.cards .image').dimmer({
-      on: 'hover'
-    });
-
     var content = {{ search_content|safe }}
 
     $('.ui.search')
@@ -20,15 +16,23 @@ $(document).ready(function() {
 });
 </script>
 
-{% if modules|length > 0 %}
-    <div class="ui four column grid">
+{% if faculties|length > 0 %}
+    <h3 class="ui header centered" style="color:teal; margin-top:0px">Faculties</h3>
+    <div class="ui three column grid">
+        <!--
         {% for module in modules %}
             <div class="column">
                 {{mc.module_card(module)}}
             </div>
         {% endfor %}
+        -->
+        {% for faculty in faculties %}
+            <div class="column">
+                {{fc.faculty_card(faculty)}}
+            </div>
+        {% endfor %}
     </div>
 {% else %}
-    <h1> No modules yet! </h1>
+    <h1> No faculties yet! </h1>
 {% endif %}
 {% endblock %}

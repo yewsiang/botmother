@@ -39,10 +39,20 @@ function vote_answer_down(answer_id) {
 }
 </script>
 
-  <div class="ui one column grid container padded">
-    <div class="ui comments custom-center" style="width: 80%">
+  <div class="ui five column grid" style="margin-top:2px; margin-bottom:8px">
+      <div class="column custom-nopadding">
+      <a href="javascript:history.back()" class="ui" style="color:gray">Go Back</a>
+      </div>
+      <div class="column custom-nopadding"></div>
+      <div class="column custom-nopadding">
+          <h3 class="ui header custom-align-center" style="color:teal">{{find_channel_name(question.channel_id)}}</h3>
+      </div>
+      <div class="column custom-nopadding"></div>
+      <div class="column custom-nopadding"></div>
+  </div>
 
-    <h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{find_channel_name(question.channel_id)}}</h3>
+  <div class="ui one column grid container padded">
+    <div class="ui comments custom-center" style="width: 100%">
 
       <div class="comment">
         <a class="ui circular avatar image" style="margin-top:-10px">
@@ -94,7 +104,7 @@ function vote_answer_down(answer_id) {
       <form method="POST" class="ui reply form">
           {{ form.hidden_tag() }}
           {{ render_reply_field_with_errors(form.reply, class='custom-reply-form') }}
-          {{ render_reply_field(form.submit, class='ui green small custom-centered submit button') }}
+          {{ render_reply_field(form.submit, class='ui circular green small custom-centered submit button') }}
       </form>
 
 {% else %}
