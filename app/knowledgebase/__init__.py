@@ -328,6 +328,8 @@ class KBManager(object):
         '''
         This method checks for a valid answer and voter, then adds
         the vote object to both
+        Returns True if the vote_amount is the new vote_amount (successful change)
+        or False if the vote was reset to 0 (double upvote/downvote)
         '''
         answer = db.session.query(Answer).get(answer_id)
 
@@ -368,9 +370,11 @@ class KBManager(object):
 
                     return True
                 else:
-                    # Incorrect vote
-                    #print "Can't re-upvote/downvote!"
+                    # Remove the vote (if we double up/downvote - assume removal)
 
+                    vote_to_remove = KBManager.get_first_user_vote(answer_id, voter_telegram_id)
+                    db.session.delete(vote_to_remove)
+                    db.session.commit()
                     return False
 
             else:

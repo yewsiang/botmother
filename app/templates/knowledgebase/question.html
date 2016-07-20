@@ -8,14 +8,32 @@
 <script>
 // Button-click voting
 
+function vote_callback(data) {
+  var answer_id = data.answer_id;
+  var new_vote_state = data.new_vote_state;
+
+
+  var up_string = '#' + answer_id + "_up";
+  var down_string = '#' + answer_id + "_down";
+
+  if (new_vote_state == 0) {
+    $(up_string).addClass("basic");
+    $(down_string).addClass("basic");
+  } else if (new_vote_state == 1) {
+    $(up_string).removeClass("basic");
+    $(down_string).addClass("basic");
+  } else if (new_vote_state == -1) {
+    $(up_string).addClass("basic");
+    $(down_string).removeClass("basic");
+  }
+}
+
 function vote_answer_up(answer_id) {
-  $.ajax('answers/' + answer_id + '/upvote');
-  location.reload();
+  $.post('answers/' + answer_id + '/upvote', null, vote_callback);
 }
 
 function vote_answer_down(answer_id) {
-  $.ajax('answers/' + answer_id + '/downvote');
-  location.reload();
+  $.post('answers/' + answer_id + '/downvote', null, vote_callback);
 }
 </script>
 
@@ -69,7 +87,10 @@ function vote_answer_down(answer_id) {
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
-        {{ac.answer_card(answer, current_user)}}
+
+        {% set vote_status = current_user.user_vote_status_on_answer(answer.id) %}
+        {{ac.answer_card(answer, current_user, vote_status)}}
+
       {% endfor %}
 
 {% else %}

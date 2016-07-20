@@ -1,7 +1,7 @@
 # Import flask dependencies
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from flask.ext.security import current_user, login_required
-
+import flask
 # Import the database object from the main app module
 from app import db
 from app.knowledgebase import KBManager, Question, Answer, Vote
@@ -65,12 +65,16 @@ def question(question_id):
 def upvote(answer_id):
     answer = db.session.query(Answer).get(answer_id)
     if answer is not None:
-        #print "Upvoting"
-        KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, 1)
-        return "", 200
+        vote_state = KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, 1)
+        if vote_state:
+            return_dict = {"answer_id": answer_id, "new_vote_state": 1}
+            return flask.jsonify(**return_dict), 200
+            # This means that this is the new amount
+        else:
+            return_dict = {"answer_id": answer_id, "new_vote_state": 0}
+            return flask.jsonify(**return_dict), 200
     else:
-        #print "No answer"
-        return "", 404
+        return flask.jsonify(**{}), 404
 
 
 @mod_knowledgebase.route('/answers/<int:answer_id>/downvote', methods=['POST'])
@@ -78,9 +82,13 @@ def upvote(answer_id):
 def downvote(answer_id):
     answer = db.session.query(Answer).get(answer_id)
     if answer is not None:
-        #print "Downvoting"
-        KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, -1)
-        return "", 200
+        vote_state = KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, -1)
+        if vote_state:
+            return_dict = {"answer_id": answer_id, "new_vote_state": -1}
+            return flask.jsonify(**return_dict), 200
+            # This means that this is the new amount
+        else:
+            return_dict = {"answer_id": answer_id, "new_vote_state": 0}
+            return flask.jsonify(**return_dict), 200
     else:
-        #print "No answer"
-        return "", 404
+        return flask.jsonify(**{}), 404
