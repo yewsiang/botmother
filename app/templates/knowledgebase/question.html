@@ -40,13 +40,13 @@ function vote_answer_down(answer_id) {
 </script>
 
   <div class="ui one column grid container padded">
-    <div class="ui comments custom-center">
+    <div class="ui comments custom-center" style="width: 80%">
 
     <h3 class="ui header centered" style="margin-bottom:0px; color:teal">{{find_channel_name(question.channel_id)}}</h3>
 
       <div class="comment">
-        <a class="avatar" style="margin-top:-5px">
-          <img src="../../static/404.jpg">
+        <a class="ui circular avatar image" style="margin-top:-10px">
+          <img src="{{ question.user.get_url_for_image() }}">
         </a>
         <div class="content">
           <span class="author">{{question.user.name}}</span>

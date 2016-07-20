@@ -7,10 +7,10 @@
        </div>
        <div class="extra content" style="padding-bottom:5px; padding-top:5px">
           <a href="{{url_for('knowledgebase.question', question_id=question.id)}}">
-          <i class="users icon" style="margin-top: 3px"></i> 
+          <i class="users icon" style="margin-top: 3px"></i>
           {{question.answers.count()}} Answer{{question.answers.count()|pluralize}}
           <div class="right floated author">
-            <img class="ui avatar image" src="../../static/404.jpg"> Matt
+            <img class="ui avatar circular image" src="{{question.user.get_url_for_image()}}"> Matt
           </div>
           </a>
        </div>
