@@ -21,22 +21,6 @@ mod_knowledgebase = Blueprint(
 
 @mod_knowledgebase.route('/', methods=['GET'])
 def home():
-    '''
-    # Retrieve the last
-    modules = KBManager.retrive_all_module_objects()
-
-    # Convert the modules to search content
-    search_content = []
-
-    # Loop through all the modules and add them to the semantic search bar
-    for module in modules:
-        search_content.append({'title': module.name.upper(),
-                               'url': url_for('knowledgebase.channel', channel_name=module.name)})
-
-    # convert to json
-    search_content = json.dumps(search_content)
-    return render_template('knowledgebase/home.html', modules=modules, search_content=search_content)
-    '''
     # Retrieve the last
     faculties = KBManager.retrieve_all_faculties()
     modules = KBManager.retrive_all_module_objects()
