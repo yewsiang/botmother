@@ -1,10 +1,10 @@
 # Import flask dependencies
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
-from flask.ext.security import current_user
+from flask.ext.security import current_user, login_required
 
 # Import the database object from the main app module
 from app import db
-from app.knowledgebase import KBManager
+from app.knowledgebase import KBManager, Question, Answer, Vote
 from app.helpers import get_all_questions_by_channel_name, get_question_by_id
 from app.knowledgebase.forms import ReplyForm
 
@@ -51,8 +51,6 @@ def question(question_id):
     question = get_question_by_id(question_id)
     answers = question.answers
 
-    print current_user.is_authenticated
-
     if request.method == 'POST' and form.validate() and current_user.is_authenticated:
         # Do something with the form info if the current user is good to go
         # and the input is sensible
@@ -60,3 +58,29 @@ def question(question_id):
         flash('Answer added!', 'success')
 
     return render_template('knowledgebase/question.html', question=question, answers=answers, form=form)
+
+
+@mod_knowledgebase.route('/answers/<int:answer_id>/upvote', methods=['GET', 'POST'])
+@login_required
+def upvote(answer_id):
+    answer = db.session.query(Answer).get(answer_id)
+    if answer is not None:
+        #print "Upvoting"
+        KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, 1)
+        return "", 200
+    else:
+        #print "No answer"
+        return "", 404
+
+
+@mod_knowledgebase.route('/answers/<int:answer_id>/downvote', methods=['GET', 'POST'])
+@login_required
+def downvote(answer_id):
+    answer = db.session.query(Answer).get(answer_id)
+    if answer is not None:
+        #print "Downvoting"
+        KBManager.add_vote_to_answer(answer_id, current_user.telegram_user_id, -1)
+        return "", 200
+    else:
+        #print "No answer"
+        return "", 404

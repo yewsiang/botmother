@@ -1,4 +1,4 @@
-{% macro answer_card(answer) %}
+{% macro answer_card(answer, current_user) %}
   <div class="comment">
     <a class="avatar">
       <img src="../../static/404.jpg">
@@ -6,15 +6,23 @@
     <div class="content">
       <a class="author">{{answer.user.name}}</a>
       <div class="metadata">
+
+      {% set upvote_function = "vote_answer_up(" ~ answer.id ~ ")"%}
+      {% set downvote_function = "vote_answer_down(" ~ answer.id ~ ")" %}
+
         <span class="date">{#{{answer.date_created}}#}</span>
-        <i class="users icon"></i>
-        <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
-          <button class="ui small compact icon basic button">
+          {% if current_user.is_authenticated %}
+            <button onclick={{upvote_function}} class="ui mini compact icon circular basic green button" style="margin-top: -5px">
             <i class="chevron up icon"></i>
-          </button>
-          <button class="ui small compact icon basic button">
+            </button>
+          {% endif %}
+
+        <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
+          {% if current_user.is_authenticated %}
+            <button onclick={{downvote_function}} class="ui mini compact icon circular basic red button" style="margin-top: -5px">
             <i class="chevron down icon"></i>
-          </button>
+            </button>
+          {% endif %}
       </div>
       <div class="text">{{answer.text}}</div>
       <div class="actions">

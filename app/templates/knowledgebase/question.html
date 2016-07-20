@@ -4,9 +4,21 @@
 
 {% block content %}
 {% set selected_color = random_color() %}
-<!-- Code for Module Cards to dim and show text-->
 
+<script>
+// Button-click voting
+
+function vote_answer_up(answer_id) {
+  $.ajax('answers/' + answer_id + '/upvote');
+  location.reload();
+}
+
+function vote_answer_down(answer_id) {
+  $.ajax('answers/' + answer_id + '/downvote');
+  location.reload();
+}
 </script>
+
   <div class="ui one column grid container padded">
     <div class="ui comments custom-center">
 
@@ -17,11 +29,10 @@
           <img src="../../static/404.jpg">
         </a>
         <div class="content">
-          <span class="author">Author</span>
+          <span class="author">{{question.user.name}}</span>
           <div class="metadata">
-            <span class="date">Today at 5:42PM</span>
-            <i class="users icon"></i>
-            <span class="votes">3 Votes</span>
+            <span class="date">{{question.date_created.strftime('%d %b %Y %d:%H:%M')}}</span>
+
           </div>
           {% if current_user.is_authenticated %}
             <button class="ui mini green basic right floated button" style="margin-top:-2px">
@@ -34,9 +45,9 @@
         </div>
       </div>
 
-    	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem </h3>
+    	<h3 class="{{selected_color}} ui dividing link card centered" style="padding-bottom:10px; width:100%; padding: 10px"> {{question.text}} </h3>
+      {% if current_user.is_authenticated %}
 
-{% if current_user.is_authenticated %}
       <form method="POST" class="ui reply form">
           {{ form.hidden_tag() }}
           {{ render_field_with_errors(form.reply) }}
@@ -58,7 +69,7 @@
 
 {% if answers.all()|length > 0 %}
       {% for answer in answers %}
-        {{ac.answer_card(answer)}}
+        {{ac.answer_card(answer, current_user)}}
       {% endfor %}
 
 {% else %}
