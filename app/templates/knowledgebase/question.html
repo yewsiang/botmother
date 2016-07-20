@@ -51,7 +51,7 @@ function vote_answer_down(answer_id) {
         <div class="content">
           <span class="author">{{question.user.name}}</span>
           <div class="metadata">
-            <span class="date">{{question.date_created.strftime('%d %b %Y %d:%H:%M')}}</span>
+            <span class="date">{{question.date_created.strftime('%d %b %Y %H:%M')}}</span>
 
           </div>
           {% if current_user.is_authenticated %}

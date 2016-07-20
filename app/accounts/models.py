@@ -71,6 +71,9 @@ class User(db.Model):
         from app.knowledgebase import KBManager
         return KBManager.user_vote_status_on_answer(answer_id, self.telegram_user_id)
 
+    def get_url_for_image(self):
+        return "../../static/img/avatars/" + str(self.id % 1000) + ".png"
+
     def __repr__(self):
         return str(self.telegram_user_id)
 
