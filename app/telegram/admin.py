@@ -18,7 +18,7 @@ class Help:
 
         # DEPENDING on the STATE of the User, provide different help commands
         if bot.state == State.NORMAL:
-            Badges.print_badges()
+            # Badges.print_badges()
             bot.sender.sendMessage(emoji.emojize("<b>NUS Question Bot :thumbs_up_sign:</b>\n\n"
                 "Dear <b>" + title[1] + "</b>" + title[2] + ",\n"
                 "/ask - <b>Ask questions</b> about specific modules!\n"  # Changes state

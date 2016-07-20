@@ -70,7 +70,6 @@ app.jinja_env.globals.update(find_channel_name=find_channel_name)
 from accounts import User, TelegramAccountManager, Role
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager, Faculty
 
-'''
 
 # Build the database:
 # This will create the database file using SQLAlchemy
@@ -86,17 +85,48 @@ TelegramAccountManager.create_account_if_does_not_exist(125, "Herbert")
 # Seed channels & faculties
 fac1 = Faculty(name="SCIENCE")
 fac2 = Faculty(name="COMPUTING")
+fac3 = Faculty(name="SDE")
+fac4 = Faculty(name="LAW")
+fac5 = Faculty(name="MEDICINE")
+fac6 = Faculty(name="ENGINEERING")
 CS1010 = Channel(name='CS1010')
 CS1020 = Channel(name='CS1020')
+CS1030 = Channel(name='CS1030')
+CS1040 = Channel(name='CS1040')
+CS1050 = Channel(name='CS1050')
+CS1060 = Channel(name='CS1060')
+LAW1234 = Channel(name='LAW1234')
+MA1521 = Channel(name='MA1521')
 BOBO1000 = Channel(name='BOBO1000')
 fac1.channels.append(BOBO1000)
+fac2.channels.append(BOBO1000)
+fac3.channels.append(BOBO1000)
+fac4.channels.append(BOBO1000)
+fac5.channels.append(BOBO1000)
+fac6.channels.append(BOBO1000)
 fac2.channels.append(CS1010)
 fac2.channels.append(CS1020)
+fac2.channels.append(CS1030)
+fac2.channels.append(CS1040)
+fac2.channels.append(CS1050)
+fac2.channels.append(CS1060)
+fac3.channels.append(LAW1234)
+fac4.channels.append(MA1521)
 
 db.session.add(fac1)
 db.session.add(fac2)
+db.session.add(fac3)
+db.session.add(fac4)
+db.session.add(fac5)
+db.session.add(fac6)
 db.session.add(CS1010)
 db.session.add(CS1020)
+db.session.add(CS1030)
+db.session.add(CS1040)
+db.session.add(CS1050)
+db.session.add(CS1060)
+db.session.add(LAW1234)
+db.session.add(MA1521)
 db.session.add(BOBO1000)
 
 question_id = KBManager.ask_question(123, 'bobo1000', "What is life?")
@@ -105,7 +135,6 @@ KBManager.add_answer_to_question(question_id, 125, "43!")
 
 db.session.commit()
 
-'''
 
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
