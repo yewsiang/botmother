@@ -31,7 +31,7 @@
             {% if has_downvoted %}
             <button id={{downvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular red button" style="margin-top: -5px">
             {% else %}
-            <button id={{upvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular basic red button" style="margin-top: -5px">
+            <button id={{downvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular basic red button" style="margin-top: -5px">
             {% endif %}
             <i class="chevron down icon"></i>
             </button>

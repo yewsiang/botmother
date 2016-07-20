@@ -12,6 +12,8 @@ function vote_callback(data) {
   var answer_id = data.answer_id;
   var new_vote_state = data.new_vote_state;
 
+  console.log(data);
+
 
   var up_string = '#' + answer_id + "_up";
   var down_string = '#' + answer_id + "_down";
