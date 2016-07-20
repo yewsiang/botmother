@@ -15,7 +15,7 @@ def home():
 
     if request.method == 'POST' and form.validate():
         otp = int(form.otp.data)
-        if current_user.telegram_user_id is None:
+        if current_user.telegram_user_id <= 0:
             merged_user = TelegramAccountManager.merge_accounts_through_otp(current_user, otp)
 
             if merged_user is not None:

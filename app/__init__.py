@@ -138,5 +138,5 @@ app.jinja_env.filters['pluralize'] = pluralize_dj
 
 from telegram import bot
 
-#bot.message_loop()
+bot.message_loop()
 print " "

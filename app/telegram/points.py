@@ -56,7 +56,7 @@ class Points:
             if (points_to_next_level == 1):
                 text_to_send += ("You just need <b>ONE</b> more point to go to the next level!\n\n"
                 "Earn points by contributing questions & answers that are rated to the community :)!\n")
-           else:
+            else:
                 text_to_send += ("You just need another <b>" + str(points_to_next_level) +
                     "</b> points to advance to the next level!\n\n"
                     "Earn points by contributing questions & answers that are rated to the community :)!\n")
