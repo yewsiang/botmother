@@ -8,5 +8,5 @@ class ExtendedRegisterForm(ConfirmRegisterForm):
 
 
 class OTPForm(Form):
-    otp = IntegerField('OTP', [Required(), NumberRange(min=100000, max=999999, message="OTP is invalid!")])
+    otp = IntegerField('One-Time Password', [Required(), NumberRange(min=100000, max=999999, message="One-Time Password is invalid!")])
     submit = SubmitField()

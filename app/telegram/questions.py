@@ -1,6 +1,7 @@
 import telepot
 from .commands import State
 from .voting import Voting
+from telepot.exception import TelegramError
 from app.tasks import execute_callback_after_time
 from app.accounts import AccountManager
 from app.knowledgebase import KBManager, max_questions_per_day
@@ -122,7 +123,7 @@ class AskingQuestions:
             'delegator_bot': delegator_bot,
             'question_id': question_id
         }
-        execute_callback_after_time(15 * 1.5, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
+        execute_callback_after_time(15 * 1.25, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
 
 
 class AnsweringQuestions:
@@ -174,30 +175,35 @@ class AnsweringQuestions:
     def callback_confirm_answer(cls, bot, delegator_bot, data, query_id, msg_idf):
         print "<< (Answer 3) 'Yes' or 'No' button has been clicked to confirm answers >>"
 
-        callback_type, answer_id, question_id, response = data.split('_')
-        msg_idf = (bot.telegram_id, msg_idf)
-        if response == 'yes':
-            # Send answer to list
-            bot.sender.sendMessage("Your answer has been sent! You will be sent other people's answers shortly!")
-            delegator_bot.answerCallbackQuery(query_id, "Your answer has been sent!")
+        # The User may press multiple times and cause an error
+        try:
+            callback_type, answer_id, question_id, response = data.split('_')
+            msg_idf = (bot.telegram_id, msg_idf)
+            if response == 'yes':
+                # Send answer to list
+                bot.sender.sendMessage("Your answer has been sent! You will be sent other people's answers shortly!")
+                delegator_bot.answerCallbackQuery(query_id, "Your answer has been sent!")
 
-            # Confirm the answer to the question. This will make it available to the rest of the Users.
-            KBManager.confirm_answer(answer_id)
+                # Confirm the answer to the question. This will make it available to the rest of the Users.
+                KBManager.confirm_answer(answer_id)
 
-            # New markup is given a callback_data of sent_None_None_None because the format of callback data is of
-            # ABC_DEF_GHI since we will .split('_')
-            new_markup = InlineKeyboardMarkup(inline_keyboard=[
-                     [InlineKeyboardButton(text="Sent", callback_data="Sent_None_None_None")]
-                 ])
-            bot.state = State.NORMAL
-            delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
+                # New markup is given a callback_data of sent_None_None_None because the format of callback data is of
+                # ABC_DEF_GHI since we will .split('_')
+                new_markup = InlineKeyboardMarkup(inline_keyboard=[
+                         [InlineKeyboardButton(text="Sent", callback_data="Sent_None_None_None")]
+                     ])
+                bot.state = State.NORMAL
+                delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
 
-        else:
-            new_markup = InlineKeyboardMarkup(inline_keyboard=[
-                     [InlineKeyboardButton(text="Cancelled", callback_data="Cancelled_None_None_None")]
-                 ])
-            bot.state = State.NORMAL
-            delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
+            else:
+                new_markup = InlineKeyboardMarkup(inline_keyboard=[
+                         [InlineKeyboardButton(text="Cancelled", callback_data="Cancelled_None_None_None")]
+                     ])
+                bot.state = State.NORMAL
+                delegator_bot.editMessageReplyMarkup(msg_idf, new_markup)
+
+        except TelegramError:
+            print "Multiple clicks error"
 
     # (Delayed Function)
     # Sending answers to voters after there are 9 answers / 15mins is up:
@@ -238,7 +244,7 @@ class AnsweringQuestions:
                 'question_id': question_id,
                 'number_of_answers': len(answers)
             }
-            execute_callback_after_time(15 * 1.5, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
+            execute_callback_after_time(15 * 1.25, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
 
         else:
             # Create link to forum and send message to the person asking the question to tell him that there are no answers

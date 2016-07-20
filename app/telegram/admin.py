@@ -69,9 +69,12 @@ class Admin:
     # /start or /restart - When User starts using the bot
     @classmethod
     def start_command(cls, bot):
-        bot.sender.sendMessage("Welcome to NUS Question Bot! Ask questions and answer questions on the go!\n")
         bot.state = State.NORMAL
         Help.help_according_to_state(bot)
+        bot.sender.sendMessage("Welcome to NUS Question Bot!\n"
+            "<b>Ask questions</b> and <b>answer questions</b> on the go!\n\n"
+            "You can start by subscribing to modules at /modules\n\n"
+            "If you need help, just /help :)", parse_mode='HTML')
 
     # /verify - When User types /verify - will generate a one-time password and send it to them. Also sets it in their user object
     @classmethod

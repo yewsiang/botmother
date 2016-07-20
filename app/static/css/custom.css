@@ -1,3 +1,9 @@
+/* Hack because of ugly formatting of forms in templates/security/login_user.html */
+.custom .ui.stacked.segment:after {
+    border-width: 0px !important;
+    background: rgba(0, 0, 0, 0);
+}
+
 .custom-center {
    margin-left: auto !important;
    margin-right: auto !important;

@@ -1,6 +1,7 @@
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
 from app.helpers import get_weblink_by_question_id, get_question_by_id
 from app.knowledgebase import KBManager
+from .points import Points
 import commands
 
 from pprint import pprint
@@ -125,12 +126,9 @@ class Voting:
                 # Append to the list of answers with votes to sort by vote value
                 list_of_answer_with_votes.append([answer.text, vote_value])
 
-        #
-        # TODO: If there are at least one vote for the top answer, award a point to the person who asked the question
-        #       and the person who answered
-        #
+        # If there are at least one vote for the top answer, award a point to the person who asked the question
+        # and the person who answered
         # Asker should only receive points once
-        '''
         awarded_points_to_asker_already = False
         for idx, answer in enumerate(list_of_answer_with_votes):
             if idx < number_of_answers:
@@ -138,11 +136,10 @@ class Voting:
                 if list_of_answer_with_votes[idx][1] != 0:
                     # Award points to the asker if haven't already
                     if not awarded_points_to_asker_already:
-                        Points.award_points(question.user.telegram_user_id)
+                        Points.award_points(question.user.telegram_user_id, 1)
                         awarded_points_to_asker_already = True
                     # Award points to the answerer
-                    Points.award_points(answerers_user_ids[idx])
-        '''
+                    Points.award_points(answerers_user_ids[idx], 1)
 
         # Sorting the list of answers by vote_values
         list_of_answer_with_votes.sort(key=lambda ans_tuple: ans_tuple[1], reverse=True)

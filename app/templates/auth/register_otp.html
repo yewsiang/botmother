@@ -1,24 +1,25 @@
 {% extends "layout.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
-
 {% block content %}
 
-<div class="ui middle aligned center aligned grid">
-      <div class="column custom-column">
-          <h2 class="ui custom-image header">
-            <div class="content">
-              Have you used NUS Questions Bot on Telegram before? <br> <br>
-              Type <u>/verify</u> into your Telegram chat with NUS Questions Bot to
-              get your One-Time password!
-            </div>
-          </h2>
-          <form action="/auth/register_otp" method="POST" class="ui large form">
-          <div class="ui stacked secondary  segment">
+{% set selected_color = random_color() %}
 
-          {{ form.hidden_tag() }}
-          {{ render_field_with_errors(form.otp) }}
-          {{ render_field(form.submit, class='ui button large fluid green') }}
-          </div>
-          </form>
-          <h3> If not, please continue to the main page <a href="/">here</a></h3>
+<div class="ui middle aligned center aligned grid">
+  <div class="column custom-column">
+        <div class="content">
+          <h3 class="ui header centered" style="margin-top:5px; color:teal">
+            Have you used NUS Questions Bot on Telegram before? <br>
+            </h3>
+            <p style="color: teal">Type <u>/verify</u> in your Telegram chat with NUS Questions Bot to link Telegram with your Web account to track your points!</p>
+        </div>
+      <!-- Custom class in order to remove a bug that mars the appearance -->
+      <form action="/auth/register_otp" method="POST" class="ui large {{selected_color}} link card form custom" style="width: 100%">
+      
+      <div class="ui stacked secondary segment" style="border-width: 0px">
+        {{ form.hidden_tag() }}
+        {{ render_field_with_errors(form.otp) }}
+        {{ render_field(form.submit, class='ui button large fluid green') }}
+      </div>
+      </form>
+      <p style="color: teal">If not, please continue to the main page <a href="/"><u>here</u></a></p>
 {% endblock %}

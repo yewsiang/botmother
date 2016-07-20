@@ -9,7 +9,7 @@ from flask import url_for
 '''
 Constants
 '''
-max_questions_per_day = 2000000000000000000
+max_questions_per_day = 20
 
 
 class KBManager(object):

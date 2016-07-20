@@ -58,7 +58,7 @@ class Modules:
         modules_from_faculty = KBManager.retrieve_all_modules_from_faculty(faculty_code.upper())
         # If faculty_code is valid
         if modules_from_faculty is not None:
-            string_to_send = "Modules available in <b>" + faculty_code.title() + "</b>:"
+            string_to_send = "Modules available in <b>" + faculty_code.title() + "</b>:\n"
             for module in modules_from_faculty:
                 # Send the user a list of modules with "/" appended - easier to subscribe
                 string_to_send += ("/" + str(module).upper() + "  ")
