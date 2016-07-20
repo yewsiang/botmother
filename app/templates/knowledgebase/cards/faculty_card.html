@@ -4,8 +4,8 @@
 
 {% macro faculty_card(faculty) %}
   {% set selected_color = random_color() %}
-   <div class="{{selected_color}} ui link special cards">
-     <div class="card">
+   <div class="{{selected_color}} ui custom-nopadding link special cards">
+     <div class="card" style="width:100%">
        <div class="content">
          <a href="{{url_for('knowledgebase.faculty', faculty_name=faculty.name)}}" class="header">{{faculty.name.upper()}}</a>
          <div class="meta">
