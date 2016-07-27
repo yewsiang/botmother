@@ -37,6 +37,7 @@ function vote_answer_up(answer_id) {
 function vote_answer_down(answer_id) {
   $.post('answers/' + answer_id + '/downvote', null, vote_callback);
 }
+
 </script>
 
   <div class="ui five column grid" style="margin-top:2px; margin-bottom:8px">
@@ -101,11 +102,14 @@ function vote_answer_down(answer_id) {
 
       {% endfor %}
 
-      <form method="POST" class="ui reply form">
+
+      {% if current_user.is_authenticated %}
+        <form method="POST" class="ui reply form">
           {{ form.hidden_tag() }}
           {{ render_reply_field_with_errors(form.reply, class='custom-reply-form') }}
           {{ render_reply_field(form.submit, class='ui circular green small custom-centered submit button') }}
-      </form>
+        </form>
+      {% endif %}
 
 {% else %}
     <div class="text" align="center">
