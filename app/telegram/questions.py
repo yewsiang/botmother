@@ -252,5 +252,5 @@ class AnsweringQuestions:
             markup = InlineKeyboardMarkup(inline_keyboard=[
                      [dict(text='Link to Forum', url=forum_link)]
                  ])
-            delegator_bot.sendMessage(question.user.telegram_user_id, "There were no answers after 15mins,"
+            delegator_bot.sendMessage(question.user.telegram_user_id, "There were no answers after 5 mins, "
                 "we have created a forum post for you and hopefully you will get your answers there :)!", reply_markup=markup)
