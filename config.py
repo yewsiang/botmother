@@ -23,6 +23,9 @@ class BaseConfig(object):
     # force SQLALCHEMY to echo
     SQLALCHEMY_ECHO = False
 
+    # Actual application url
+    SERVER_NAME = "botmother.themetamorph.net"
+
     # FLASK-SECURITY
     SECURITY_REGISTERABLE = True
     SECURITY_CONFIRMABLE = True

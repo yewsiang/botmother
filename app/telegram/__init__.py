@@ -45,7 +45,7 @@ class MainBot(telepot.helper.ChatHandler):
         # Admin checks every time the bot has been initialized.
         # If user is not registered in db, register him. Initialize state to NORMAL.
         telegram_id = seed_tuple[2]
-        name = seed_tuple[1]['chat']['first_name'].strip() + " " + seed_tuple[1]['chat']['last_name'].strip()
+        name = seed_tuple[1]['chat']['first_name'].strip()
         self.telegram_id = telegram_id
         self.state = State.NORMAL
         TelegramAccountManager.create_account_if_does_not_exist(telegram_id, name)
