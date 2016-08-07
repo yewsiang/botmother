@@ -100,8 +100,10 @@ fac1.channels.append(PC1142)
 
 fac2 = Faculty(name="COMPUTING")
 POKE1001 = Channel(name='POKE1001')
+CS1010 = Channel(name='CS1010')
 CS1101S = Channel(name='CS1101S')
 fac2.channels.append(POKE1001)
+fac2.channels.append(CS1010)
 fac2.channels.append(CS1101S)
 
 fac3 = Faculty(name="ENGINEERING")
@@ -172,6 +174,7 @@ db.session.add(CM1111)
 db.session.add(PC1142)
 
 db.session.add(POKE1001)
+db.session.add(CS1010)
 db.session.add(CS1101S)
 
 db.session.add(POKE1002)
