@@ -25,7 +25,8 @@
             </button>
           {% endif %}
 
-        <span class="votes">{{answer.votes.count()}} Vote{{answer.votes.count()|pluralize}}</span>
+        {% set tallied_votes = tally_votes(answer.votes) %}
+        <span class="votes">{{tallied_votes}} Point{{tallied_votes | pluralize}}</span>
           {% if current_user.is_authenticated %}
             {% if has_downvoted %}
             <button id={{downvote_id}} onclick={{downvote_function}} class="ui mini compact icon circular red button" style="margin-top: -5px">
