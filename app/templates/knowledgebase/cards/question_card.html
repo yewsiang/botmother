@@ -10,7 +10,7 @@
           <i class="users icon" style="margin-top: 3px"></i>
           {{question.answers.count()}} Answer{{question.answers.count()|pluralize}}
           <div class="right floated author">
-            <img class="ui avatar circular image" src="{{question.user.get_url_for_image()}}"> Matt
+            <img class="ui avatar circular image" src="{{question.user.get_url_for_image()}}"> question.user.name
           </div>
           </a>
        </div>
