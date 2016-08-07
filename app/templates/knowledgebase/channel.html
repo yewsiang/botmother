@@ -18,19 +18,20 @@
 <div class="custom-80percent-width" style="margin-left: auto; margin-right: auto">
 	{% if questions.all()|length > 0 %}
 
-		<p class="ui header">Newest</p>
+		<p class="ui header">Questions</p>
 	  {% for question in questions %}
 	    <div class="column">
 	      {{qc.question_card(question)}}
 	    </div>
 	  {% endfor %}
-
+	<!--
 		<p class="ui header">Highly Voted</p>
 	  {% for question in questions %}
 	    <div class="column">
 	      {{qc.question_card(question)}}
 	    </div>
 	  {% endfor %}
+	-->
 
 	{% else %}
 		<div class="text" align="center">
