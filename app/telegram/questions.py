@@ -91,7 +91,7 @@ class AskingQuestions:
             # Back to NORMAL state after question ahs been sent
             bot.state = State.NORMAL
             bot.sender.sendMessage("Your question has been sent to the people subscribed to " + module_code.upper() +
-                ". The answers will be sent back to you in 15 mins!")
+                ". The answers will be sent back to you in 5 mins!")
 
     # Sending questions to answerers after they have finished:
     # 1) Typing their question,
@@ -123,7 +123,7 @@ class AskingQuestions:
             'delegator_bot': delegator_bot,
             'question_id': question_id
         }
-        execute_callback_after_time(15 * 1.25, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
+        execute_callback_after_time(5 * 60, AnsweringQuestions.send_answers_to_voters, kwargs_for_time_function)
 
 
 class AnsweringQuestions:
@@ -244,7 +244,7 @@ class AnsweringQuestions:
                 'question_id': question_id,
                 'number_of_answers': len(answers)
             }
-            execute_callback_after_time(15 * 1.25, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
+            execute_callback_after_time(5 * 60, Voting.send_answers_and_link_to_participants, kwargs_for_time_function)
 
         else:
             # Create link to forum and send message to the person asking the question to tell him that there are no answers
