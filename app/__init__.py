@@ -71,6 +71,12 @@ from accounts import User, TelegramAccountManager, Role
 from knowledgebase import Question, Answer, Vote, Comment, Channel, KBManager, Faculty
 
 
+def tally_votes(votes):
+    # Sums all votes by their amount
+    return sum(map(lambda vote: vote.amount, votes))
+
+app.jinja_env.globals.update(tally_votes=tally_votes)
+
 # Build the database:
 # This will create the database file using SQLAlchemy
 # db.drop_all()
