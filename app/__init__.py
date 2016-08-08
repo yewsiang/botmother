@@ -77,8 +77,8 @@ def tally_votes(votes):
 
 app.jinja_env.globals.update(tally_votes=tally_votes)
 
-'''
 
+'''
 # Build the database:
 # This will create the database file using SQLAlchemy
 db.drop_all()
@@ -326,8 +326,8 @@ db.session.add(UTS2100)
 # KBManager.add_answer_to_question(question_id, 124, "42")
 # KBManager.add_answer_to_question(question_id, 125, "43!")
 db.session.commit()
-
 '''
+
 
 # SECURITY/AUTH
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

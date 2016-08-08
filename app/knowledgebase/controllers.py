@@ -61,7 +61,7 @@ def channel(channel_name):
 def question(question_id):
     form = ReplyForm(request.form)
     question = get_question_by_id(question_id)
-    answers = question.answers
+    answers = question.answers.filter(Answer.confirmed == True)
 
     if request.method == 'POST' and form.validate() and current_user.is_authenticated:
         # Do something with the form info if the current user is good to go
