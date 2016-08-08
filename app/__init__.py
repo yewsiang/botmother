@@ -38,7 +38,7 @@ db.init_app(app)
 
 # AUTH
 # Start Telegram bot loop
-TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
+TOKEN = '228426808:AAGPfHX6yyhFdzWZeoAlNgns7sC_inAL92k'
 
 
 @app.route("/")

@@ -5,7 +5,7 @@ from pprint import pprint
 from .callbackqueries import CallbackQueries
 from app.accounts import TelegramAccountManager
 
-TOKEN = '228426808:AAFjJ1Aj9PaRhlVSIIQ3sNRhxjFT_nEEd1A'
+TOKEN = '228426808:AAGPfHX6yyhFdzWZeoAlNgns7sC_inAL92k'
 
 # Left here in case we want to implement such a method in the future
 """
