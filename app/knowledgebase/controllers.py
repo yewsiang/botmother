@@ -66,7 +66,7 @@ def question(question_id):
     if request.method == 'POST' and form.validate() and current_user.is_authenticated:
         # Do something with the form info if the current user is good to go
         # and the input is sensible
-        KBManager.add_answer_to_question(question_id, current_user.telegram_user_id, form.reply.data)
+        KBManager.add_answer_to_question(question_id, current_user.telegram_user_id, form.reply.data, True)
         return redirect(url_for('knowledgebase.question', question_id=question_id))
 
     return render_template('knowledgebase/question.html', question=question, answers=answers, form=form)

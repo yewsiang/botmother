@@ -82,6 +82,7 @@ class Answer(db.Model):
         if len(text) <= 5000:
             self.text = text
             self.pending = pending
+	    self.confirmed = pending
         else:
             raise ValueError('Answer is too long for database (<= 5000 chars)')
 

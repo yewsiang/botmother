@@ -203,7 +203,7 @@ class KBManager(object):
             raise ValueError('Channel does not exist, cannot get answerers!')
 
     @staticmethod
-    def add_answer_to_question(question_id, answerer_telegram_user_id, answer_text):
+    def add_answer_to_question(question_id, answerer_telegram_user_id, answer_text, confirmed=False):
         '''
         This method checks for a valid question, answerer and valid answer_text
         and adds it to both the question and the answerer_user
@@ -219,7 +219,7 @@ class KBManager(object):
             if answerer is not None:
                 if answer_text != "":
                     # User has not confirmed his answer, hence confirmed = False
-                    answer = Answer(answer_text, False)
+                    answer = Answer(answer_text, confirmed)
                     # add this answer to the user who answered
                     answerer.answers.append(answer)
                     # add this answer to the question
