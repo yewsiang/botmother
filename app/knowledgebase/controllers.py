@@ -3,8 +3,8 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from flask.ext.security import current_user, login_required
 import flask
 # Import the database object from the main app module
-from app import db
-from app.knowledgebase import KBManager, Question, Answer, Vote
+from app import app, db
+from app.knowledgebase import KBManager, Question, Answer, Vote, Channel
 from app.helpers import get_all_questions_by_channel_name, get_question_by_id
 from app.knowledgebase.forms import ReplyForm
 
@@ -104,3 +104,21 @@ def downvote(answer_id):
             return flask.jsonify(**return_dict), 200
     else:
         return flask.jsonify(**{}), 404
+
+
+@app.route('/query/<string:query_string>', methods=['GET'])
+def query(query_string):
+    # Searches for a module by module name
+    query_module_results = Channel.query.filter(Channel.name.like("%" + query_string + "%")).all()
+    if query_module_results is not None and len(query_module_results) > 0:
+        return_dict = {}
+        return_dict_items = []
+        for query_module in query_module_results:
+            module_dict = {'title': query_module.name.upper(),
+                           'url': url_for('knowledgebase.channel', channel_name=query_module.name)}
+            return_dict_items.append(module_dict)
+        return_dict = {"results": return_dict_items}
+        return flask.jsonify(**return_dict)
+
+    else:
+        return flask.jsonify(**{})

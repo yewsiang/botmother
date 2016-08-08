@@ -69,6 +69,20 @@
                     </div>
                 </div>
                 <br>
+                <script>
+                    $(document).ready(function() {
+                        var content = {{ search_content|safe }}
+
+                        $('.ui.search')
+                          .search({
+                            apiSettings: {
+                                url: '/query/{query}'
+                            }
+                            //source: content
+                          })
+                        ;
+                    });
+                </script>
             {% endblock %}
         </div>
 

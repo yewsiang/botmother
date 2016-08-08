@@ -4,17 +4,7 @@
 
 {% block content %}
 <!-- Code for Faculty Cards to show text-->
-<script>
-$(document).ready(function() {
-    var content = {{ search_content|safe }}
 
-    $('.ui.search')
-      .search({
-        source: content
-      })
-    ;
-});
-</script>
 
 {% if faculties|length > 0 %}
     <h3 class="ui header centered" style="color:teal; margin-top:0px">Faculties</h3>

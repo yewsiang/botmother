@@ -4,16 +4,7 @@
 
 {% block content %}
 <!-- Code for Module Cards to dim and show text-->
-<script>
-$(document).ready(function() {
-    var content = {{ search_content|safe }}
 
-    $('.ui.search')
-      .search({
-        source: content
-      });
-});
-</script>
 
 {% if modules|length > 0 %}
     <div class="ui five column grid" style="margin-top:3px">
