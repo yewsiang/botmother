@@ -76,7 +76,9 @@ def tally_votes(votes):
     return sum(map(lambda vote: vote.amount, votes))
 
 app.jinja_env.globals.update(tally_votes=tally_votes)
+
 '''
+
 # Build the database:
 # This will create the database file using SQLAlchemy
 db.drop_all()
@@ -145,7 +147,7 @@ fac4.channels.append(EC1101E)
 fac4.channels.append(GL1101E)
 fac4.channels.append(PS1101E)
 fac4.channels.append(EL1101E)
-fac4.channels.append(HY110E)
+fac4.channels.append(HY1101E)
 fac4.channels.append(SE1101E)
 fac4.channels.append(NM1101E)
 fac4.channels.append(SC1101E)
@@ -243,7 +245,7 @@ db.session.add(EC1101E)
 db.session.add(GL1101E)
 db.session.add(PS1101E)
 db.session.add(EL1101E)
-db.session.add(HY110E)
+db.session.add(HY1101E)
 db.session.add(SE1101E)
 db.session.add(NM1101E)
 db.session.add(SC1101E)
@@ -279,6 +281,7 @@ db.session.add(UTC1102S)
 # KBManager.add_answer_to_question(question_id, 124, "42")
 # KBManager.add_answer_to_question(question_id, 125, "43!")
 db.session.commit()
+
 '''
 
 # SECURITY/AUTH
