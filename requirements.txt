@@ -18,7 +18,7 @@ green==2.4.0
 gunicorn==19.5.0
 inflect==0.2.5
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.11.3
 jinja2-pluralize==0.3.0
 kombu==3.0.35
 MarkupSafe==0.23
